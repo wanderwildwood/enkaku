@@ -12,19 +12,16 @@ import androidx.compose.ui.unit.Dp
 import com.atharok.btremote.domain.entities.remoteInput.RemoteButtonProperties
 import com.atharok.btremote.ui.components.DefaultElevatedCard
 import com.atharok.btremote.ui.components.customButtons.RemoteIconRawButton
-import com.atharok.btremote.ui.theme.surfaceElevationMedium
 
 @Composable
 fun MultimediaButtonsLayout(
     sendRemoteKeyReport: (ByteArray) -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = RectangleShape,
-    elevation: Dp = surfaceElevationMedium()
 ) {
     DefaultElevatedCard(
         modifier = modifier,
         shape = shape,
-        elevation = elevation
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

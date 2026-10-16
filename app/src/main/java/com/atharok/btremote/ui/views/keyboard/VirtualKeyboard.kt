@@ -3,16 +3,13 @@ package com.atharok.btremote.ui.views.keyboard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -33,7 +30,7 @@ import com.atharok.btremote.common.utils.AppIcons
 import com.atharok.btremote.domain.entities.remoteInput.RemoteButtonProperties
 import com.atharok.btremote.ui.components.BasicIconButton
 import com.atharok.btremote.ui.components.customButtons.RemoteIconSurfaceButton
-import com.atharok.btremote.ui.theme.surfaceElevationHigh
+import com.mudita.mmd.components.text_field.TextFieldMMD
 
 @Composable
 fun VirtualKeyboardModalBottomSheet(
@@ -45,7 +42,6 @@ fun VirtualKeyboardModalBottomSheet(
 ) {
     KeyboardModalBottomSheet(
         onShowKeyboardBottomSheetChanged = onShowKeyboardBottomSheetChanged,
-        windowInsets = WindowInsets.ime,
         modifier = modifier
     ) {
         val focusRequester = remember { FocusRequester() }
@@ -93,7 +89,7 @@ private fun StatelessKeyboardView(
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small)),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedTextField(
+            TextFieldMMD(
                 value = text,
                 onValueChange = onTextChange,
                 modifier = Modifier
@@ -217,7 +213,6 @@ private fun VirtualKeyboardButton(
         sendKeyReport = sendKeyboardKeyReport,
         modifier = modifier,
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.keyboard_key_corner_radius)),
-        elevation = surfaceElevationHigh(),
         iconFillFraction = 1f,
         iconPadding = dimensionResource(id = R.dimen.padding_medium)
     )

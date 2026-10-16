@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "BT Remote"
+rootProject.name = "enkaku"
 include(":app")

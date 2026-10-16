@@ -19,8 +19,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import com.atharok.btremote.ui.components.DefaultElevatedCard
-import com.atharok.btremote.ui.theme.surfaceElevationMedium
-import com.atharok.btremote.ui.theme.surfaceElevationShadow
 
 @Composable
 private fun StatefulCustomButton(
@@ -83,15 +81,11 @@ fun SurfaceButton(
     touchUp: () -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = RectangleShape,
-    elevation: Dp = surfaceElevationMedium(),
-    shadowElevation: Dp = surfaceElevationShadow(),
     content: @Composable () -> Unit
 ) {
     DefaultElevatedCard(
         modifier = modifier,
         shape = shape,
-        elevation = elevation,
-        shadowElevation = shadowElevation
     ) {
         CustomButton(
             touchDown = touchDown,

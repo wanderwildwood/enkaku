@@ -17,8 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.atharok.btremote.common.extensions.autoMirroredIcon
 import com.atharok.btremote.common.utils.REMOTE_INPUT_NONE
 import com.atharok.btremote.domain.entities.remoteInput.RemoteButtonProperties
-import com.atharok.btremote.ui.theme.surfaceElevationMedium
-import com.atharok.btremote.ui.theme.surfaceElevationShadow
 
 // ---- Surface Button ----
 
@@ -30,8 +28,6 @@ fun IconSurfaceButton(
     touchUp: () -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = RectangleShape,
-    elevation: Dp = surfaceElevationMedium(),
-    shadowElevation: Dp = surfaceElevationShadow(),
     @FloatRange(from = 0.0, to = 1.0) iconFillFraction: Float = 0.5f,
     iconPadding: Dp = 0.dp,
     iconTint: Color = LocalContentColor.current
@@ -41,8 +37,6 @@ fun IconSurfaceButton(
         touchUp = touchUp,
         modifier = modifier,
         shape = shape,
-        elevation = elevation,
-        shadowElevation = shadowElevation
     ) {
         Icon(
             imageVector = image,
@@ -59,8 +53,6 @@ fun RemoteIconSurfaceButton(
     sendKeyReport: (ByteArray) -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = RectangleShape,
-    elevation: Dp = surfaceElevationMedium(),
-    shadowElevation: Dp = surfaceElevationShadow(),
     @FloatRange(from = 0.0, to = 1.0) iconFillFraction: Float = 0.5f,
     iconPadding: Dp = 0.dp,
     iconTint: Color = LocalContentColor.current
@@ -72,8 +64,6 @@ fun RemoteIconSurfaceButton(
         touchUp = { sendKeyReport(REMOTE_INPUT_NONE) },
         modifier = modifier,
         shape = shape,
-        elevation = elevation,
-        shadowElevation = shadowElevation,
         iconFillFraction = iconFillFraction,
         iconPadding = iconPadding,
         iconTint = iconTint

@@ -16,7 +16,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -106,9 +105,7 @@ private fun StatelessDistantDevicePairScreen(
         ) {
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier
-                    .verticalScroll(scrollState)
-                    .weight(1f),
+                modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.Top,
                 userScrollEnabled = false
             ) { pageIndex: Int ->
@@ -120,14 +117,14 @@ private fun StatelessDistantDevicePairScreen(
                 previous = {
                     if (pagerState.currentPage > 0) {
                         coroutineScope.launch {
-                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                            pagerState.scrollToPage(pagerState.currentPage - 1)
                         }
                     }
                 },
                 next = {
                     if (pagerState.currentPage < MAX_PAGES - 1) {
                         coroutineScope.launch {
-                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                            pagerState.scrollToPage(pagerState.currentPage + 1)
                         }
                     } else {
                         navigateUp()

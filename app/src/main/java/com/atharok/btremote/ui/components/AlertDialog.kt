@@ -1,33 +1,31 @@
 package com.atharok.btremote.ui.components
 
-import android.content.res.Configuration
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonColors
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.dimensionResource
-import com.atharok.btremote.R
-import com.atharok.btremote.ui.theme.surfaceElevationMedium
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.atharok.btremote.ui.theme.EInkDialog
+import com.mudita.mmd.components.buttons.OutlinedButtonMMD
+import com.mudita.mmd.components.lazy.LazyColumnMMD
+import com.mudita.mmd.components.text.TextMMD
 
+/**
+ * BT Remote's dialogs, on the house dialog rather than Material's: no dimmed backdrop, no
+ * animation, always the same width, and MMD buttons across the foot.
+ */
 @Composable
 fun TemplateDialog(
     title: @Composable () -> Unit,
@@ -38,19 +36,27 @@ fun TemplateDialog(
     dismissButtonText: String? = null,
     onDismissRequest: () -> Unit = {}
 ) {
-    AlertDialog(
-        title = title,
-        text = content,
-        onDismissRequest = onDismissRequest,
-        confirmButton = {
-            DialogButton(text = confirmButtonText, action = onConfirmation)
-        },
-        dismissButton = {
-            DialogButton(text = dismissButtonText, action = onDismissRequest)
-        },
-        containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevationMedium()),
-        modifier = modifier
-    )
+    EInkDialog(onDismiss = onDismissRequest) {
+        Column(modifier = modifier) {
+            title()
+            Spacer(Modifier.height(12.dp))
+            content()
+        }
+        if (confirmButtonText != null || dismissButtonText != null) {
+            Spacer(Modifier.height(18.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                dismissButtonText?.let {
+                    DialogButton(text = it, action = onDismissRequest, modifier = Modifier.weight(1f))
+                }
+                confirmButtonText?.let {
+                    DialogButton(text = it, action = onConfirmation, modifier = Modifier.weight(1f))
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -65,12 +71,10 @@ fun SimpleDialog(
 ) {
     TemplateDialog(
         title = {
-            TextLarge(text = dialogTitle)
+            DialogTitle(text = dialogTitle)
         },
         content = {
-            TextNormal(
-                text = dialogText
-            )
+            TextMMD(text = dialogText, style = MaterialTheme.typography.bodyMedium)
         },
         modifier = modifier,
         confirmButtonText = confirmButtonText,
@@ -80,6 +84,10 @@ fun SimpleDialog(
     )
 }
 
+/**
+ * A choice among a few: pressing one chooses it and closes the dialog, so there is no OK to
+ * press after it. The chosen one wears the black edge, which is how the house shows a choice.
+ */
 @Composable
 fun ListDialog(
     confirmButtonText: String?,
@@ -91,68 +99,49 @@ fun ListDialog(
     items: List<String>,
     defaultItemIndex: Int = 0
 ) {
-    val selected = remember { mutableIntStateOf(defaultItemIndex) }
     TemplateDialog(
         title = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                TextLarge(
-                    text = dialogTitle,
-                    maxLines = 2
-                )
+                DialogTitle(text = dialogTitle)
                 dialogMessage?.let {
-                    TextNormal(
-                        text = it,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = dimensionResource(id = R.dimen.padding_max))
-                    )
+                    Spacer(Modifier.height(6.dp))
+                    TextMMD(text = it, style = MaterialTheme.typography.labelSmall)
                 }
             }
         },
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.Start
+            LazyColumnMMD(
+                modifier = Modifier.fillMaxWidth().heightIn(max = 360.dp),
+                isScrollbarVisible = false
             ) {
-                items.forEachIndexed { index, item ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = selected.intValue == index,
-                            onClick = { selected.intValue = index },
-                            colors = RadioButtonColors(
-                                selectedColor = MaterialTheme.colorScheme.primary,
-                                unselectedColor = MaterialTheme.colorScheme.onSurface,
-                                disabledSelectedColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                disabledUnselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
+                itemsIndexed(items) { index, item ->
+                    val chosen = index == defaultItemIndex
+                    TextMMD(
+                        text = item,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = if (chosen) FontWeight.Bold else null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 3.dp)
+                            .then(
+                                if (chosen) Modifier.border(1.5.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
+                                else Modifier
                             )
-                        )
-                        TextNormal(
-                            text = item,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.clickable { selected.intValue = index }
-                        )
-                    }
+                            .clickable { onConfirmation(index) }
+                            .padding(horizontal = 12.dp, vertical = 10.dp)
+                    )
                 }
             }
-        },
-        modifier = if(LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT)
-            Modifier.heightIn(max = LocalWindowInfo.current.containerDpSize.height * 3 / 5)
-        else
-            Modifier,
-        confirmButtonText = confirmButtonText,
-        onConfirmation = {
-            onConfirmation(selected.intValue)
         },
         dismissButtonText = dismissButtonText,
         onDismissRequest = onDismissRequest
     )
 }
 
+/**
+ * Waiting on the other device. Said in words, without a spinner: on this panel a spinner is a
+ * smear that never settles, and the words say all it would.
+ */
 @Composable
 fun LoadingDialog(
     title: String,
@@ -162,13 +151,10 @@ fun LoadingDialog(
 ) {
     TemplateDialog(
         title = {
-            TextLarge(text = title)
+            DialogTitle(text = title)
         },
         content = {
-            LoadingView(
-                message = message,
-                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.padding_max))
-            )
+            TextMMD(text = message, style = MaterialTheme.typography.bodyMedium)
         },
         confirmButtonText = buttonText,
         onConfirmation = onButtonClick,
@@ -177,34 +163,25 @@ fun LoadingDialog(
 }
 
 @Composable
-private fun DialogButton(
-    text: String?,
-    action: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    text?.let {
-        TextButton(
-            onClick = action,
-            modifier = modifier
-        ) {
-            TextNormal(text = text)
-        }
-    }
+fun DialogTitle(text: String) {
+    TextMMD(
+        text = text,
+        style = MaterialTheme.typography.bodyLarge,
+        fontWeight = FontWeight.Medium,
+        maxLines = 2
+    )
 }
 
 @Composable
-private fun LoadingView(
-    message: String,
+fun DialogButton(
+    text: String,
+    action: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_max))
+    OutlinedButtonMMD(
+        onClick = action,
+        modifier = modifier.height(48.dp)
     ) {
-        CircularProgressIndicator()
-        TextNormal(
-            text = message
-        )
+        TextMMD(text = text, style = MaterialTheme.typography.bodySmall, maxLines = 1)
     }
 }

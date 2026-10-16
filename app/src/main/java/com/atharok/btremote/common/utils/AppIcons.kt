@@ -25,6 +25,7 @@ import androidx.compose.material.icons.rounded.BrightnessHigh
 import androidx.compose.material.icons.rounded.BrightnessLow
 import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material.icons.rounded.ClosedCaption
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Computer
 import androidx.compose.material.icons.rounded.ControlCamera
 import androidx.compose.material.icons.rounded.Delete
@@ -80,6 +81,7 @@ object AppIcons {
     val Back get() = Icons.AutoMirrored.Rounded.ArrowBack
     val Help get() = Icons.AutoMirrored.Rounded.HelpOutline
     val Settings get() = Icons.Rounded.Settings
+    val Close get() = Icons.Rounded.Close
     val Info get() = Icons.Outlined.Info
     val Refresh get() = Icons.Rounded.Refresh
     val MoreVert get() = Icons.Rounded.MoreVert

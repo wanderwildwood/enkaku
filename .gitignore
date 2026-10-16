@@ -13,3 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+signing/signing.properties
+signing/signing.keystore
+*.apk

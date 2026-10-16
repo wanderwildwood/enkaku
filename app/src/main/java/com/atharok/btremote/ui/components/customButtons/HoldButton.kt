@@ -27,8 +27,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.atharok.btremote.common.extensions.autoMirroredIcon
 import com.atharok.btremote.ui.components.DefaultElevatedCard
-import com.atharok.btremote.ui.theme.surfaceElevationMedium
-import com.atharok.btremote.ui.theme.surfaceElevationShadow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -39,8 +37,6 @@ private fun HoldButton(
     modifier: Modifier = Modifier,
     durationBetweenRepeatsInMillis: Long = 100L,
     shape: Shape = RectangleShape,
-    elevation: Dp = surfaceElevationMedium(),
-    shadowElevation: Dp = surfaceElevationShadow(),
     content: @Composable () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -49,8 +45,6 @@ private fun HoldButton(
     DefaultElevatedCard(
         modifier = modifier,
         shape = shape,
-        elevation = elevation,
-        shadowElevation = shadowElevation
     ) {
         Box(
             modifier = Modifier
@@ -94,8 +88,6 @@ fun IconHoldButton(
     modifier: Modifier = Modifier,
     durationBetweenRepeatsInMillis: Long = 100L,
     shape: Shape = RectangleShape,
-    elevation: Dp = surfaceElevationMedium(),
-    shadowElevation: Dp = surfaceElevationShadow(),
     @FloatRange(from = 0.0, to = 1.0) iconFillFraction: Float = 0.5f,
     iconPadding: Dp = 0.dp,
     iconTint: Color = LocalContentColor.current
@@ -106,8 +98,6 @@ fun IconHoldButton(
         modifier = modifier,
         durationBetweenRepeatsInMillis = durationBetweenRepeatsInMillis,
         shape = shape,
-        elevation = elevation,
-        shadowElevation = shadowElevation
     ) {
         Icon(
             imageVector = image,

@@ -5,7 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import com.atharok.btremote.domain.entities.remoteInput.RemoteButtonProperties
 import com.atharok.btremote.ui.components.customButtons.CharacterKeyboardKey
 import com.atharok.btremote.ui.components.customButtons.IconSurfaceButton
@@ -20,8 +19,7 @@ sealed class AdvancedKeyboardKey {
         touchDown: (Byte) -> Unit,
         touchUp: (Byte) -> Unit,
         modifier: Modifier,
-        shape: Shape,
-        elevation: Dp
+        shape: Shape
     )
 }
 
@@ -38,8 +36,7 @@ data class CharacterAdvancedKeyboardKey(
         touchDown: (Byte) -> Unit,
         touchUp: (Byte) -> Unit,
         modifier: Modifier,
-        shape: Shape,
-        elevation: Dp
+        shape: Shape
     ) {
         CharacterKeyboardKey(
             text = text,
@@ -49,7 +46,6 @@ data class CharacterAdvancedKeyboardKey(
             textSecondary = textSecondary,
             textTertiary = textTertiary,
             shape = shape,
-            elevation = elevation
         )
     }
 }
@@ -66,8 +62,7 @@ data class TextAdvancedKeyboardKey(
         touchDown: (Byte) -> Unit,
         touchUp: (Byte) -> Unit,
         modifier: Modifier,
-        shape: Shape,
-        elevation: Dp
+        shape: Shape
     ) {
         TextKeyboardKey(
             text = text,
@@ -75,7 +70,6 @@ data class TextAdvancedKeyboardKey(
             touchUp = { touchUp(byte) },
             modifier = modifier,
             shape = shape,
-            elevation = elevation,
             textAlign = textAlign
         )
     }
@@ -93,8 +87,7 @@ data class IconAdvancedKeyboardKey(
         touchDown: (Byte) -> Unit,
         touchUp: (Byte) -> Unit,
         modifier: Modifier,
-        shape: Shape,
-        elevation: Dp
+        shape: Shape
     ) {
         IconSurfaceButton(
             image = properties.icon,
@@ -105,7 +98,6 @@ data class IconAdvancedKeyboardKey(
             touchUp = { touchUp(byte) },
             modifier = modifier,
             shape = shape,
-            elevation = elevation,
             iconFillFraction = 0.4f
         )
     }

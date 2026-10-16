@@ -1,7 +1,6 @@
 package com.atharok.btremote.ui.views
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,25 +12,20 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.atharok.btremote.R
-import com.atharok.btremote.common.utils.AppIcons
 import com.atharok.btremote.ui.components.BasicDropdownMenuItem
 import com.atharok.btremote.ui.components.MoreOverflowMenu
 import com.atharok.btremote.ui.components.TextMedium
 import com.atharok.btremote.ui.components.TextNormal
 import com.atharok.btremote.ui.components.TextNormalSecondary
-import com.atharok.btremote.ui.theme.surfaceElevationHigh
+import com.atharok.btremote.ui.theme.rimWidth
 
 @Composable
 fun DeviceItemView(
     name: String,
     macAddress: String,
-    icon: ImageVector,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -39,16 +33,6 @@ fun DeviceItemView(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_large))
     ) {
-        Image(
-            imageVector = icon,
-            contentDescription = "",
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(dimensionResource(id = R.dimen.padding_medium)),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary)
-        )
-
         Column(
             modifier = Modifier,
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_min))
@@ -69,7 +53,6 @@ fun DeviceItemView(
 fun DeviceItemView(
     name: String,
     macAddress: String,
-    icon: ImageVector,
     isAutoConnectDeviceAddress: Boolean,
     autoConnect: () -> Unit,
     isFavoriteDevice: Boolean,
@@ -83,7 +66,7 @@ fun DeviceItemView(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         DeviceItemView(
-            name, macAddress, icon, Modifier.weight(1f)
+            name, macAddress, Modifier.weight(1f)
         )
 
         if(isAutoConnectDeviceAddress) {
@@ -92,7 +75,8 @@ fun DeviceItemView(
                     horizontal = dimensionResource(id = R.dimen.padding_small)
                 ),
                 shape = CircleShape,
-                tonalElevation = surfaceElevationHigh()
+                color = MaterialTheme.colorScheme.surface,
+                border = BorderStroke(rimWidth, MaterialTheme.colorScheme.onSurface)
             ) {
                 TextNormal(
                     text = stringResource(id = R.string.automatic_shorten),
@@ -111,7 +95,6 @@ fun DeviceItemView(
                 // Auto Connect
                 BasicDropdownMenuItem(
                     text = stringResource(id = R.string.automatic_connect),
-                    icon = AppIcons.EnabledAutoConnect,
                     onClick = {
                         closeDropdownMenu()
                         autoConnect()
@@ -123,7 +106,6 @@ fun DeviceItemView(
                     text = stringResource(
                         id = if(isFavoriteDevice) R.string.remove_from_favorites else R.string.add_to_favorites
                     ),
-                    icon = AppIcons.Favorite,
                     onClick = {
                         closeDropdownMenu()
                         onFavoriteDeviceChanged()
@@ -133,7 +115,6 @@ fun DeviceItemView(
                 // Unpair
                 BasicDropdownMenuItem(
                     text = stringResource(id = R.string.unpair),
-                    icon = AppIcons.BluetoothUnpair,
                     onClick = {
                         closeDropdownMenu()
                         unpair()

@@ -2,15 +2,12 @@ package com.atharok.btremote.ui.components
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.atharok.btremote.ui.theme.surfaceElevationHigh
-import com.atharok.btremote.ui.theme.surfaceElevationLow
+import androidx.compose.ui.text.style.TextOverflow
+import com.mudita.mmd.components.text.TextMMD
+import com.mudita.mmd.components.top_app_bar.TopAppBarMMD
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,22 +18,11 @@ fun TopBar(
     actions: @Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
-    TopAppBar(
-        title = {
-            TextLarge(text = title)
-        },
+    TopAppBarMMD(
+        title = { TextMMD(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         modifier = modifier,
         navigationIcon = navigateUp,
         actions = actions,
-        windowInsets = TopAppBarDefaults.windowInsets,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
-                elevation = surfaceElevationLow()
-            ),
-            scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
-                elevation = surfaceElevationHigh()
-            )
-        ),
         scrollBehavior = scrollBehavior
     )
 }

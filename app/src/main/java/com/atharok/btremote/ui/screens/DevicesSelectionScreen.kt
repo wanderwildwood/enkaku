@@ -13,15 +13,10 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,17 +45,21 @@ import com.atharok.btremote.ui.components.AppScaffold
 import com.atharok.btremote.ui.components.BasicDropdownMenuItem
 import com.atharok.btremote.ui.components.BasicOverflowMenu
 import com.atharok.btremote.ui.components.DefaultElevatedCard
+import com.atharok.btremote.ui.components.DialogTitle
 import com.atharok.btremote.ui.components.HelpIconButton
 import com.atharok.btremote.ui.components.LoadingDialog
 import com.atharok.btremote.ui.components.SettingsIconButton
 import com.atharok.btremote.ui.components.SimpleDialog
 import com.atharok.btremote.ui.components.TemplateDialog
-import com.atharok.btremote.ui.components.TextLarge
 import com.atharok.btremote.ui.components.TextMedium
 import com.atharok.btremote.ui.components.TextNormal
 import com.atharok.btremote.ui.components.TextNormalSecondary
 import com.atharok.btremote.ui.views.DeviceItemView
 import com.atharok.btremote.ui.views.DevicesSelectionScreenHelpModalBottomSheet
+import com.mudita.mmd.components.lazy.LazyColumnMMD
+import com.mudita.mmd.components.snackbar.SnackbarHostMMD
+import com.mudita.mmd.components.snackbar.SnackbarHostStateMMD
+import com.mudita.mmd.components.text_field.TextFieldMMD
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -82,7 +81,7 @@ fun DevicesSelectionScreen(
     context: Context = LocalContext.current
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState: SnackbarHostStateMMD = remember { SnackbarHostStateMMD() }
 
     val devices: List<DeviceEntity> by viewModel.devicesFlow.collectAsStateWithLifecycle()
     val autoConnectDeviceAddress: String by viewModel.getAutoConnectDeviceAddressFlow().collectAsStateWithLifecycle("")
@@ -225,7 +224,7 @@ fun DevicesSelectionScreen(
 
 @Composable
 private fun StatelessDevicesSelectionScreen(
-    snackbarHostState: SnackbarHostState,
+    snackbarHostState: SnackbarHostStateMMD,
     isBluetoothServiceRunning: Boolean,
 
     connectDevice: (String) -> Unit,
@@ -246,7 +245,7 @@ private fun StatelessDevicesSelectionScreen(
         modifier = modifier,
         topBarActions = topBarActions,
         snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
+            SnackbarHostMMD(hostState = snackbarHostState)
         }
     ) { innerPadding ->
         DevicesListView(
@@ -280,11 +279,13 @@ private fun DevicesListView(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = contentPadding
+    LazyColumnMMD(
+        modifier = modifier.padding(contentPadding),
+        isScrollbarVisible = false
     ) {
-        item {
+        // Only when there is something to say: BT Remote kept a card here that pointed at the
+        // help button beside it, which is a line nobody needs to read twice.
+        if(!isBluetoothServiceRunning) item {
             InfoView(
                 isBluetoothServiceRunning = isBluetoothServiceRunning,
                 modifier = Modifier.padding(
@@ -312,7 +313,6 @@ private fun DevicesListView(
                 DeviceItemView(
                     name = device.name,
                     macAddress = device.macAddress,
-                    icon = device.imageVector,
                     isAutoConnectDeviceAddress = autoConnectDeviceAddress == device.macAddress,
                     autoConnect = { autoConnect(InternalDevice(device.name, device.macAddress)) },
                     isFavoriteDevice = true,
@@ -346,7 +346,6 @@ private fun DevicesListView(
                 DeviceItemView(
                     name = device.name,
                     macAddress = device.macAddress,
-                    icon = device.imageVector,
                     isAutoConnectDeviceAddress = autoConnectDeviceAddress == device.macAddress,
                     autoConnect = { autoConnect(InternalDevice(device.name, device.macAddress)) },
                     isFavoriteDevice = false,
@@ -398,10 +397,6 @@ private fun InfoView(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_normal))
             ) {
-                Icon(
-                    imageVector = AppIcons.Info,
-                    contentDescription = stringResource(R.string.information)
-                )
                 TextMedium(
                     text = stringResource(R.string.information),
                     maxLines = 1
@@ -409,8 +404,7 @@ private fun InfoView(
             }
             if(!isBluetoothServiceRunning) {
                 TextNormalSecondary(
-                    text = stringResource(R.string.help_info_hid_service_not_initialized_message),
-                    color = MaterialTheme.colorScheme.error
+                    text = stringResource(R.string.help_info_hid_service_not_initialized_message)
                 )
             } else {
                 TextNormalSecondary(text = stringResource(R.string.help_info_message))
@@ -436,7 +430,6 @@ private fun TopBarActions(
         // Device Discovery
         BasicDropdownMenuItem(
             text = stringResource(id = R.string.pairing_a_device),
-            icon = AppIcons.BluetoothPairing,
             onClick = {
                 closeDropdownMenu()
                 navigateToDeviceDiscoveryScreen()
@@ -446,7 +439,6 @@ private fun TopBarActions(
         // Distant Device Pair
         BasicDropdownMenuItem(
             text = stringResource(id = R.string.pairing_from_the_remote_device),
-            icon = AppIcons.BluetoothPairing,
             onClick = {
                 closeDropdownMenu()
                 navigateToDistantDevicePairScreen()
@@ -456,7 +448,6 @@ private fun TopBarActions(
         // Show Bluetooth Address Dialog
         BasicDropdownMenuItem(
             text = stringResource(id = R.string.enter_bluetooth_address_manually),
-            icon = AppIcons.Keyboard,
             onClick = {
                 closeDropdownMenu()
                 onShowBluetoothAddressDialogChanged(true)
@@ -484,12 +475,12 @@ private fun BluetoothAddressDialog(
 
     TemplateDialog(
         title = {
-            TextLarge(text = stringResource(id = R.string.bluetooth_address))
+            DialogTitle(text = stringResource(id = R.string.bluetooth_address))
         },
         content = {
             Column {
                 TextNormal(text = stringResource(id = R.string.bluetooth_address_prompt))
-                OutlinedTextField(
+                TextFieldMMD(
                     value = textState.value,
                     onValueChange = { textState.value = it },
                     modifier = Modifier
@@ -511,8 +502,7 @@ private fun BluetoothAddressDialog(
                 )
                 if(showError.value) {
                     TextNormal(
-                        text = stringResource(id = R.string.bluetooth_address_wrong_format),
-                        color = MaterialTheme.colorScheme.error
+                        text = stringResource(id = R.string.bluetooth_address_wrong_format)
                     )
                 }
             }

@@ -1,37 +1,11 @@
 package com.atharok.btremote.ui.theme
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.Dp
-import com.atharok.btremote.R
+import androidx.compose.ui.unit.dp
 
-@Composable
-@ReadOnlyComposable
-fun surfaceElevationLow(): Dp =
-    if(MaterialTheme.colorScheme.background == Color.Black)
-        dimensionResource(R.dimen.true_black_surface_elevation_low)
-    else
-        dimensionResource(id = R.dimen.surface_elevation_low)
-
-@Composable
-@ReadOnlyComposable
-fun surfaceElevationMedium(): Dp =
-    if(MaterialTheme.colorScheme.background == Color.Black)
-        dimensionResource(R.dimen.true_black_surface_elevation_medium)
-    else
-        dimensionResource(id = R.dimen.surface_elevation_medium)
-
-@Composable
-@ReadOnlyComposable
-fun surfaceElevationHigh(): Dp =
-    if(MaterialTheme.colorScheme.background == Color.Black)
-        dimensionResource(R.dimen.true_black_surface_elevation_high)
-    else
-        dimensionResource(id = R.dimen.surface_elevation_high)
-
-@Composable
-@ReadOnlyComposable
-fun surfaceElevationShadow(): Dp = dimensionResource(id = R.dimen.surface_elevation_shadow)
+/**
+ * The rim every button and card is drawn with, in place of the elevation and shadow BT Remote
+ * gave them. A shadow on this panel is a band of dithered grey; a black edge reads at arm's
+ * length outdoors and costs nothing to redraw.
+ */
+val rimWidth: Dp = 1.5.dp

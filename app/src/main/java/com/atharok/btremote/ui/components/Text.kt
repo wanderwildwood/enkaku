@@ -22,7 +22,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
-import com.atharok.btremote.ui.theme.Typography
 import kotlin.math.max
 
 // ---- Adaptive ----
@@ -34,7 +33,7 @@ fun AdaptiveText(
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
     fontWeight: FontWeight? = null,
-    fontFamily: FontFamily? = FontFamily.Monospace,
+    fontFamily: FontFamily? = null,
     textAlign: TextAlign = TextAlign.Unspecified
 ) {
     require(percent in 0f..1f) { "Percentage must be between 0 and 1" }
@@ -55,7 +54,8 @@ fun AdaptiveText(
         BasicText(
             text = text,
             modifier = Modifier.fillMaxWidth(),
-            style = TextStyle(
+            // Over the theme's body style, so a key's label is in Lato like every other word.
+            style = MaterialTheme.typography.bodyLarge.merge(
                 color = if (color.isSpecified) color else LocalContentColor.current,
                 fontWeight = fontWeight,
                 fontFamily = fontFamily,
@@ -89,7 +89,7 @@ fun TextLarge(
         modifier = modifier,
         color = color,
         fontSize = fontSize,
-        style = Typography.titleLarge,
+        style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Bold,
         overflow = TextOverflow.Ellipsis,
         maxLines = maxLines,
@@ -112,7 +112,7 @@ fun TextMedium(
         text = text,
         modifier = modifier,
         color = color,
-        style = Typography.titleMedium,
+        style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.SemiBold,
         textAlign = textAlign,
         overflow = overflow,
@@ -128,7 +128,7 @@ fun TextNormal(
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
-    style: TextStyle = Typography.titleSmall,
+    style: TextStyle = MaterialTheme.typography.titleSmall,
     fontWeight: FontWeight? = null,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
@@ -162,7 +162,7 @@ fun TextNormalSecondary(
         text = text,
         modifier = modifier,
         color = color,
-        style = Typography.bodyMedium,
+        style = MaterialTheme.typography.bodyMedium,
         textAlign = textAlign,
         overflow = overflow,
         maxLines = maxLines
@@ -183,8 +183,7 @@ fun TextSmall(
         text = text,
         modifier = modifier,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        fontSize = 9.sp,
-        style = Typography.bodySmall,
+        style = MaterialTheme.typography.labelSmall,
         textAlign = textAlign,
         overflow = overflow,
         maxLines = maxLines

@@ -23,8 +23,6 @@ import com.atharok.btremote.R
 import com.atharok.btremote.common.utils.REMOTE_INPUT_NONE
 import com.atharok.btremote.domain.entities.remoteInput.ChannelButtonProperties
 import com.atharok.btremote.ui.components.AdaptiveText
-import com.atharok.btremote.ui.theme.surfaceElevationMedium
-import com.atharok.btremote.ui.theme.surfaceElevationShadow
 
 // ---- Channel Button ----
 
@@ -35,16 +33,12 @@ fun ChannelSurfaceButton(
     modifier: Modifier = Modifier,
     @FloatRange(from = 0.0, to = 1.0) percent: Float = 0.45f,
     shape: Shape = RectangleShape,
-    elevation: Dp = surfaceElevationMedium(),
-    shadowElevation: Dp = surfaceElevationShadow()
 ) {
     SurfaceButton(
         touchDown = { sendKeyReport(properties.input) },
         touchUp = { sendKeyReport(REMOTE_INPUT_NONE) },
         modifier = modifier,
         shape = shape,
-        elevation = elevation,
-        shadowElevation = shadowElevation
     ) {
         AdaptiveText(
             text = properties.text,
@@ -67,14 +61,12 @@ fun CharacterKeyboardKey(
     textSecondary: String? = null,
     textTertiary: String? = null,
     shape: Shape = RoundedCornerShape(dimensionResource(id = R.dimen.keyboard_key_corner_radius)),
-    elevation: Dp = surfaceElevationMedium()
 ) {
     SurfaceButton(
         touchDown = touchDown,
         touchUp = touchUp,
         modifier = modifier,
         shape = shape,
-        elevation = elevation
     ) {
         Column(
             modifier = Modifier
@@ -125,7 +117,6 @@ fun TextKeyboardKey(
     touchUp: () -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(dimensionResource(id = R.dimen.keyboard_key_corner_radius)),
-    elevation: Dp = surfaceElevationMedium(),
     textAlign: TextAlign = TextAlign.Center
 ) {
     SurfaceButton(
@@ -133,7 +124,6 @@ fun TextKeyboardKey(
         touchUp = touchUp,
         modifier = modifier,
         shape = shape,
-        elevation = elevation
     ) {
         Box(
             modifier = Modifier

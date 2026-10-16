@@ -1,10 +1,6 @@
 package com.atharok.btremote.ui.components
 
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,9 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.atharok.btremote.R
-import com.atharok.btremote.common.extensions.autoMirroredIcon
 import com.atharok.btremote.common.utils.AppIcons
-import com.atharok.btremote.ui.theme.surfaceElevationHigh
+import com.mudita.mmd.components.menus.DropdownMenuItemMMD
+import com.mudita.mmd.components.menus.DropdownMenuMMD
+import com.mudita.mmd.components.text.TextMMD
 
 @Composable
 private fun OverflowMenu(
@@ -27,10 +24,9 @@ private fun OverflowMenu(
 
     item { showMenu = !showMenu }
 
-    DropdownMenu(
+    DropdownMenuMMD(
         expanded = showMenu,
-        onDismissRequest = { showMenu = false },
-        containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevationHigh())
+        onDismissRequest = { showMenu = false }
     ) {
         content { showMenu = false }
     }
@@ -73,28 +69,16 @@ fun MoreOverflowMenu(
 
 // ---- DropdownMenuItem ----
 
+/** A word, no icon: a glyph beside every line of a short menu is decoration the panel smudges. */
 @Composable
 fun BasicDropdownMenuItem(
     text: String,
-    icon: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    DropdownMenuItem(
-        text = {
-            TextNormal(
-                text = text,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        },
+    DropdownMenuItemMMD(
+        text = { TextMMD(text = text, style = MaterialTheme.typography.bodyMedium) },
         onClick = onClick,
-        modifier = modifier,
-        leadingIcon = {
-            Icon(
-                imageVector = icon,
-                contentDescription = text,
-                modifier = Modifier.autoMirroredIcon(icon)
-            )
-        }
+        modifier = modifier
     )
 }

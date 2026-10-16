@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,9 +43,7 @@ import com.atharok.btremote.ui.screens.DevicesSelectionScreen
 import com.atharok.btremote.ui.screens.DistantDevicePairScreen
 import com.atharok.btremote.ui.screens.RemoteScreen
 import com.atharok.btremote.ui.screens.SettingsScreen
-import com.atharok.btremote.ui.screens.ThirdLibrariesScreen
 import com.atharok.btremote.ui.theme.BtRemoteTheme
-import com.atharok.btremote.ui.theme.surfaceElevationLow
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -64,7 +63,7 @@ fun BtRemoteApp(
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            tonalElevation = surfaceElevationLow()
+            color = MaterialTheme.colorScheme.surface
         ) {
             if(!appScopeViewModel.isBluetoothSupported) {
                 BluetoothNotSupportScreen()
@@ -137,16 +136,6 @@ fun BtRemoteApp(
 
                     settingsScreen = {
                         SettingsScreen(
-                            navigateUp = { navController.navigateUp() },
-                            navigateToThirdLibrariesScreen = {
-                                navController.navigateTo(AppNavDestination.ThirdLibrariesDestination.route)
-                            },
-                            modifier = Modifier
-                        )
-                    },
-
-                    thirdLibrariesScreen = {
-                        ThirdLibrariesScreen(
                             navigateUp = { navController.navigateUp() },
                             modifier = Modifier
                         )

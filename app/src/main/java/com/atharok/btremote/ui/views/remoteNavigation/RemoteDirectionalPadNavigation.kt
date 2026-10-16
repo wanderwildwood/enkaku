@@ -15,15 +15,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.atharok.btremote.common.utils.ArcShape
 import com.atharok.btremote.domain.entities.remoteInput.RemoteButtonProperties
 import com.atharok.btremote.ui.components.customButtons.RemoteEmptySurfaceButton
-import com.atharok.btremote.ui.theme.surfaceElevationMedium
-import com.atharok.btremote.ui.theme.surfaceElevationShadow
 
 private val TopArcShape = ArcShape(-45f, -90f)
 private val BottomArcShape = ArcShape(45f, 90f)
@@ -36,7 +33,6 @@ fun RemoteDirectionalPadNavigation(
     sendKeyboardKeyReport: (ByteArray) -> Unit,
     useEnterForSelection: Boolean,
     modifier: Modifier = Modifier,
-    elevation: Dp = surfaceElevationMedium()
 ) {
     val upButtonProperties = RemoteButtonProperties.MenuUpButton
     val downButtonProperties = RemoteButtonProperties.MenuDownButton
@@ -44,12 +40,7 @@ fun RemoteDirectionalPadNavigation(
     val rightButtonProperties = RemoteButtonProperties.MenuRightButton
     val pickButtonProperties = RemoteButtonProperties.MenuPickButton
 
-    Box(
-        modifier = modifier.shadow(
-            elevation = surfaceElevationShadow(),
-            shape = CircleShape
-        )
-    ) {
+    Box(modifier = modifier) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -61,8 +52,6 @@ fun RemoteDirectionalPadNavigation(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.fillMaxSize(),
                 shape = TopArcShape,
-                elevation = elevation,
-                shadowElevation = 0.dp
             )
 
             // ---- Bottom ----
@@ -71,8 +60,6 @@ fun RemoteDirectionalPadNavigation(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.fillMaxSize(),
                 shape = BottomArcShape,
-                elevation = elevation,
-                shadowElevation = 0.dp
             )
 
             // ---- Left ----
@@ -81,8 +68,6 @@ fun RemoteDirectionalPadNavigation(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.fillMaxSize(),
                 shape = LeftArcShape,
-                elevation = elevation,
-                shadowElevation = 0.dp
             )
 
             // ---- Right ----
@@ -91,8 +76,6 @@ fun RemoteDirectionalPadNavigation(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.fillMaxSize(),
                 shape = RightArcShape,
-                elevation = elevation,
-                shadowElevation = 0.dp
             )
 
             // ---- Center ----
@@ -102,8 +85,6 @@ fun RemoteDirectionalPadNavigation(
                     sendKeyReport = sendKeyboardKeyReport,
                     modifier = Modifier.fillMaxSize(1f / 3f),
                     shape = CircleShape,
-                    elevation = elevation,
-                    shadowElevation = 0.dp
                 )
             } else {
                 RemoteEmptySurfaceButton(
@@ -111,8 +92,6 @@ fun RemoteDirectionalPadNavigation(
                     sendKeyReport = sendRemoteKeyReport,
                     modifier = Modifier.fillMaxSize(1f / 3f),
                     shape = CircleShape,
-                    elevation = elevation,
-                    shadowElevation = 0.dp
                 )
             }
         }

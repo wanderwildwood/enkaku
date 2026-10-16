@@ -8,7 +8,7 @@
         If you choose to translate it, ensure that the name is 11 characters or fewer if possible.
         If the text exceeds 11 characters, it's not a problem, but it may not display entirely in all launchers.
     -->
-    <string name="app_name">BT Remote</string>
+    <string name="app_name">Remote</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="error">Error</string>
@@ -120,19 +120,19 @@
     <string name="clear_input_field">Clear input field after sending text</string>
     <string name="integrate_advanced_keyboard_into_the_view">Integrate the advanced keyboard into the view</string>
     <string name="user_interface">Interface</string>
-    <string name="use_minimalist_interface">Use the minimalist interface</string>
+    <string name="use_minimalist_interface">Minimalist remote</string>
     <string name="use_mouse_navigation_by_default">Use mouse navigation by default</string>
-    <string name="minimalist_interface_info">Does not display the TV channel buttons</string>
-    <string name="navigation_mode">Navigation Mode</string>
+    <string name="minimalist_interface_info">Without the channel number buttons</string>
+    <string name="navigation_mode">Navigation mode</string>
     <string name="d_pad">D-pad</string>
     <string name="d_pad_description">Navigation via directional controls</string>
     <string name="touchpad">Touchpad</string>
     <string name="touchpad_description">Navigation via touch gestures</string>
     <string name="use_enter_for_selection_title">Use the Enter key for selection</string>
     <string name="use_enter_for_selection_summary">Enable this option only if the select button does not work</string>
-    <string name="assign_action_volume_up_button">Assign an action to the volume up button</string>
-    <string name="assign_action_volume_down_button">Assign an action to the volume down button</string>
-    <string name="advanced_options">Advanced Options</string>
+    <string name="assign_action_volume_up_button">Volume up button</string>
+    <string name="assign_action_volume_down_button">Volume down button</string>
+    <string name="advanced_options">Other</string>
     <string name="show_remote_buttons_in_notification">Show remote buttons in notification</string>
     <string name="hide_bluetooth_activation_button">Hide Bluetooth activation button at app startup</string>
     <string name="about">About</string>
@@ -329,4 +329,17 @@
     <string name="kotlin_serialization_id" translatable="false">org.jetbrains.kotlinx:kotlinx-serialization-json</string>
     <string name="kotlin_serialization_url" translatable="false">https://github.com/Kotlin/kotlinx.serialization</string>
 
+
+    <!-- Remote (enkaku) -->
+    <string name="searching">Searching…</string>
+    <string name="about_title">Remote %1$s</string>
+    <string name="about_privacy">It talks only to the device you pair it with, over Bluetooth, as a remote, a keyboard and a mouse. It has no internet permission.</string>
+    <string name="about_after">After BT Remote by Atharok, GPL 3.0 or later.</string>
+    <string name="about_licence">GNU General Public License v3</string>
+    <string name="about_bundled">Mudita Mindful Design, Material icons and Koin, Apache 2.0</string>
+    <string name="about_source">github.com/wanderwildwood/enkaku</string>
+    <!-- The donation link label, beside a drawing of a llama. A fixed phrase: a verb and an object, so the reader knows what pressing it does -->
+    <string name="about_feed_the_llamas">feed the llamas</string>
+    <string name="about_no_browser">There is no browser on this phone to open that with.</string>
+    <string name="about_close">Close</string>
 </resources>

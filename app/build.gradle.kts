@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -10,11 +12,12 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.atharok.btremote"
+        applicationId = "com.wanderwildwood.enkaku"
         minSdk = 28
         targetSdk = 37
-        versionCode = 27
-        versionName = "1.13.0"
+        // Remote 0.1.0, on BT Remote 1.13.0. versionCode = major * 1000000 + minor * 1000 + patch
+        versionCode = 1000
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -22,20 +25,29 @@ android {
         }
     }
 
-    signingConfigs {
-        create("release") {
-            System.getenv("ANDROID_KEY_STORE_FILE")?.let { storeFile = file(it) }
-            System.getenv("ANDROID_KEY_STORE_PASSWORD")?.let { storePassword = it }
-            System.getenv("ANDROID_KEY_ALIAS")?.let { keyAlias = it }
-            System.getenv("ANDROID_KEY_PASSWORD")?.let { keyPassword = it }
+    // A real keystore in signing/ signs every build type when it is present, so the
+    // very first install is already release-signed and a later update can never hit
+    // INSTALL_FAILED_UPDATE_INCOMPATIBLE. It is gitignored, and there is no fallback:
+    // a fresh clone builds an unsigned release APK, which will not install anywhere.
+    val signingPropertiesFile = rootProject.file("signing/signing.properties")
+    val realSigningConfig = if (signingPropertiesFile.isFile) {
+        val signingProperties = Properties().apply {
+            signingPropertiesFile.inputStream().use(::load)
         }
+        signingConfigs.create("real") {
+            storeFile = rootProject.file("signing/signing.keystore")
+            storePassword = signingProperties.getProperty("STORE_PASSWORD")
+            keyAlias = signingProperties.getProperty("KEY_ALIAS")
+            keyPassword = signingProperties.getProperty("KEY_PASSWORD")
+        }
+    } else {
+        null
     }
 
     buildTypes {
         debug {
             isDebuggable = true
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
+            realSigningConfig?.let { signingConfig = it }
         }
         release {
             isDebuggable = false
@@ -45,18 +57,14 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-    }
+            realSigningConfig?.let { signingConfig = it }
 
-    flavorDimensions += "version"
-    productFlavors {
-        create("default") {
-            dimension = "version"
-            signingConfig = signingConfigs.getByName("release")
-        }
-        create("gplay") {
-            dimension = "version"
-            applicationIdSuffix = ".gplay"
+            // AGP stamps the git revision into META-INF. The build box works from an rsync
+            // with no .git and writes NO_SUPPORTED_VCS_FOUND there, so the same version built
+            // in two places would differ. Off, so it does not.
+            vcsInfo {
+                include = false
+            }
         }
     }
 
@@ -67,6 +75,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {
@@ -92,6 +101,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material3)
+    implementation(libs.mmd)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.datastore)

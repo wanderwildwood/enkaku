@@ -19,10 +19,9 @@ import com.atharok.btremote.R
 import com.atharok.btremote.domain.entities.remoteInput.ChannelButtonProperties
 import com.atharok.btremote.domain.entities.remoteInput.RemoteButtonProperties
 import com.atharok.btremote.ui.components.TemplateDialog
-import com.atharok.btremote.ui.components.TextLarge
+import com.atharok.btremote.ui.components.DialogTitle
 import com.atharok.btremote.ui.components.customButtons.ChannelSurfaceButton
 import com.atharok.btremote.ui.components.customButtons.RemoteIconSurfaceButton
-import com.atharok.btremote.ui.theme.surfaceElevationHigh
 
 @Composable
 fun TVChannelDialog(
@@ -34,7 +33,7 @@ fun TVChannelDialog(
     val orientation = LocalConfiguration.current.orientation
     TemplateDialog(
         title = {
-            TextLarge(text = stringResource(R.string.tv))
+            DialogTitle(text = stringResource(R.string.tv))
         },
         content = {
             TVChannelLayout(
@@ -58,7 +57,6 @@ private fun TVChannelLayout(
     sendKeyboardKeyReport: (ByteArray) -> Unit,
     modifier: Modifier = Modifier,
     buttonShape: Shape = CircleShape,
-    buttonElevation: Dp = surfaceElevationHigh(),
     padding: Dp = dimensionResource(id = R.dimen.padding_large)
 ) {
     Column(
@@ -74,7 +72,6 @@ private fun TVChannelLayout(
                 sendKeyReport = sendKeyboardKeyReport,
                 modifier = Modifier.weight(1f),
                 shape = buttonShape,
-                elevation = buttonElevation
             )
 
             ChannelSurfaceButton(
@@ -82,7 +79,6 @@ private fun TVChannelLayout(
                 sendKeyReport = sendKeyboardKeyReport,
                 modifier = Modifier.weight(1f),
                 shape = buttonShape,
-                elevation = buttonElevation
             )
 
             ChannelSurfaceButton(
@@ -90,7 +86,6 @@ private fun TVChannelLayout(
                 sendKeyReport = sendKeyboardKeyReport,
                 modifier = Modifier.weight(1f),
                 shape = buttonShape,
-                elevation = buttonElevation
             )
         }
         Row(
@@ -102,7 +97,6 @@ private fun TVChannelLayout(
                 sendKeyReport = sendKeyboardKeyReport,
                 modifier = Modifier.weight(1f),
                 shape = buttonShape,
-                elevation = buttonElevation
             )
 
             ChannelSurfaceButton(
@@ -110,7 +104,6 @@ private fun TVChannelLayout(
                 sendKeyReport = sendKeyboardKeyReport,
                 modifier = Modifier.weight(1f),
                 shape = buttonShape,
-                elevation = buttonElevation
             )
 
             ChannelSurfaceButton(
@@ -118,7 +111,6 @@ private fun TVChannelLayout(
                 sendKeyReport = sendKeyboardKeyReport,
                 modifier = Modifier.weight(1f),
                 shape = buttonShape,
-                elevation = buttonElevation
             )
         }
         Row(
@@ -130,7 +122,6 @@ private fun TVChannelLayout(
                 sendKeyReport = sendKeyboardKeyReport,
                 modifier = Modifier.weight(1f),
                 shape = buttonShape,
-                elevation = buttonElevation
             )
 
             ChannelSurfaceButton(
@@ -138,7 +129,6 @@ private fun TVChannelLayout(
                 sendKeyReport = sendKeyboardKeyReport,
                 modifier = Modifier.weight(1f),
                 shape = buttonShape,
-                elevation = buttonElevation
             )
 
             ChannelSurfaceButton(
@@ -146,7 +136,6 @@ private fun TVChannelLayout(
                 sendKeyReport = sendKeyboardKeyReport,
                 modifier = Modifier.weight(1f),
                 shape = buttonShape,
-                elevation = buttonElevation
             )
         }
         Row(
@@ -158,7 +147,6 @@ private fun TVChannelLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 shape = buttonShape,
-                elevation = buttonElevation
             )
 
             ChannelSurfaceButton(
@@ -166,7 +154,6 @@ private fun TVChannelLayout(
                 sendKeyReport = sendKeyboardKeyReport,
                 modifier = Modifier.weight(1f),
                 shape = buttonShape,
-                elevation = buttonElevation
             )
 
             RemoteIconSurfaceButton(
@@ -174,7 +161,6 @@ private fun TVChannelLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 shape = buttonShape,
-                elevation = buttonElevation
             )
         }
     }

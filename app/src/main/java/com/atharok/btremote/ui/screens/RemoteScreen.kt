@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -59,13 +58,10 @@ import com.atharok.btremote.domain.entities.settings.RemoteSettings
 import com.atharok.btremote.presentation.services.BluetoothHidService
 import com.atharok.btremote.presentation.viewmodel.RemoteViewModel
 import com.atharok.btremote.ui.components.AppScaffold
-import com.atharok.btremote.ui.components.BasicDropdownMenuItem
 import com.atharok.btremote.ui.components.BasicIconButton
 import com.atharok.btremote.ui.components.FadeAnimatedContent
 import com.atharok.btremote.ui.components.LoadingDialog
-import com.atharok.btremote.ui.components.MoreOverflowMenu
-import com.atharok.btremote.ui.theme.surfaceElevationMedium
-import com.atharok.btremote.ui.views.RemoteScreenHelpModalBottomSheet
+import com.atharok.btremote.ui.components.SettingsIconButton
 import com.atharok.btremote.ui.views.keyboard.AdvancedKeyboard
 import com.atharok.btremote.ui.views.keyboard.AdvancedKeyboardModalBottomSheet
 import com.atharok.btremote.ui.views.keyboard.VirtualKeyboardModalBottomSheet
@@ -108,31 +104,24 @@ fun RemoteScreen(
     // More Buttons
     var isMoreButtonsVisible: Boolean by rememberSaveable { mutableStateOf(false) }
 
-    // Help
-    var isHelpBottomSheetVisible: Boolean by remember { mutableStateOf(false) }
-
     BackHandler(enabled = true, onBack = closeApp)
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     StatelessRemoteScreen(
         deviceName = bluetoothDeviceHidConnectionState.deviceName,
+        disconnectDevice = { remoteViewModel.disconnectDevice() },
         isLandscapeMode = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
         topBarActions = {
             TopBarActions(
                 navigateToSettings = navigateToSettings,
-                disconnectDevice = {
-                    remoteViewModel.disconnectDevice()
-                },
                 navigationToggle = navigationToggle,
                 onNavigationToggleChanged = { navigationToggle = it },
                 useAdvancedKeyboardIntegrated = remoteSettings.useAdvancedKeyboard && remoteSettings.useAdvancedKeyboardIntegrated,
                 isKeyboardVisible = isKeyboardVisible,
                 onKeyboardVisibleChanged = { isKeyboardVisible = it },
                 isMoreButtonsVisible = isMoreButtonsVisible,
-                onMoreButtonsVisibleChanged = { isMoreButtonsVisible = it },
-                isHelpBottomSheetVisible = isHelpBottomSheetVisible,
-                onHelpBottomSheetVisibleChanged = { isHelpBottomSheetVisible = it }
+                onMoreButtonsVisibleChanged = { isMoreButtonsVisible = it }
             )
         },
         remoteLayout = {
@@ -166,12 +155,6 @@ fun RemoteScreen(
                             remoteViewModel.disconnectDevice()
                             BluetoothHidService.stop(context) // force disconnection
                         }
-                    )
-                }
-                isHelpBottomSheetVisible -> {
-                    RemoteScreenHelpModalBottomSheet(
-                        onDismissRequest = { isHelpBottomSheetVisible = false },
-                        modifier = modifier
                     )
                 }
                 isKeyboardVisible && (!remoteSettings.useAdvancedKeyboard || !remoteSettings.useAdvancedKeyboardIntegrated) -> {
@@ -239,6 +222,7 @@ fun RemoteScreen(
 @Composable
 private fun StatelessRemoteScreen(
     deviceName: String,
+    disconnectDevice: () -> Unit,
     isLandscapeMode: Boolean,
     topBarActions: @Composable (RowScope.() -> Unit),
     remoteLayout: @Composable () -> Unit,
@@ -250,6 +234,14 @@ private fun StatelessRemoteScreen(
         title = deviceName,
         modifier = modifier,
         scrollBehavior = null,
+        // Disconnecting is the way back to the list of devices, so it sits where back would.
+        navigateUp = {
+            BasicIconButton(
+                onClick = disconnectDevice,
+                icon = AppIcons.Disconnect,
+                contentDescription = stringResource(id = R.string.disconnect)
+            )
+        },
         topBarActions = topBarActions
     ) { innerPadding ->
 
@@ -368,7 +360,6 @@ private fun RemoteLayout(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimensionResource(R.dimen.padding_large)),
-                keyElevation = surfaceElevationMedium()
             )
         } else {
             RemoteButtonsLayouts(
@@ -510,66 +501,53 @@ private fun KeyboardModalBottomSheet(
     }
 }
 
+/**
+ * Mouse or arrows, the keyboard, the buttons a remote keeps out of the way, and settings.
+ *
+ * BT Remote kept "More buttons", "Disconnect", "Help" and "Settings" in a menu behind ⋮. Each
+ * is one press here instead of two: disconnect took the place of back, and the help it offered
+ * is the same help as on the list of devices.
+ */
 @Composable
 private fun TopBarActions(
     navigateToSettings: () -> Unit,
-    disconnectDevice: () -> Unit,
     navigationToggle: NavigationToggle,
     onNavigationToggleChanged: (NavigationToggle) -> Unit,
     useAdvancedKeyboardIntegrated: Boolean,
     isKeyboardVisible: Boolean,
     onKeyboardVisibleChanged: (Boolean) -> Unit,
     isMoreButtonsVisible: Boolean,
-    onMoreButtonsVisibleChanged: (Boolean) -> Unit,
-    isHelpBottomSheetVisible: Boolean,
-    onHelpBottomSheetVisibleChanged: (Boolean) -> Unit
+    onMoreButtonsVisibleChanged: (Boolean) -> Unit
 ) {
-    FadeAnimatedContent(targetState = navigationToggle) {
-        when (it) {
-            NavigationToggle.MOUSE -> {
-                BasicIconButton(
-                    onClick = {
-                        onNavigationToggleChanged(NavigationToggle.DIRECTION)
-                    },
-                    icon = AppIcons.Controller,
-                    contentDescription = stringResource(id = R.string.direction_arrows),
-                )
-            }
+    when (navigationToggle) {
+        NavigationToggle.MOUSE -> {
+            BasicIconButton(
+                onClick = {
+                    onNavigationToggleChanged(NavigationToggle.DIRECTION)
+                },
+                icon = AppIcons.Controller,
+                contentDescription = stringResource(id = R.string.direction_arrows),
+            )
+        }
 
-            NavigationToggle.DIRECTION -> {
-                BasicIconButton(
-                    onClick = {
-                        onNavigationToggleChanged(NavigationToggle.MOUSE)
-                    },
-                    icon = AppIcons.Mouse,
-                    contentDescription = stringResource(id = R.string.mouse),
-                )
-            }
+        NavigationToggle.DIRECTION -> {
+            BasicIconButton(
+                onClick = {
+                    onNavigationToggleChanged(NavigationToggle.MOUSE)
+                },
+                icon = AppIcons.Mouse,
+                contentDescription = stringResource(id = R.string.mouse),
+            )
         }
     }
 
-    if(useAdvancedKeyboardIntegrated) {
-        FadeAnimatedContent(targetState = isKeyboardVisible) {
-            when (it) {
-                true -> {
-                    // Remote
-                    BasicIconButton(
-                        onClick = { onKeyboardVisibleChanged(false) },
-                        icon = AppIcons.RemoteControl,
-                        contentDescription = stringResource(id = R.string.remote)
-                    )
-                }
-
-                false -> {
-                    // Keyboard
-                    BasicIconButton(
-                        onClick = { onKeyboardVisibleChanged(true) },
-                        icon = AppIcons.Keyboard,
-                        contentDescription = stringResource(id = R.string.keyboard)
-                    )
-                }
-            }
-        }
+    if(useAdvancedKeyboardIntegrated && isKeyboardVisible) {
+        // Back to the remote
+        BasicIconButton(
+            onClick = { onKeyboardVisibleChanged(false) },
+            icon = AppIcons.RemoteControl,
+            contentDescription = stringResource(id = R.string.remote)
+        )
     } else {
         // Keyboard
         BasicIconButton(
@@ -579,55 +557,14 @@ private fun TopBarActions(
         )
     }
 
-    MoreOverflowMenu { closeDropdownMenu: () -> Unit ->
+    // More buttons
+    BasicIconButton(
+        onClick = { onMoreButtonsVisibleChanged(!isMoreButtonsVisible) },
+        icon = AppIcons.MoreHoriz,
+        contentDescription = stringResource(id = R.string.more_buttons)
+    )
 
-        // More Buttons
-        BasicDropdownMenuItem(
-            text = stringResource(id = R.string.more_buttons),
-            icon = AppIcons.MoreHoriz,
-            onClick = {
-                closeDropdownMenu()
-                onMoreButtonsVisibleChanged(!isMoreButtonsVisible)
-            }
-        )
-
-        // Disconnect
-        BasicDropdownMenuItem(
-            text = stringResource(id = R.string.disconnect),
-            icon = AppIcons.Disconnect,
-            onClick = {
-                closeDropdownMenu()
-                disconnectDevice()
-            }
-        )
-
-        // Divider
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.padding_medium))
-        )
-
-        // Help
-        BasicDropdownMenuItem(
-            text = stringResource(id = R.string.help),
-            icon = AppIcons.Help,
-            onClick = {
-                closeDropdownMenu()
-                onHelpBottomSheetVisibleChanged(!isHelpBottomSheetVisible)
-            }
-        )
-
-        // Settings
-        BasicDropdownMenuItem(
-            text = stringResource(id = R.string.settings),
-            icon = AppIcons.Settings,
-            onClick = {
-                closeDropdownMenu()
-                navigateToSettings()
-            }
-        )
-    }
+    SettingsIconButton(navigateToSettings)
 }
 
 // ---- Physical Buttons ----

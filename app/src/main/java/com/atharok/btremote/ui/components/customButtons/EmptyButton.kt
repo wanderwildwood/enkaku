@@ -9,8 +9,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import com.atharok.btremote.common.utils.REMOTE_INPUT_NONE
 import com.atharok.btremote.domain.entities.remoteInput.RemoteButtonProperties
-import com.atharok.btremote.ui.theme.surfaceElevationMedium
-import com.atharok.btremote.ui.theme.surfaceElevationShadow
 
 // ---- Surface Button ----
 
@@ -20,16 +18,12 @@ fun EmptySurfaceButton(
     touchUp: () -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = RectangleShape,
-    elevation: Dp = surfaceElevationMedium(),
-    shadowElevation: Dp = surfaceElevationShadow(),
 ) {
     SurfaceButton(
         touchDown = touchDown,
         touchUp = touchUp,
         modifier = modifier,
         shape = shape,
-        elevation = elevation,
-        shadowElevation = shadowElevation
     ) {
         Spacer(
             modifier = Modifier.fillMaxSize()
@@ -43,15 +37,11 @@ fun RemoteEmptySurfaceButton(
     sendKeyReport: (ByteArray) -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = RectangleShape,
-    elevation: Dp = surfaceElevationMedium(),
-    shadowElevation: Dp = surfaceElevationShadow()
 ) {
     EmptySurfaceButton(
         touchDown = { sendKeyReport(properties.input) },
         touchUp = { sendKeyReport(REMOTE_INPUT_NONE) },
         modifier = modifier,
         shape = shape,
-        elevation = elevation,
-        shadowElevation = shadowElevation
     )
 }

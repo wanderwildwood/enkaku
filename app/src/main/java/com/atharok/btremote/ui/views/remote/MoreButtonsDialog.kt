@@ -21,11 +21,9 @@ import androidx.compose.ui.unit.Dp
 import com.atharok.btremote.R
 import com.atharok.btremote.domain.entities.remoteInput.RemoteButtonProperties
 import com.atharok.btremote.ui.components.TemplateDialog
-import com.atharok.btremote.ui.components.TextLarge
+import com.atharok.btremote.ui.components.DialogTitle
 import com.atharok.btremote.ui.components.TextSmall
 import com.atharok.btremote.ui.components.customButtons.RemoteIconSurfaceButton
-import com.atharok.btremote.ui.theme.surfaceElevationHigh
-import com.atharok.btremote.ui.theme.surfaceElevationMedium
 
 @Composable
 fun MoreButtonsDialog(
@@ -36,7 +34,7 @@ fun MoreButtonsDialog(
 ) {
     TemplateDialog(
         title = {
-            TextLarge(text = stringResource(R.string.more_buttons))
+            DialogTitle(text = stringResource(R.string.more_buttons))
         },
         content = {
             MoreButtonsLayout(
@@ -57,7 +55,6 @@ private fun MoreButtonsLayout(
     sendKeyboardKeyReport: (ByteArray) -> Unit,
     modifier: Modifier = Modifier,
     buttonShape: Shape = CircleShape,
-    buttonElevation: Dp = surfaceElevationHigh(),
     padding: Dp = dimensionResource(id = R.dimen.padding_large)
 ) {
     Column(
@@ -73,7 +70,6 @@ private fun MoreButtonsLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
-                buttonElevation = buttonElevation
             )
 
             MoreRemoteIconLayout(
@@ -81,7 +77,6 @@ private fun MoreButtonsLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
-                buttonElevation = buttonElevation
             )
 
             MoreRemoteIconLayout(
@@ -89,7 +84,6 @@ private fun MoreButtonsLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
-                buttonElevation = buttonElevation
             )
 
             MoreRemoteIconLayout(
@@ -97,7 +91,6 @@ private fun MoreButtonsLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
-                buttonElevation = buttonElevation
             )
         }
         Row(
@@ -109,7 +102,6 @@ private fun MoreButtonsLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
-                buttonElevation = buttonElevation
             )
 
             MoreRemoteIconLayout(
@@ -117,7 +109,6 @@ private fun MoreButtonsLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
-                buttonElevation = buttonElevation
             )
 
             MoreRemoteIconLayout(
@@ -125,7 +116,6 @@ private fun MoreButtonsLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
-                buttonElevation = buttonElevation
             )
 
             MoreRemoteIconLayout(
@@ -133,7 +123,6 @@ private fun MoreButtonsLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
-                buttonElevation = buttonElevation
             )
         }
         Row(
@@ -145,7 +134,6 @@ private fun MoreButtonsLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
-                buttonElevation = buttonElevation
             )
 
             MoreRemoteIconLayout(
@@ -153,7 +141,6 @@ private fun MoreButtonsLayout(
                 sendKeyReport = sendKeyboardKeyReport,
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
-                buttonElevation = buttonElevation
             )
 
             MoreRemoteIconLayout(
@@ -161,7 +148,6 @@ private fun MoreButtonsLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
-                buttonElevation = buttonElevation
             )
 
             MoreRemoteIconLayout(
@@ -169,7 +155,6 @@ private fun MoreButtonsLayout(
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
-                buttonElevation = buttonElevation
             )
         }
         Row(
@@ -180,36 +165,28 @@ private fun MoreButtonsLayout(
                 properties = RemoteButtonProperties.RedMenuButton,
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-                buttonElevation = buttonElevation,
-                buttonIconTint = Color.Red.copy(alpha = 0.5f)
+                buttonShape = buttonShape
             )
 
             MoreRemoteIconLayout(
                 properties = RemoteButtonProperties.GreenMenuButton,
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-                buttonElevation = buttonElevation,
-                buttonIconTint = Color.Green.copy(alpha = 0.5f)
+                buttonShape = buttonShape
             )
 
             MoreRemoteIconLayout(
                 properties = RemoteButtonProperties.BlueMenuButton,
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-                buttonElevation = buttonElevation,
-                buttonIconTint = Color.Blue.copy(alpha = 0.5f)
+                buttonShape = buttonShape
             )
 
             MoreRemoteIconLayout(
                 properties = RemoteButtonProperties.YellowMenuButton,
                 sendKeyReport = sendRemoteKeyReport,
                 modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-                buttonElevation = buttonElevation,
-                buttonIconTint = Color.Yellow.copy(alpha = 0.5f)
+                buttonShape = buttonShape
             )
         }
     }
@@ -221,7 +198,6 @@ private fun MoreRemoteIconLayout(
     sendKeyReport: (ByteArray) -> Unit,
     modifier: Modifier = Modifier,
     buttonShape: Shape = RectangleShape,
-    buttonElevation: Dp = surfaceElevationMedium(),
     buttonIconTint: Color = LocalContentColor.current
 ) {
     Column(
@@ -234,7 +210,6 @@ private fun MoreRemoteIconLayout(
             sendKeyReport = sendKeyReport,
             modifier = Modifier.aspectRatio(1f),
             shape = buttonShape,
-            elevation = buttonElevation,
             iconTint = buttonIconTint
         )
         TextSmall(text = stringResource(properties.stringRes))

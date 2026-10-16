@@ -1,40 +1,12 @@
 package com.atharok.btremote.ui.navigation
 
-import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-
-private val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
-    slideInHorizontally(
-        initialOffsetX = { fullWidth -> fullWidth }
-    )
-}
-
-private val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
-    slideOutHorizontally (
-        targetOffsetX = { fullWidth -> -fullWidth }
-    )
-}
-
-private val popEnterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
-    slideInHorizontally(
-        initialOffsetX = { fullWidth -> -fullWidth }
-    )
-}
-
-private val popExitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
-    slideOutHorizontally (
-        targetOffsetX = { fullWidth -> fullWidth }
-    )
-}
 
 @Composable
 fun AppNavHost(
@@ -42,7 +14,6 @@ fun AppNavHost(
     startDestination: String,
     bluetoothPermissionsScreen: @Composable () -> Unit,
     settingsScreen: @Composable () -> Unit,
-    thirdLibrariesScreen: @Composable () -> Unit,
     bluetoothActivationScreen: @Composable () -> Unit,
     deviceSelectionScreen: @Composable () -> Unit,
     deviceDiscoveryScreen: @Composable () -> Unit,
@@ -50,88 +21,55 @@ fun AppNavHost(
     remoteScreen: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // No slide between screens: on this panel a slide is a smear across two repaints.
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = modifier
+        modifier = modifier,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None },
+        popEnterTransition = { EnterTransition.None },
+        popExitTransition = { ExitTransition.None }
     ) {
 
         composable(
-            route = AppNavDestination.BluetoothPermissionsDestination.route,
-            enterTransition = enterTransition,
-            exitTransition = exitTransition,
-            popEnterTransition = popEnterTransition,
-            popExitTransition = popExitTransition
+            route = AppNavDestination.BluetoothPermissionsDestination.route
         ) {
             bluetoothPermissionsScreen()
         }
 
         composable(
-            route = AppNavDestination.SettingsDestination.route,
-            enterTransition = enterTransition,
-            exitTransition = exitTransition,
-            popEnterTransition = popEnterTransition,
-            popExitTransition = popExitTransition
+            route = AppNavDestination.SettingsDestination.route
         ) {
             settingsScreen()
         }
 
         composable(
-            route = AppNavDestination.ThirdLibrariesDestination.route,
-            enterTransition = enterTransition,
-            exitTransition = exitTransition,
-            popEnterTransition = popEnterTransition,
-            popExitTransition = popExitTransition
-        ) {
-            thirdLibrariesScreen()
-        }
-
-        composable(
-            route = AppNavDestination.BluetoothActivationDestination.route,
-            enterTransition = enterTransition,
-            exitTransition = exitTransition,
-            popEnterTransition = popEnterTransition,
-            popExitTransition = popExitTransition
+            route = AppNavDestination.BluetoothActivationDestination.route
         ) {
             bluetoothActivationScreen()
         }
 
         composable(
-            route = AppNavDestination.DeviceSelectionDestination.route,
-            enterTransition = enterTransition,
-            exitTransition = exitTransition,
-            popEnterTransition = popEnterTransition,
-            popExitTransition = popExitTransition
+            route = AppNavDestination.DeviceSelectionDestination.route
         ) {
             deviceSelectionScreen()
         }
 
         composable(
-            route = AppNavDestination.DeviceDiscoveryDestination.route,
-            enterTransition = enterTransition,
-            exitTransition = exitTransition,
-            popEnterTransition = popEnterTransition,
-            popExitTransition = popExitTransition
+            route = AppNavDestination.DeviceDiscoveryDestination.route
         ) {
             deviceDiscoveryScreen()
         }
 
         composable(
-            route = AppNavDestination.DistantDevicePairDestination.route,
-            enterTransition = enterTransition,
-            exitTransition = exitTransition,
-            popEnterTransition = popEnterTransition,
-            popExitTransition = popExitTransition
+            route = AppNavDestination.DistantDevicePairDestination.route
         ) {
             distantDevicePairScreen()
         }
 
         composable(
-            route = AppNavDestination.RemoteDestination.route,
-            enterTransition = enterTransition,
-            exitTransition = exitTransition,
-            popEnterTransition = popEnterTransition,
-            popExitTransition = popExitTransition
+            route = AppNavDestination.RemoteDestination.route
         ) {
             remoteScreen()
         }

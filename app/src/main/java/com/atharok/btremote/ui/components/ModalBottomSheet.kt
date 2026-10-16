@@ -1,71 +1,119 @@
 package com.atharok.btremote.ui.components
 
-import androidx.compose.foundation.Image
+import android.view.Gravity
+import android.view.WindowManager
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
 import com.atharok.btremote.R
-import com.atharok.btremote.common.extensions.autoMirroredIcon
-import com.atharok.btremote.ui.theme.surfaceElevationMedium
+import com.atharok.btremote.common.utils.AppIcons
+import com.atharok.btremote.ui.theme.rimWidth
+import com.mudita.mmd.components.lazy.LazyColumnMMD
 
+/**
+ * A panel along the bottom of the screen for the keyboards, in place of Material's bottom sheet.
+ *
+ * The bottom sheet slides up, dims everything behind it, and can be dragged — a smear, a
+ * screenful of dithered grey and a gesture nobody needs on this panel. This one is simply
+ * there, white with a black rule along its top edge, and goes when the back button or a press
+ * outside it says so. It rides above the soft keyboard when one is up.
+ */
+@Composable
+fun EInkSheet(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
+    ) {
+        val view = LocalView.current
+        SideEffect {
+            (view.parent as? DialogWindowProvider)?.window?.let { window ->
+                window.setDimAmount(0f)
+                window.setGravity(Gravity.BOTTOM)
+                @Suppress("DEPRECATION")
+                window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+            }
+        }
+        Surface(
+            color = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            border = BorderStroke(rimWidth, MaterialTheme.colorScheme.onSurface),
+            shape = RectangleShape,
+            modifier = modifier
+                .fillMaxWidth()
+                .imePadding()
+        ) {
+            Column(content = content)
+        }
+    }
+}
+
+/**
+ * Help, on a page of its own: a title, a cross to close it, and the text in sections that
+ * turn over a few at a time with a swipe.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TemplateModalBottomSheet(
     title: String,
-    icon: ImageVector,
-    iconDescription: String,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (ColumnScope.() -> Unit)
+    content: LazyListScope.() -> Unit
 ) {
-    ModalBottomSheet(
+    Dialog(
         onDismissRequest = onDismissRequest,
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(surfaceElevationMedium()),
-        contentWindowInsets = {
-            WindowInsets(0, 0, 0, 0)
-        }
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(
-                    start = dimensionResource(id = R.dimen.padding_max),
-                    end = dimensionResource(id = R.dimen.padding_max),
-                    bottom = dimensionResource(id = R.dimen.padding_max)
-                )
+        Surface(
+            color = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            modifier = modifier.fillMaxSize()
         ) {
-            Row(
-                modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_max)),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    imageVector = icon,
-                    contentDescription = iconDescription,
-                    modifier = Modifier.autoMirroredIcon(icon).size(dimensionResource(id = R.dimen.large_icon_size)),
-                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onSurface)
+            Column {
+                TopBar(
+                    title = title,
+                    navigateUp = {
+                        BasicIconButton(
+                            onClick = onDismissRequest,
+                            icon = AppIcons.Close,
+                            contentDescription = stringResource(id = R.string.close)
+                        )
+                    }
                 )
-                TextLarge(
-                    text = title,
-                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_medium))
-                )
+                LazyColumnMMD(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp),
+                    isScrollbarVisible = false
+                ) {
+                    item { Spacer(Modifier.height(8.dp)) }
+                    content()
+                    item { Spacer(Modifier.height(24.dp)) }
+                }
             }
-            content()
         }
     }
 }

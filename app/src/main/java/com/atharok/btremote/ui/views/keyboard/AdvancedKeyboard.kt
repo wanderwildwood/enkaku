@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
@@ -32,7 +31,6 @@ import com.atharok.btremote.domain.entities.remoteInput.keyboard.KeyboardLanguag
 import com.atharok.btremote.domain.entities.remoteInput.keyboard.advancedKeyboard.AdvancedKeyboardKey
 import com.atharok.btremote.domain.entities.remoteInput.keyboard.advancedKeyboard.AdvancedKeyboardLayout
 import com.atharok.btremote.domain.entities.remoteInput.keyboard.advancedKeyboard.TextAdvancedKeyboardKey
-import com.atharok.btremote.ui.theme.surfaceElevationHigh
 
 @Composable
 fun AdvancedKeyboardModalBottomSheet(
@@ -43,7 +41,6 @@ fun AdvancedKeyboardModalBottomSheet(
 ) {
     KeyboardModalBottomSheet(
         onShowKeyboardBottomSheetChanged = onShowKeyboardBottomSheetChanged,
-        windowInsets = WindowInsets(0, 0, 0, 0),
         modifier = modifier
     ) {
         AdvancedKeyboard(
@@ -63,7 +60,6 @@ fun AdvancedKeyboard(
     sendKeyboardKeyReport: (bytes: ByteArray) -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(dimensionResource(id = R.dimen.keyboard_key_corner_radius)),
-    keyElevation: Dp = surfaceElevationHigh()
 ) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -127,7 +123,6 @@ fun AdvancedKeyboard(
                                 },
                                 modifier = Modifier.weight(keyboardKey.weight),
                                 shape = shape,
-                                elevation = keyElevation
                             )
                         }
                     }
