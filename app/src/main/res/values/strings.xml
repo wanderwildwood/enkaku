@@ -335,7 +335,7 @@
     <string name="about_title">Remote %1$s</string>
     <string name="about_privacy">It talks only to the device you pair it with, over Bluetooth, as a remote, a keyboard and a mouse. It has no internet permission.</string>
     <string name="about_after">After BT Remote by Atharok, GPL 3.0 or later.</string>
-    <string name="about_licence">GNU General Public License v3</string>
+    <string name="about_licence">GNU General Public License v3 or later</string>
     <string name="about_bundled">Mudita Mindful Design, Material icons and Koin, Apache 2.0</string>
     <string name="about_source">github.com/wanderwildwood/enkaku</string>
     <!-- The donation link label, beside a drawing of a llama. A fixed phrase: a verb and an object, so the reader knows what pressing it does -->
