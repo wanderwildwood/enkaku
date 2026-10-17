@@ -38,7 +38,7 @@ import com.atharok.btremote.ui.components.BasicIconButton
 import com.atharok.btremote.ui.components.ListDialog
 import com.atharok.btremote.ui.views.AboutDialog
 import com.mudita.mmd.components.divider.HorizontalDividerMMD
-import com.mudita.mmd.components.lazy.LazyColumnMMD
+import com.atharok.btremote.ui.components.PagedColumn
 import com.mudita.mmd.components.switcher.SwitchMMD
 import com.mudita.mmd.components.text.TextMMD
 import org.koin.androidx.compose.koinViewModel
@@ -89,12 +89,11 @@ fun SettingsScreen(
             )
         }
     ) { innerPadding ->
-        LazyColumnMMD(
+        PagedColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 20.dp),
-            isScrollbarVisible = false
+                .padding(horizontal = 20.dp)
         ) {
             // ---- Remote ----
 
@@ -269,8 +268,6 @@ fun SettingsScreen(
                     onCheckedChange = { settingsViewModel.saveHideBluetoothActivationButton(it) }
                 )
             }
-
-            item { Spacer(Modifier.height(24.dp)) }
         }
     }
 

@@ -19,7 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.atharok.btremote.ui.theme.EInkDialog
 import com.mudita.mmd.components.buttons.OutlinedButtonMMD
-import com.mudita.mmd.components.lazy.LazyColumnMMD
 import com.mudita.mmd.components.text.TextMMD
 
 /**
@@ -110,9 +109,8 @@ fun ListDialog(
             }
         },
         content = {
-            LazyColumnMMD(
-                modifier = Modifier.fillMaxWidth().heightIn(max = 360.dp),
-                isScrollbarVisible = false
+            PagedColumn(
+                modifier = Modifier.fillMaxWidth().heightIn(max = 360.dp)
             ) {
                 itemsIndexed(items) { index, item ->
                     val chosen = index == defaultItemIndex

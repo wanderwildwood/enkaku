@@ -28,7 +28,6 @@ import androidx.compose.ui.window.DialogWindowProvider
 import com.atharok.btremote.R
 import com.atharok.btremote.common.utils.AppIcons
 import com.atharok.btremote.ui.theme.rimWidth
-import com.mudita.mmd.components.lazy.LazyColumnMMD
 
 /**
  * A panel along the bottom of the screen for the keyboards, in place of Material's bottom sheet.
@@ -103,15 +102,13 @@ fun TemplateModalBottomSheet(
                         )
                     }
                 )
-                LazyColumnMMD(
+                PagedColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 20.dp),
-                    isScrollbarVisible = false
+                        .padding(horizontal = 20.dp)
                 ) {
                     item { Spacer(Modifier.height(8.dp)) }
                     content()
-                    item { Spacer(Modifier.height(24.dp)) }
                 }
             }
         }

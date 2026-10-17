@@ -56,7 +56,7 @@ import com.atharok.btremote.ui.components.TextNormal
 import com.atharok.btremote.ui.components.TextNormalSecondary
 import com.atharok.btremote.ui.views.DeviceItemView
 import com.atharok.btremote.ui.views.DevicesSelectionScreenHelpModalBottomSheet
-import com.mudita.mmd.components.lazy.LazyColumnMMD
+import com.atharok.btremote.ui.components.PagedColumn
 import com.mudita.mmd.components.snackbar.SnackbarHostMMD
 import com.mudita.mmd.components.snackbar.SnackbarHostStateMMD
 import com.mudita.mmd.components.text_field.TextFieldMMD
@@ -279,9 +279,8 @@ private fun DevicesListView(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
-    LazyColumnMMD(
-        modifier = modifier.padding(contentPadding),
-        isScrollbarVisible = false
+    PagedColumn(
+        modifier = modifier.padding(contentPadding)
     ) {
         // Only when there is something to say: BT Remote kept a card here that pointed at the
         // help button beside it, which is a line nobody needs to read twice.

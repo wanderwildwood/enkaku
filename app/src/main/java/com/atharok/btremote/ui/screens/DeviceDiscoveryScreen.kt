@@ -40,7 +40,7 @@ import com.atharok.btremote.ui.components.SettingsIconButton
 import com.atharok.btremote.ui.components.TextNormalSecondary
 import com.atharok.btremote.ui.views.BluetoothScanningScreenHelpModalBottomSheet
 import com.atharok.btremote.ui.views.DeviceItemView
-import com.mudita.mmd.components.lazy.LazyColumnMMD
+import com.atharok.btremote.ui.components.PagedColumn
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -207,9 +207,8 @@ private fun DiscoveredDevicesListView(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
-    LazyColumnMMD(
-        modifier = modifier.padding(contentPadding),
-        isScrollbarVisible = false
+    PagedColumn(
+        modifier = modifier.padding(contentPadding)
     ) {
         item {
             Column(
