@@ -51,6 +51,9 @@ fun EInkSheet(
         SideEffect {
             (view.parent as? DialogWindowProvider)?.window?.let { window ->
                 window.setDimAmount(0f)
+                // Dimming by nothing still counts as dimming: while a dimming window is up,
+                // Android turns the status-bar icons white, and on the white bar they vanish.
+                window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
                 window.setGravity(Gravity.BOTTOM)
                 @Suppress("DEPRECATION")
                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
@@ -86,6 +89,12 @@ fun TemplateModalBottomSheet(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
+        val view = LocalView.current
+        SideEffect {
+            // No dim, as in EInkSheet above, so the status-bar icons stay dark.
+            (view.parent as? DialogWindowProvider)?.window
+                ?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        }
         Surface(
             color = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface,
