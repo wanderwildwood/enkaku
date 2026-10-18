@@ -15,9 +15,9 @@ android {
         applicationId = "com.wanderwildwood.enkaku"
         minSdk = 28
         targetSdk = 37
-        // Remote 0.1.1, on BT Remote 1.13.0. versionCode = major * 1000000 + minor * 1000 + patch
-        versionCode = 1001
-        versionName = "0.1.1"
+        // Remote 0.1.2, on BT Remote 1.13.0. versionCode = major * 1000000 + minor * 1000 + patch
+        versionCode = 1002
+        versionName = "0.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
