@@ -19,6 +19,8 @@ fun AppNavHost(
     deviceDiscoveryScreen: @Composable () -> Unit,
     distantDevicePairScreen: @Composable () -> Unit,
     remoteScreen: @Composable () -> Unit,
+    kodiScreen: @Composable () -> Unit,
+    kodiRemoteScreen: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // No slide between screens: on this panel a slide is a smear across two repaints.
@@ -72,6 +74,18 @@ fun AppNavHost(
             route = AppNavDestination.RemoteDestination.route
         ) {
             remoteScreen()
+        }
+
+        composable(
+            route = AppNavDestination.KodiDestination.route
+        ) {
+            kodiScreen()
+        }
+
+        composable(
+            route = AppNavDestination.KodiRemoteDestination.route
+        ) {
+            kodiRemoteScreen()
         }
     }
 }

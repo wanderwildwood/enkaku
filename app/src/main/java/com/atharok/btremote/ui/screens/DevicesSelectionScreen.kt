@@ -40,7 +40,12 @@ import com.atharok.btremote.common.utils.isMacAddress
 import com.atharok.btremote.domain.entities.DeviceEntity
 import com.atharok.btremote.domain.entities.DeviceHidConnectionState
 import com.atharok.btremote.presentation.services.BluetoothHidService
+import com.atharok.btremote.domain.entities.KodiHost
 import com.atharok.btremote.presentation.viewmodel.DeviceSelectionViewModel
+import com.atharok.btremote.presentation.viewmodel.KodiConnectState
+import com.atharok.btremote.presentation.viewmodel.KodiViewModel
+import com.atharok.btremote.ui.views.KodiConnectOverlay
+import com.atharok.btremote.ui.views.KodiHostItemView
 import com.atharok.btremote.ui.components.AppScaffold
 import com.atharok.btremote.ui.components.BasicDropdownMenuItem
 import com.atharok.btremote.ui.components.BasicOverflowMenu
@@ -76,8 +81,11 @@ fun DevicesSelectionScreen(
     navigateToDeviceDiscoveryScreen: () -> Unit,
     navigateToDistantDevicePairScreen: () -> Unit,
     navigateToSettings: () -> Unit,
+    navigateToKodiScreen: () -> Unit,
+    navigateToKodiRemote: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DeviceSelectionViewModel = koinViewModel(),
+    kodiViewModel: KodiViewModel = koinViewModel(),
     context: Context = LocalContext.current
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -91,6 +99,11 @@ fun DevicesSelectionScreen(
     var showHelpBottomSheet: Boolean by remember { mutableStateOf(false) }
     var deviceToAutoConnect: InternalDevice? by remember { mutableStateOf(null) }
     var deviceToUnpair: InternalDevice? by remember { mutableStateOf(null) }
+
+    val lastKodi: KodiHost? by kodiViewModel.lastKodi.collectAsStateWithLifecycle()
+    val kodiState: KodiConnectState by kodiViewModel.state.collectAsStateWithLifecycle()
+
+    KodiConnectedEffect(state = kodiState, navigateToKodiRemote = navigateToKodiRemote, dismiss = kodiViewModel::dismiss)
 
     BackHandler(enabled = true, onBack = closeApp)
 
@@ -135,6 +148,9 @@ fun DevicesSelectionScreen(
         autoConnectDeviceAddress = autoConnectDeviceAddress,
         onDeviceToAutoConnectChanged = { deviceToAutoConnect = it },
         onDeviceToUnpairChanged = { deviceToUnpair = it },
+        lastKodi = lastKodi,
+        connectKodi = kodiViewModel::connect,
+        navigateToKodiScreen = navigateToKodiScreen,
 
         topBarActions = {
             TopBarActions(
@@ -216,6 +232,7 @@ fun DevicesSelectionScreen(
                     )
                 }
             }
+            KodiConnectOverlay(state = kodiState, connect = kodiViewModel::connect, dismiss = kodiViewModel::dismiss)
         },
 
         modifier = modifier
@@ -234,6 +251,9 @@ private fun StatelessDevicesSelectionScreen(
     autoConnectDeviceAddress: String,
     onDeviceToAutoConnectChanged: (InternalDevice) -> Unit,
     onDeviceToUnpairChanged: (InternalDevice) -> Unit,
+    lastKodi: KodiHost?,
+    connectKodi: (KodiHost) -> Unit,
+    navigateToKodiScreen: () -> Unit,
 
     topBarActions: @Composable (RowScope.() -> Unit),
     overlayView: @Composable () -> Unit,
@@ -257,6 +277,9 @@ private fun StatelessDevicesSelectionScreen(
             saveFavoriteDevice = saveFavoriteDevice,
             unpairDevice = onDeviceToUnpairChanged,
             isBluetoothServiceRunning = isBluetoothServiceRunning,
+            lastKodi = lastKodi,
+            connectKodi = connectKodi,
+            navigateToKodiScreen = navigateToKodiScreen,
             modifier = Modifier,
             contentPadding = innerPadding
         )
@@ -276,6 +299,9 @@ private fun DevicesListView(
     saveFavoriteDevice: (String) -> Unit,
     unpairDevice: (InternalDevice) -> Unit,
     isBluetoothServiceRunning: Boolean,
+    lastKodi: KodiHost?,
+    connectKodi: (KodiHost) -> Unit,
+    navigateToKodiScreen: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
@@ -372,6 +398,40 @@ private fun DevicesListView(
                         )
                 )
             }
+        }
+
+        // Kodi over Wi-Fi: the box last used is one press, the rest are behind the next row.
+
+        item {
+            TextNormalSecondary(
+                text = stringResource(id = R.string.kodi_over_wifi),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = dimensionResource(id = R.dimen.padding_max),
+                        vertical = dimensionResource(id = R.dimen.padding_normal)
+                    )
+            )
+        }
+        lastKodi?.let { kodi ->
+            item {
+                KodiHostItemView(
+                    host = kodi,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { connectKodi(kodi) }
+                        .padding(dimensionResource(id = R.dimen.padding_max))
+                )
+            }
+        }
+        item {
+            TextMedium(
+                text = stringResource(id = R.string.kodi_find),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navigateToKodiScreen() }
+                    .padding(dimensionResource(id = R.dimen.padding_max))
+            )
         }
     }
 }

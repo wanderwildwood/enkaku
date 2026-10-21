@@ -23,6 +23,7 @@ fun BluetoothActivationScreen(
     isBluetoothEnabled: Boolean,
     navigateToBluetoothDeviceSelectionScreen: () -> Unit,
     navigateToSettings: () -> Unit,
+    navigateToKodiScreen: () -> Unit,
     modifier: Modifier = Modifier,
     bluetoothActivationViewModel: BluetoothActivationViewModel = koinViewModel(),
     context: Context = LocalContext.current
@@ -53,6 +54,8 @@ fun BluetoothActivationScreen(
         },
         hideButton = hideBluetoothActivationButton,
         navigateToSettings = navigateToSettings,
-        modifier = modifier
+        modifier = modifier,
+        secondButtonText = stringResource(id = R.string.kodi_over_wifi),
+        secondButtonOnClick = navigateToKodiScreen
     )
 }

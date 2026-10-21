@@ -333,7 +333,7 @@
     <!-- Remote (enkaku) -->
     <string name="searching">Searching…</string>
     <string name="about_title">Remote %1$s</string>
-    <string name="about_privacy">It talks only to the device you pair it with, over Bluetooth, as a remote, a keyboard and a mouse. It has no internet permission.</string>
+    <string name="about_privacy">It talks only to the device you pair it with, over Bluetooth, as a remote, a keyboard and a mouse, or to the Kodi you choose on your home Wi-Fi, which is sent your presses and the text you type. Nothing goes anywhere else.</string>
     <string name="about_after">After BT Remote by Atharok, GPL 3.0 or later.</string>
     <string name="about_licence">GNU General Public License v3 or later</string>
     <string name="about_bundled">Mudita Mindful Design, Material icons and Koin, Apache 2.0</string>
@@ -342,4 +342,28 @@
     <string name="about_feed_the_llamas">feed the llamas</string>
     <string name="about_no_browser">There is no browser on this phone to open that with.</string>
     <string name="about_close">Close</string>
+
+    <!-- Kodi over Wi-Fi -->
+    <string name="kodi_over_wifi">Kodi over Wi-Fi</string>
+    <string name="kodi_find">Find Kodi on this network</string>
+    <string name="kodi_last_used">Last used</string>
+    <string name="kodi_on_this_network">On this network</string>
+    <string name="kodi_none_found">No Kodi has answered yet. Kodi shows itself here when Settings › Services › General › Announce services to other systems is on.</string>
+    <string name="kodi_enter_address">Enter an address</string>
+    <string name="kodi_forget">Forget %1$s</string>
+    <string name="kodi_forget_armed">Forget %1$s — tap again</string>
+    <string name="kodi_address_title">Kodi\'s address</string>
+    <string name="kodi_address">Address</string>
+    <string name="kodi_port">Port</string>
+    <string name="kodi_username">Username</string>
+    <string name="kodi_password">Password</string>
+    <string name="kodi_address_note">Kodi\'s address and port are under Settings › Services › Control, with Allow remote control via HTTP on. The username is kodi unless it was changed there.</string>
+    <string name="kodi_login_note">Kodi asked for its username and password, from Settings › Services › Control.</string>
+    <string name="kodi_address_wrong">That is not an address and port Kodi can be reached at.</string>
+    <string name="kodi_connecting">Asking Kodi at %1$s.</string>
+    <string name="kodi_unreachable">Nothing answered at %1$s. Kodi needs to be on, on this Wi-Fi, with Allow remote control via HTTP on.</string>
+    <string name="kodi_refused">%1$s answered, but not as Kodi does: %2$s</string>
+    <string name="kodi_press_unreachable">Kodi did not answer.</string>
+    <string name="kodi_press_refused">Kodi did not take that: %1$s</string>
+    <string name="kodi_press_login">Kodi turned down the username or password.</string>
 </resources>

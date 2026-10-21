@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.atharok.btremote.R
 import com.atharok.btremote.ui.components.AppScaffold
 import com.atharok.btremote.ui.components.MaterialButton
+import com.atharok.btremote.ui.components.MaterialOutlinedButton
 import com.atharok.btremote.ui.components.SettingsIconButton
 import com.atharok.btremote.ui.components.TextMedium
 import com.atharok.btremote.ui.components.TextNormalSecondary
@@ -39,7 +40,9 @@ fun ActivationView(
     buttonOnClick: () -> Unit,
     hideButton: Boolean,
     navigateToSettings: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    secondButtonText: String? = null,
+    secondButtonOnClick: () -> Unit = {}
 ) {
     AppScaffold(
         title = topBarTitle,
@@ -80,15 +83,29 @@ fun ActivationView(
                         )
                 )
 
-                if(!hideButton) {
-                    MaterialButton(
-                        onClick = buttonOnClick,
-                        modifier = Modifier.fillMaxWidth(),
-                        text = buttonText,
-                        icon = buttonIcon,
-                    )
-                } else {
-                    Spacer(modifier = Modifier)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_normal))
+                ) {
+                    if(!hideButton) {
+                        MaterialButton(
+                            onClick = buttonOnClick,
+                            modifier = Modifier.fillMaxWidth(),
+                            text = buttonText,
+                            icon = buttonIcon,
+                        )
+                    }
+                    // Kodi over Wi-Fi needs no Bluetooth, so it is offered before Bluetooth is.
+                    secondButtonText?.let {
+                        MaterialOutlinedButton(
+                            onClick = secondButtonOnClick,
+                            modifier = Modifier.fillMaxWidth(),
+                            text = it
+                        )
+                    }
+                    if(hideButton && secondButtonText == null) {
+                        Spacer(modifier = Modifier)
+                    }
                 }
             }
         }

@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,7 +48,9 @@ import com.atharok.btremote.common.utils.KEYBOARD_REPORT_ID
 import com.atharok.btremote.common.utils.REMOTE_INPUT_NONE
 import com.atharok.btremote.common.utils.REMOTE_REPORT_ID
 import com.atharok.btremote.common.utils.getKeyboardLayout
+import com.atharok.btremote.data.kodi.KodiReply
 import com.atharok.btremote.domain.entities.DeviceHidConnectionState
+import com.atharok.btremote.domain.entities.KodiHost
 import com.atharok.btremote.domain.entities.RemoteNavigationEntity
 import com.atharok.btremote.domain.entities.remoteInput.MouseAction
 import com.atharok.btremote.domain.entities.remoteInput.RemoteButtonProperties
@@ -66,12 +69,15 @@ import com.atharok.btremote.ui.views.keyboard.AdvancedKeyboard
 import com.atharok.btremote.ui.views.keyboard.AdvancedKeyboardModalBottomSheet
 import com.atharok.btremote.ui.views.keyboard.VirtualKeyboardModalBottomSheet
 import com.atharok.btremote.ui.views.mouse.MousePadLayout
+import com.atharok.btremote.ui.views.remote.LocalKodiRemote
 import com.atharok.btremote.ui.views.remote.MinimalistRemoteView
 import com.atharok.btremote.ui.views.remote.MoreButtonsDialog
 import com.atharok.btremote.ui.views.remote.RemoteView
 import com.atharok.btremote.ui.views.remote.TVChannelDialog
 import com.atharok.btremote.ui.views.remoteNavigation.RemoteDirectionalPadNavigation
 import com.atharok.btremote.ui.views.remoteNavigation.RemoteSwipeNavigation
+import com.mudita.mmd.components.snackbar.SnackbarHostMMD
+import com.mudita.mmd.components.snackbar.SnackbarHostStateMMD
 import org.koin.androidx.compose.koinViewModel
 
 private enum class NavigationToggle {
@@ -85,6 +91,8 @@ fun RemoteScreen(
     closeApp: () -> Unit,
     navigateToSettings: () -> Unit,
     modifier: Modifier = Modifier,
+    kodi: KodiHost? = null,
+    leaveKodi: () -> Unit = {},
     remoteViewModel: RemoteViewModel = koinViewModel(),
     context: Context = LocalContext.current
 ) {
@@ -92,8 +100,36 @@ fun RemoteScreen(
 
     val focusRequester = remember { FocusRequester() }
 
-    val remoteSettings by remoteViewModel
+    val storedRemoteSettings by remoteViewModel
         .remoteSettingsFlow.collectAsStateWithLifecycle(RemoteSettings())
+
+    // Kodi over Wi-Fi takes buttons and text but no pointer and no single keystrokes, so the
+    // mouse is not offered and the keyboard is the one that sends what is typed as text.
+    val remoteSettings = if (kodi == null) storedRemoteSettings else storedRemoteSettings.copy(
+        useMouseNavigationByDefault = false,
+        useAdvancedKeyboard = false,
+        useAdvancedKeyboardIntegrated = false
+    )
+
+    val snackbarHostState: SnackbarHostStateMMD = remember { SnackbarHostStateMMD() }
+    if (kodi != null) {
+        val unreachable = stringResource(R.string.kodi_press_unreachable)
+        val login = stringResource(R.string.kodi_press_login)
+        val refused = stringResource(R.string.kodi_press_refused, "%s")
+        LaunchedEffect(kodi) {
+            // One line at a time: failures that come while a line is showing are let go but
+            // for the latest, so a box that has gone away is said once, not at every press.
+            remoteViewModel.kodiFailures.collect { reply ->
+                snackbarHostState.showSnackbar(
+                    when (reply) {
+                        KodiReply.Unauthorized -> login
+                        is KodiReply.Refused -> refused.replace("%s", reply.message)
+                        else -> unreachable
+                    }
+                )
+            }
+        }
+    }
 
     // Remote
     var navigationToggle by rememberSaveable(remoteSettings.useMouseNavigationByDefault) { mutableStateOf(if(remoteSettings.useMouseNavigationByDefault) NavigationToggle.MOUSE else NavigationToggle.DIRECTION) }
@@ -108,12 +144,17 @@ fun RemoteScreen(
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
+    CompositionLocalProvider(LocalKodiRemote provides (kodi != null)) {
     StatelessRemoteScreen(
-        deviceName = bluetoothDeviceHidConnectionState.deviceName,
-        disconnectDevice = { remoteViewModel.disconnectDevice() },
+        deviceName = kodi?.name ?: bluetoothDeviceHidConnectionState.deviceName,
+        disconnectDevice = {
+            if (kodi != null) leaveKodi() else remoteViewModel.disconnectDevice()
+        },
+        snackbarHostState = snackbarHostState,
         isLandscapeMode = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE,
         topBarActions = {
             TopBarActions(
+                isKodi = kodi != null,
                 navigateToSettings = navigateToSettings,
                 navigationToggle = navigationToggle,
                 onNavigationToggleChanged = { navigationToggle = it },
@@ -146,7 +187,7 @@ fun RemoteScreen(
         overlayView = {
             // Dialog / ModalBottomSheet
             when {
-                bluetoothDeviceHidConnectionState.state == BluetoothHidDevice.STATE_DISCONNECTING -> {
+                kodi == null && bluetoothDeviceHidConnectionState.state == BluetoothHidDevice.STATE_DISCONNECTING -> {
                     LoadingDialog(
                         title = stringResource(id = R.string.connection),
                         message = stringResource(id = R.string.bluetooth_device_disconnecting_message, bluetoothDeviceHidConnectionState.deviceName),
@@ -216,6 +257,7 @@ fun RemoteScreen(
                 )
             }
     )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -223,6 +265,7 @@ fun RemoteScreen(
 private fun StatelessRemoteScreen(
     deviceName: String,
     disconnectDevice: () -> Unit,
+    snackbarHostState: SnackbarHostStateMMD,
     isLandscapeMode: Boolean,
     topBarActions: @Composable (RowScope.() -> Unit),
     remoteLayout: @Composable () -> Unit,
@@ -242,7 +285,8 @@ private fun StatelessRemoteScreen(
                 contentDescription = stringResource(id = R.string.disconnect)
             )
         },
-        topBarActions = topBarActions
+        topBarActions = topBarActions,
+        snackbarHost = { SnackbarHostMMD(hostState = snackbarHostState) }
     ) { innerPadding ->
 
         if(isLandscapeMode) {
@@ -510,6 +554,7 @@ private fun KeyboardModalBottomSheet(
  */
 @Composable
 private fun TopBarActions(
+    isKodi: Boolean,
     navigateToSettings: () -> Unit,
     navigationToggle: NavigationToggle,
     onNavigationToggleChanged: (NavigationToggle) -> Unit,
@@ -519,7 +564,8 @@ private fun TopBarActions(
     isMoreButtonsVisible: Boolean,
     onMoreButtonsVisibleChanged: (Boolean) -> Unit
 ) {
-    when (navigationToggle) {
+    // Kodi has no pointer to move, so over Wi-Fi there is no mouse to switch to.
+    if (!isKodi) when (navigationToggle) {
         NavigationToggle.MOUSE -> {
             BasicIconButton(
                 onClick = {

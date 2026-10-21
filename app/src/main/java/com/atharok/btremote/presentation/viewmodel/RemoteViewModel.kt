@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.atharok.btremote.common.utils.KEYBOARD_REPORT_ID
 import com.atharok.btremote.common.utils.MOUSE_REPORT_ID
 import com.atharok.btremote.common.utils.REMOTE_REPORT_ID
+import com.atharok.btremote.data.kodi.KodiRemote
+import com.atharok.btremote.data.kodi.KodiReply
 import com.atharok.btremote.domain.entities.remoteInput.MouseAction
 import com.atharok.btremote.domain.entities.remoteInput.keyboard.virtualKeyboard.VirtualKeyboardLayout
 import com.atharok.btremote.domain.entities.settings.RemoteSettings
@@ -12,12 +14,23 @@ import com.atharok.btremote.domain.usecases.RemoteUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class RemoteViewModel(
-    private val useCase: RemoteUseCase
+    private val useCase: RemoteUseCase,
+    private val kodiRemote: KodiRemote
 ): ViewModel() {
+
+    // ---- Kodi over Wi-Fi ----
+
+    // The same screen drives a Kodi box when one is open: its reports go to Kodi instead.
+    private val isKodi: Boolean get() = kodiRemote.session.value != null
+
+    val kodiFailures: SharedFlow<KodiReply> = kodiRemote.failures
+
+    fun leaveKodi() = kodiRemote.close()
 
     // ---- Settings ----
 
@@ -30,6 +43,7 @@ class RemoteViewModel(
     // ---- Send ----
 
     fun sendReport(id: Int, bytes: ByteArray): Boolean {
+        if (isKodi) return kodiRemote.sendReport(id, bytes)
         return useCase.sendReport(id, bytes)
     }
 
@@ -50,7 +64,9 @@ class RemoteViewModel(
     // Text (Keyboard)
     private var sendTextJob: Job? = null
     val sendTextReport: (String, VirtualKeyboardLayout, Boolean) -> Unit = { text, virtualKeyboardLayout, shouldSendEnter ->
-        if(sendTextJob?.isActive != true) {
+        if (isKodi) {
+            kodiRemote.sendText(text, done = shouldSendEnter)
+        } else if(sendTextJob?.isActive != true) {
             sendTextJob = viewModelScope.launch(Dispatchers.Default) {
                 useCase.sendTextReport(text, virtualKeyboardLayout, shouldSendEnter)
             }

@@ -8,4 +8,6 @@ sealed class AppNavDestination(val route: String) {
     data object DeviceDiscoveryDestination: AppNavDestination(route = "bluetooth_pairing_from_a_scanned_device_route")
     data object DistantDevicePairDestination: AppNavDestination(route = "bluetooth_pairing_from_a_remote_device_route")
     data object RemoteDestination: AppNavDestination(route = "bluetooth_remote_route")
+    data object KodiDestination: AppNavDestination(route = "kodi_route")
+    data object KodiRemoteDestination: AppNavDestination(route = "kodi_remote_route")
 }

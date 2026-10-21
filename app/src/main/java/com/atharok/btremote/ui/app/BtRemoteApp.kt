@@ -44,7 +44,11 @@ import com.atharok.btremote.ui.screens.DistantDevicePairScreen
 import com.atharok.btremote.ui.screens.RemoteScreen
 import com.atharok.btremote.ui.screens.SettingsScreen
 import com.atharok.btremote.ui.theme.BtRemoteTheme
+import com.atharok.btremote.data.kodi.KodiRemote
+import com.atharok.btremote.domain.entities.KodiHost
+import com.atharok.btremote.ui.screens.KodiScreen
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun BtRemoteApp(
@@ -53,6 +57,7 @@ fun BtRemoteApp(
     navigateToSettings: () -> Unit = {
         navController.navigateTo(AppNavDestination.SettingsDestination.route)
     },
+    kodiRemote: KodiRemote = koinInject(),
     context: Context = LocalContext.current
 ) {
     val appearance by appScopeViewModel.appearanceSettingsFlow
@@ -75,13 +80,25 @@ fun BtRemoteApp(
 
                 var isBluetoothEnabled: Boolean by remember { mutableStateOf(appScopeViewModel.isBluetoothEnabled) }
 
+                // Kodi over Wi-Fi needs no Bluetooth, so Bluetooth going off or a device
+                // going away leaves its two screens where they are.
+                val kodiRoutes = remember {
+                    setOf(AppNavDestination.KodiDestination.route, AppNavDestination.KodiRemoteDestination.route)
+                }
+                val navigateToKodiScreen = {
+                    navController.navigateTo(AppNavDestination.KodiDestination.route)
+                }
+                val navigateToKodiRemote = {
+                    navController.navigateTo(AppNavDestination.KodiRemoteDestination.route)
+                }
+
                 CheckBluetoothStateChanged(
                     isBluetoothEnabled = isBluetoothEnabled,
                     onBluetoothEnabledChanged = { isBluetoothEnabled = it }
                 )
 
                 LaunchedEffect(isBluetoothEnabled) {
-                    if (!isBluetoothEnabled) {
+                    if (!isBluetoothEnabled && navController.currentDestination?.route !in kodiRoutes) {
                         BluetoothHidService.stop(context)
                         navController.popBackStack(
                             route = AppNavDestination.BluetoothActivationDestination.route,
@@ -93,7 +110,8 @@ fun BtRemoteApp(
                 LaunchedEffect(bluetoothDeviceHidConnectionState) {
                     if(bluetoothDeviceHidConnectionState.state == BluetoothHidDevice.STATE_DISCONNECTED &&
                         navController.currentDestination?.route != AppNavDestination.DeviceSelectionDestination.route &&
-                        navController.currentDestination?.route != AppNavDestination.DeviceDiscoveryDestination.route
+                        navController.currentDestination?.route != AppNavDestination.DeviceDiscoveryDestination.route &&
+                        navController.currentDestination?.route !in kodiRoutes
                         ) {
                         navController.popBackStack(
                             route = AppNavDestination.DeviceSelectionDestination.route,
@@ -130,6 +148,7 @@ fun BtRemoteApp(
                                 }
                             },
                             navigateToSettings = navigateToSettings,
+                            navigateToKodiScreen = navigateToKodiScreen,
                             modifier = Modifier
                         )
                     },
@@ -147,7 +166,8 @@ fun BtRemoteApp(
                             navigateToBluetoothDeviceSelectionScreen = {
                                 navController.navigateTo(AppNavDestination.DeviceSelectionDestination.route)
                             },
-                            navigateToSettings = navigateToSettings
+                            navigateToSettings = navigateToSettings,
+                            navigateToKodiScreen = navigateToKodiScreen
                         )
                     },
 
@@ -168,6 +188,8 @@ fun BtRemoteApp(
                                 navController.navigateTo(AppNavDestination.DistantDevicePairDestination.route)
                             },
                             navigateToSettings = navigateToSettings,
+                            navigateToKodiScreen = navigateToKodiScreen,
+                            navigateToKodiRemote = navigateToKodiRemote,
                             modifier = Modifier
                         )
                     },
@@ -201,12 +223,49 @@ fun BtRemoteApp(
                     },
 
                     remoteScreen = {
+                        // Over Bluetooth, nothing goes to a Kodi left open before.
+                        LaunchedEffect(Unit) { kodiRemote.close() }
                         RemoteScreen(
                             bluetoothDeviceHidConnectionState = bluetoothDeviceHidConnectionState,
                             closeApp = { context.getActivity()?.moveTaskToBack(true) },
                             navigateToSettings = navigateToSettings,
                             modifier = Modifier
                         )
+                    },
+
+                    kodiScreen = {
+                        KodiScreen(
+                            navigateUp = { navController.navigateUp() },
+                            navigateToKodiRemote = navigateToKodiRemote,
+                            navigateToSettings = navigateToSettings,
+                            modifier = Modifier
+                        )
+                    },
+
+                    kodiRemoteScreen = {
+                        val kodi: KodiHost? by kodiRemote.session.collectAsStateWithLifecycle()
+                        // The Bluetooth service has nothing to do while Kodi is driven over
+                        // Wi-Fi; the list of devices starts it again on the way back.
+                        LaunchedEffect(Unit) {
+                            if (isBluetoothServiceRunning) BluetoothHidService.stop(context)
+                        }
+                        // Android may have ended the app while the remote was in the background;
+                        // the Kodi it was driving went with it, so go back to choose it again.
+                        LaunchedEffect(kodi == null) {
+                            if (kodi == null) navController.navigateUp()
+                        }
+                        kodi?.let { host ->
+                            RemoteScreen(
+                                bluetoothDeviceHidConnectionState = bluetoothDeviceHidConnectionState,
+                                closeApp = { context.getActivity()?.moveTaskToBack(true) },
+                                navigateToSettings = navigateToSettings,
+                                kodi = host,
+                                leaveKodi = {
+                                    kodiRemote.close()
+                                },
+                                modifier = Modifier
+                            )
+                        }
                     },
                     modifier = Modifier.windowInsetsPadding(WindowInsets.displayCutout.exclude(WindowInsets.systemBars))
                 )

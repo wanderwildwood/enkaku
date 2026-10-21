@@ -21,6 +21,7 @@ fun BluetoothPermissionsScreen(
     arePermissionsGranted: Boolean,
     onPermissionsGranted: () -> Unit,
     navigateToSettings: () -> Unit,
+    navigateToKodiScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val permissionState = remember { mutableStateOf(arePermissionsGranted) }
@@ -56,7 +57,9 @@ fun BluetoothPermissionsScreen(
             buttonOnClick = { shouldAskPermissions = true },
             hideButton = false,
             navigateToSettings = navigateToSettings,
-            modifier = modifier
+            modifier = modifier,
+            secondButtonText = stringResource(id = R.string.kodi_over_wifi),
+            secondButtonOnClick = navigateToKodiScreen
         )
     }
 }

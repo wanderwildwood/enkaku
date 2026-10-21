@@ -1,6 +1,6 @@
 # 遠隔 enkaku — Remote
 
-A Bluetooth remote, keyboard and mouse for an E Ink phone. Black on white, Lato, nothing that slides.
+A Bluetooth remote, keyboard and mouse for an E Ink phone, and a Wi-Fi remote for Kodi. Black on white, Lato, nothing that slides.
 
 *Enkaku* means at a distance: the plain word for "remote".
 
@@ -21,7 +21,14 @@ media box or a computer as an ordinary Bluetooth remote, keyboard and mouse, so 
 to be installed on the other end. A d-pad or a touchpad, media and channel buttons, a mouse
 pad, two keyboards, and the volume keys put to work.
 
-What is mine is how it looks on this screen.
+What is mine is how it looks on this screen, and one addition:
+
+**Kodi over Wi-Fi.** The same remote can drive Kodi (LibreELEC, OSMC, any Kodi) over the
+home network instead of Bluetooth, through Kodi's JSON-RPC, which spares the phone's
+Bluetooth. Kodi boxes that announce themselves are listed; any other is an address away. The
+last one used is a single press on the list of devices. Turn on Settings › Services › Control
+› Allow remote control via HTTP in Kodi. The buttons, the d-pad and the text keyboard work;
+the mouse and brightness have no Kodi equivalent and are left out.
 
 ## What changed for E Ink
 
@@ -68,7 +75,7 @@ by design.
 ## Privacy
 
 See [PRIVACY.md](PRIVACY.md). In short: it talks only to the device you pair it with, over
-Bluetooth, and it has no internet permission.
+Bluetooth, or to the Kodi you choose on your home Wi-Fi, and to nothing else.
 
 ## Licence
 

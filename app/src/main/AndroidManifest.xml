@@ -27,6 +27,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
+    <!-- Kodi over Wi-Fi: JSON-RPC to the Kodi chosen in the app, on the home network. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".BtRemoteApplication"
         android:allowBackup="false"
@@ -36,6 +39,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BTRemote"
         android:localeConfig="@xml/locales_config"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="33">
 
         <service

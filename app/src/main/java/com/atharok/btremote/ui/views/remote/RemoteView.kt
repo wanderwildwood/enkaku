@@ -294,7 +294,8 @@ fun MinimalistRemoteView(
                 modifier = Modifier.weight(1f).padding(padding),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                VerticalButtonsLayout(
+                // Kodi has no brightness; its place stays, empty, so the rest do not move.
+                if (!LocalKodiRemote.current) VerticalButtonsLayout(
                     topButtonProperties = RemoteButtonProperties.BrightnessUpButton,
                     bottomButtonProperties = RemoteButtonProperties.BrightnessDownButton,
                     sendRemoteKeyReport = sendRemoteKeyReport,

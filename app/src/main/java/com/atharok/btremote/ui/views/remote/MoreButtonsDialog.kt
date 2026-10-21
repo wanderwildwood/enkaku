@@ -3,6 +3,7 @@ package com.atharok.btremote.ui.views.remote
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
@@ -143,19 +144,25 @@ private fun MoreButtonsLayout(
                 buttonShape = buttonShape,
             )
 
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.BrightnessDownButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-            )
+            // Kodi has no brightness; the two places stay, empty, so the grid keeps its columns.
+            if (LocalKodiRemote.current) {
+                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(1f))
+            } else {
+                MoreRemoteIconLayout(
+                    properties = RemoteButtonProperties.BrightnessDownButton,
+                    sendKeyReport = sendRemoteKeyReport,
+                    modifier = Modifier.weight(1f),
+                    buttonShape = buttonShape,
+                )
 
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.BrightnessUpButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-            )
+                MoreRemoteIconLayout(
+                    properties = RemoteButtonProperties.BrightnessUpButton,
+                    sendKeyReport = sendRemoteKeyReport,
+                    modifier = Modifier.weight(1f),
+                    buttonShape = buttonShape,
+                )
+            }
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
