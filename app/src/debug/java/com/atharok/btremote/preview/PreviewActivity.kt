@@ -35,7 +35,7 @@ class PreviewActivity : ComponentActivity() {
                     "settings" -> SettingsScreen(navigateUp = {})
                     "about" -> { SettingsScreen(navigateUp = {}); AboutDialog(onDismiss = {}) }
                     "help" -> DevicesSelectionScreenHelpModalBottomSheet(onDismissRequest = {})
-                    "kodi" -> KodiScreen(navigateUp = {}, navigateToKodiRemote = {}, navigateToSettings = {})
+                    "kodi" -> KodiScreen(bluetoothMissing = false, navigateUp = {}, navigateToKodiRemote = {}, navigateToSettings = {})
                     else -> RemoteScreen(
                         bluetoothDeviceHidConnectionState = DeviceHidConnectionState(
                             state = BluetoothHidDevice.STATE_CONNECTED,

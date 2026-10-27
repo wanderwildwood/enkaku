@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalCursorBlinkEnabled
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,8 +37,8 @@ import com.atharok.btremote.ui.components.OnLifecycleEvent
 import com.atharok.btremote.ui.navigation.AppNavDestination
 import com.atharok.btremote.ui.navigation.AppNavHost
 import com.atharok.btremote.ui.navigation.navigateTo
+import com.atharok.btremote.ui.navigation.startRoute
 import com.atharok.btremote.ui.screens.BluetoothActivationScreen
-import com.atharok.btremote.ui.screens.BluetoothNotSupportScreen
 import com.atharok.btremote.ui.screens.BluetoothPermissionsScreen
 import com.atharok.btremote.ui.screens.DeviceDiscoveryScreen
 import com.atharok.btremote.ui.screens.DevicesSelectionScreen
@@ -45,6 +47,8 @@ import com.atharok.btremote.ui.screens.RemoteScreen
 import com.atharok.btremote.ui.screens.SettingsScreen
 import com.atharok.btremote.ui.theme.BtRemoteTheme
 import com.atharok.btremote.data.kodi.KodiRemote
+import com.atharok.btremote.data.kodi.KodiStore
+import kotlinx.coroutines.runBlocking
 import com.atharok.btremote.domain.entities.KodiHost
 import com.atharok.btremote.ui.screens.KodiScreen
 import org.koin.androidx.compose.koinViewModel
@@ -58,11 +62,15 @@ fun BtRemoteApp(
         navController.navigateTo(AppNavDestination.SettingsDestination.route)
     },
     kodiRemote: KodiRemote = koinInject(),
+    kodiStore: KodiStore = koinInject(),
     context: Context = LocalContext.current
 ) {
     val appearance by appScopeViewModel.appearanceSettingsFlow
         .collectAsStateWithLifecycle(AppearanceSettings())
 
+    // A steady cursor: a blinking one is a repaint twice a second on an e-ink panel for as long
+    // as a field has focus. Dialogs inherit it.
+    CompositionLocalProvider(LocalCursorBlinkEnabled provides false) {
     BtRemoteTheme(
         appearance = appearance
     ) {
@@ -70,9 +78,8 @@ fun BtRemoteApp(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.surface
         ) {
-            if(!appScopeViewModel.isBluetoothSupported) {
-                BluetoothNotSupportScreen()
-            } else {
+            // A phone with no Bluetooth is not a dead end: it opens on Kodi over Wi-Fi.
+            run {
 
                 val isBluetoothServiceRunning: Boolean by appScopeViewModel.isBluetoothServiceRunning.collectAsStateWithLifecycle()
                 val isBluetoothHidProfileRegistered: Boolean by appScopeViewModel.isBluetoothHidProfileRegistered.collectAsStateWithLifecycle()
@@ -85,6 +92,22 @@ fun BtRemoteApp(
                 val kodiRoutes = remember {
                     setOf(AppNavDestination.KodiDestination.route, AppNavDestination.KodiRemoteDestination.route)
                 }
+                val isBluetoothSupported = appScopeViewModel.isBluetoothSupported
+                // The way last used is the way it opens: a small read of the app's own settings.
+                val startsOnKodi = remember { runBlocking { kodiStore.startsOnKodi() } }
+
+                // Remember which of the two the person is using.
+                LaunchedEffect(navController) {
+                    navController.currentBackStackEntryFlow.collect { entry ->
+                        when (entry.destination.route) {
+                            in kodiRoutes -> kodiStore.saveStartsOnKodi(true)
+                            AppNavDestination.BluetoothActivationDestination.route,
+                            AppNavDestination.DeviceSelectionDestination.route,
+                            AppNavDestination.RemoteDestination.route -> kodiStore.saveStartsOnKodi(false)
+                        }
+                    }
+                }
+
                 val navigateToKodiScreen = {
                     navController.navigateTo(AppNavDestination.KodiDestination.route)
                 }
@@ -126,10 +149,11 @@ fun BtRemoteApp(
                     navController = navController,
 
                     startDestination = remember {
-                        if(arePermissionsGranted(context, bluetoothConnectPermissions))
-                            AppNavDestination.BluetoothActivationDestination.route
-                        else
-                            AppNavDestination.BluetoothPermissionsDestination.route
+                        startRoute(
+                            bluetoothSupported = isBluetoothSupported,
+                            startsOnKodi = startsOnKodi,
+                            bluetoothPermitted = arePermissionsGranted(context, bluetoothConnectPermissions)
+                        )
                     },
 
                     bluetoothPermissionsScreen = {
@@ -235,7 +259,20 @@ fun BtRemoteApp(
 
                     kodiScreen = {
                         KodiScreen(
-                            navigateUp = { navController.navigateUp() },
+                            bluetoothMissing = !isBluetoothSupported,
+                            navigateUp = {
+                                when {
+                                    navController.previousBackStackEntry != null -> navController.navigateUp()
+                                    !isBluetoothSupported -> context.getActivity()?.moveTaskToBack(true)
+                                    // Opened on Kodi, so there is no list of devices behind it yet.
+                                    else -> navController.navigate(
+                                        if(arePermissionsGranted(context, bluetoothConnectPermissions))
+                                            AppNavDestination.BluetoothActivationDestination.route
+                                        else
+                                            AppNavDestination.BluetoothPermissionsDestination.route
+                                    ) { popUpTo(0) }
+                                }
+                            },
                             navigateToKodiRemote = navigateToKodiRemote,
                             navigateToSettings = navigateToSettings,
                             modifier = Modifier
@@ -286,4 +323,5 @@ fun BtRemoteApp(
             }
         }
     }
+}
 }

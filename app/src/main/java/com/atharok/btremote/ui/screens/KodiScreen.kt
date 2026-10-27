@@ -1,5 +1,6 @@
 package com.atharok.btremote.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +45,7 @@ import org.koin.androidx.compose.koinViewModel
  */
 @Composable
 fun KodiScreen(
+    bluetoothMissing: Boolean,
     navigateUp: () -> Unit,
     navigateToKodiRemote: () -> Unit,
     navigateToSettings: () -> Unit,
@@ -62,6 +64,9 @@ fun KodiScreen(
         onDispose { viewModel.stopDiscovery() }
     }
 
+    // The same way back as the arrow in the bar, which knows what is behind this screen.
+    BackHandler(onBack = navigateUp)
+
     KodiConnectedEffect(state = state, navigateToKodiRemote = navigateToKodiRemote, dismiss = viewModel::dismiss)
 
     AppScaffold(
@@ -78,6 +83,19 @@ fun KodiScreen(
         }
     ) { innerPadding ->
         PagedColumn(modifier = Modifier.padding(innerPadding)) {
+            if (bluetoothMissing) {
+                item {
+                    TextNormalSecondary(
+                        text = stringResource(R.string.kodi_only_no_bluetooth),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = dimensionResource(R.dimen.padding_max),
+                                vertical = dimensionResource(R.dimen.padding_normal)
+                            )
+                    )
+                }
+            }
             lastKodi?.let { last ->
                 heading(R.string.kodi_last_used)
                 item {
@@ -189,13 +207,16 @@ private fun LazyListScope.heading(@StringRes text: Int) {
     }
 }
 
-/** It asks in its own face: the first tap arms it, a second within four seconds forgets. */
+/** How long a row that asks for a second tap stays armed. */
+private const val ARMED_MS = 6_000L
+
+/** It asks in its own face: the first tap arms it, a second within six seconds forgets. */
 @Composable
 private fun ForgetRow(name: String, forget: () -> Unit) {
     var armed by remember { mutableStateOf(false) }
     LaunchedEffect(armed) {
         if (armed) {
-            delay(4_000)
+            delay(ARMED_MS)
             armed = false
         }
     }

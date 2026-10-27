@@ -44,7 +44,7 @@ class MediaControlWidgetDimensions {
                 padding = 12.dp,
                 minIconSize = iconSize - 8.dp,
                 maxIconSize = iconSize,
-                minTextSp = 11.sp,
+                minTextSp = 14.sp,
                 maxTextSp = 16.sp
             )
         }

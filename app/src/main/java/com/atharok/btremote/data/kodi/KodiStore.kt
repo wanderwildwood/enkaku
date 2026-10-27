@@ -1,6 +1,7 @@
 package com.atharok.btremote.data.kodi
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -9,6 +10,7 @@ import com.atharok.btremote.domain.entities.KODI_DEFAULT_PORT
 import com.atharok.btremote.domain.entities.KodiHost
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
@@ -25,6 +27,7 @@ import kotlinx.serialization.json.put
 class KodiStore(private val context: Context) {
 
     private val lastKodiKey = stringPreferencesKey("last_kodi_key")
+    private val startsOnKodiKey = booleanPreferencesKey("starts_on_kodi_key")
 
     val lastKodiFlow: Flow<KodiHost?> by lazy {
         context.dataStore.data
@@ -34,6 +37,17 @@ class KodiStore(private val context: Context) {
 
     suspend fun saveLastKodi(host: KodiHost) {
         context.dataStore.edit { it[lastKodiKey] = encode(host) }
+    }
+
+    /** Whether the remote was last used over Wi-Fi, so it opens there next time. */
+    suspend fun startsOnKodi(): Boolean = try {
+        context.dataStore.data.first()[startsOnKodiKey] == true
+    } catch (_: Exception) {
+        false
+    }
+
+    suspend fun saveStartsOnKodi(value: Boolean) {
+        context.dataStore.edit { if (it[startsOnKodiKey] != value) it[startsOnKodiKey] = value }
     }
 
     suspend fun forgetLastKodi() {

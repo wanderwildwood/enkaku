@@ -94,9 +94,6 @@ private val androidModule: Module = module {
         androidContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
     }
 
-    single<BluetoothManager> {
-        androidContext().getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-    }
 
     single<BluetoothHidDeviceAppSdpSettings> {
         BluetoothHidDeviceAppSdpSettings(
@@ -290,28 +287,28 @@ private val dataModule: Module = module {
 
     single {
         BluetoothStatus(
-            adapter = get<BluetoothManager>().adapter
+            adapter = androidContext().bluetoothAdapterOrNull()
         )
     }
 
     single {
         BluetoothScanner(
             context = androidContext(),
-            adapter = get<BluetoothManager>().adapter
+            adapter = androidContext().bluetoothAdapterOrNull()
         )
     }
 
     single {
         BluetoothLocalData(
             context = androidContext(),
-            adapter = get<BluetoothManager>().adapter
+            adapter = androidContext().bluetoothAdapterOrNull()
         )
     }
 
     single {
         BluetoothHidCore(
             context = androidContext(),
-            adapter = get<BluetoothManager>().adapter,
+            adapter = androidContext().bluetoothAdapterOrNull(),
             hidSettings = get<BluetoothHidDeviceAppSdpSettings>()
         )
     }
@@ -336,3 +333,7 @@ private val dataModule: Module = module {
 
     single { KodiStore(context = androidContext()) }
 }
+
+/** A phone without Bluetooth hands back no manager at all; Kodi over Wi-Fi still works there. */
+private fun Context.bluetoothAdapterOrNull() =
+    (getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter

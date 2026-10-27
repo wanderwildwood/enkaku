@@ -13,7 +13,15 @@ import com.mudita.mmd.components.buttons.OutlinedButtonMMD
 import com.mudita.mmd.components.text.TextMMD
 import com.atharok.btremote.BuildConfig
 import com.atharok.btremote.ui.theme.EInkDialog
+import android.content.Context
 import android.content.Intent
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.style.TextDecoration
+import com.atharok.btremote.ui.components.PagedColumn
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -35,6 +43,10 @@ import com.atharok.btremote.R
  */
 @Composable
 fun AboutDialog(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    // The words run past one screen, so they turn in pages like every list here; the dialog is
+    // a fixed share of the screen so the page is always the same size.
+    val pageHeight = (LocalConfiguration.current.screenHeightDp * 0.62f).dp
     EInkDialog(onDismiss = onDismiss) {
         TextMMD(
             text = stringResource(R.string.about_title, BuildConfig.VERSION_NAME),
@@ -42,32 +54,81 @@ fun AboutDialog(onDismiss: () -> Unit) {
             fontWeight = FontWeight.Medium,
         )
 
-        Spacer(Modifier.height(14.dp))
-        TextMMD(
-            text = stringResource(R.string.about_privacy),
-            style = MaterialTheme.typography.labelSmall,
-        )
+        Spacer(Modifier.height(8.dp))
+        PagedColumn(modifier = Modifier.fillMaxWidth().height(pageHeight)) {
+            // A heading and its words are one row, so a heading never ends a page alone.
+            item {
+                Column {
+                    AboutHeading(R.string.about_privacy_heading)
+                    AboutParagraph(stringResource(R.string.about_privacy))
+                }
+            }
+            item {
+                Column {
+                    AboutHeading(R.string.about_terms_heading)
+                    AboutParagraph(stringResource(R.string.about_terms))
+                }
+            }
+            item {
+                Column(modifier = Modifier.padding(top = 12.dp)) {
+                    TextMMD(text = stringResource(R.string.about_after), style = MaterialTheme.typography.labelSmall)
+                    TextMMD(text = stringResource(R.string.about_bundled), style = MaterialTheme.typography.labelSmall)
+                }
+            }
+            item {
+                // The source, one press from the code the licence promises.
+                AboutLink(
+                    text = stringResource(R.string.about_source),
+                    url = "https://" + stringResource(R.string.about_source),
+                    context = context,
+                )
+            }
+            item { Llama() }
+        }
 
-
-        Spacer(Modifier.height(14.dp))
-        TextMMD(
-            text = stringResource(R.string.about_after),
-            style = MaterialTheme.typography.labelSmall,
-        )
-
-        Spacer(Modifier.height(14.dp))
-        TextMMD(text = stringResource(R.string.about_licence), style = MaterialTheme.typography.labelSmall)
-        TextMMD(text = stringResource(R.string.about_bundled), style = MaterialTheme.typography.labelSmall)
-        TextMMD(text = stringResource(R.string.about_source), style = MaterialTheme.typography.labelSmall)
-
-        Spacer(Modifier.height(14.dp))
-        Llama()
-
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(12.dp))
         OutlinedButtonMMD(
             onClick = onDismiss,
             modifier = Modifier.fillMaxWidth().height(48.dp),
         ) { TextMMD(text = stringResource(R.string.about_close), style = MaterialTheme.typography.bodySmall) }
+    }
+}
+
+@Composable
+private fun AboutHeading(@StringRes text: Int) {
+    TextMMD(
+        text = stringResource(text),
+        style = MaterialTheme.typography.bodyLarge,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
+    )
+}
+
+@Composable
+private fun AboutParagraph(text: String) {
+    TextMMD(text = text, style = MaterialTheme.typography.labelSmall)
+}
+
+/** A web address that opens when pressed, in a row 48 dp tall. A phone with no browser gets a word, not a crash. */
+@Composable
+private fun AboutLink(text: String, url: String, context: Context) {
+    TextMMD(
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
+        textDecoration = TextDecoration.Underline,
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .clickable { openLink(context, url) }
+            .wrapContentHeight(Alignment.CenterVertically),
+    )
+}
+
+private fun openLink(context: Context, url: String) {
+    runCatching {
+        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    }.onFailure {
+        Toast.makeText(context, context.getString(R.string.about_no_browser), Toast.LENGTH_SHORT).show()
     }
 }
 
@@ -103,7 +164,8 @@ private fun Llama() {
                         Toast.makeText(context, context.getString(R.string.about_no_browser), Toast.LENGTH_SHORT).show()
                     }
                 }
-                .padding(vertical = 4.dp),
+                .heightIn(min = 48.dp)
+                .wrapContentHeight(Alignment.CenterVertically),
         )
         Spacer(Modifier.width(6.dp))
         Row(
@@ -123,7 +185,7 @@ private fun Llama() {
                         Toast.makeText(context, context.getString(R.string.about_no_browser), Toast.LENGTH_SHORT).show()
                     }
                 }
-                .padding(vertical = 4.dp),
+                .heightIn(min = 48.dp),
         ) {
             Image(
                 painter = painterResource(R.drawable.llama),

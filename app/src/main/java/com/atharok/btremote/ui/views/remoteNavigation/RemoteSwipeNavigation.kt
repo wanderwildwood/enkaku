@@ -112,7 +112,7 @@ fun RemoteSwipeNavigation(
                 imageVector = AppIcons.Gesture,
                 contentDescription = stringResource(id = R.string.touchpad_description),
                 modifier = Modifier.fillMaxSize(0.2f),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f)
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
     }

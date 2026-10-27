@@ -14,10 +14,14 @@ for a username and password, those go with each press, to that address and no ot
 Kodi boxes it listens on the home network for the ones that announce themselves (mDNS,
 through Android's own service discovery); it announces nothing about itself.
 
+**The Kodi login** (username and password) is sent only to the Kodi address you entered, and over plain HTTP, because Kodi offers nothing else. Anyone on that network who can see its traffic could read it, so use it on a network you trust.
+
 **On the phone** it keeps its settings, the devices you marked as favourites and the one it
 connects to on its own, and the last Kodi it reached: its name, address, and the username and
 password you gave it. Nothing else is stored. Uninstalling it removes all of that, and
 "Forget" on the Kodi screen removes the Kodi.
+
+**Terms:** Remote is free software under the GNU General Public License v3 or later. It comes with no warranty: use it at your own risk.
 
 **Permissions:** Bluetooth, to pair and connect; internet, for Kodi over Wi-Fi, used for
 nothing but the Kodi address you choose; a foreground service, so the connection holds

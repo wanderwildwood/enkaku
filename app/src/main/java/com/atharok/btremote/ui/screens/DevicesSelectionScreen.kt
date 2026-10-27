@@ -308,6 +308,43 @@ private fun DevicesListView(
     PagedColumn(
         modifier = modifier.padding(contentPadding)
     ) {
+        // Kodi over Wi-Fi comes first, so it is in reach on a phone with no Bluetooth to speak of:
+        // the box last used is one press, the rest are behind the next row.
+
+        item {
+            TextNormalSecondary(
+                text = stringResource(id = R.string.kodi_over_wifi),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = dimensionResource(id = R.dimen.padding_max),
+                        vertical = dimensionResource(id = R.dimen.padding_normal)
+                    )
+            )
+        }
+        lastKodi?.let { kodi ->
+            item {
+                KodiHostItemView(
+                    host = kodi,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { connectKodi(kodi) }
+                        .padding(dimensionResource(id = R.dimen.padding_max))
+                )
+            }
+        }
+        item {
+            TextMedium(
+                text = stringResource(id = R.string.kodi_find),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navigateToKodiScreen() }
+                    .padding(dimensionResource(id = R.dimen.padding_max))
+            )
+        }
+
+        // Bluetooth devices
+
         // Only when there is something to say: BT Remote kept a card here that pointed at the
         // help button beside it, which is a line nobody needs to read twice.
         if(!isBluetoothServiceRunning) item {
@@ -398,40 +435,6 @@ private fun DevicesListView(
                         )
                 )
             }
-        }
-
-        // Kodi over Wi-Fi: the box last used is one press, the rest are behind the next row.
-
-        item {
-            TextNormalSecondary(
-                text = stringResource(id = R.string.kodi_over_wifi),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = dimensionResource(id = R.dimen.padding_max),
-                        vertical = dimensionResource(id = R.dimen.padding_normal)
-                    )
-            )
-        }
-        lastKodi?.let { kodi ->
-            item {
-                KodiHostItemView(
-                    host = kodi,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { connectKodi(kodi) }
-                        .padding(dimensionResource(id = R.dimen.padding_max))
-                )
-            }
-        }
-        item {
-            TextMedium(
-                text = stringResource(id = R.string.kodi_find),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { navigateToKodiScreen() }
-                    .padding(dimensionResource(id = R.dimen.padding_max))
-            )
         }
     }
 }

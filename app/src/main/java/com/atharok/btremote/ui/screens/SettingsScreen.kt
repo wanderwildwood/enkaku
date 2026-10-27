@@ -37,7 +37,6 @@ import com.atharok.btremote.ui.components.AppScaffold
 import com.atharok.btremote.ui.components.BasicIconButton
 import com.atharok.btremote.ui.components.ListDialog
 import com.atharok.btremote.ui.views.AboutDialog
-import com.mudita.mmd.components.divider.HorizontalDividerMMD
 import com.atharok.btremote.ui.components.PagedColumn
 import com.mudita.mmd.components.switcher.SwitchMMD
 import com.mudita.mmd.components.text.TextMMD
@@ -282,10 +281,7 @@ private fun speed(value: Float): String =
 @Composable
 private fun Heading(@StringRes text: Int, first: Boolean = false) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        if (!first) {
-            Spacer(Modifier.height(10.dp))
-            HorizontalDividerMMD()
-        }
+        if (!first) Spacer(Modifier.height(24.dp))
         Spacer(Modifier.height(14.dp))
         TextMMD(
             text = stringResource(id = text),

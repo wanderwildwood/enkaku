@@ -49,7 +49,8 @@ fun AdaptiveText(
         val targetFontSize = with(density) {
             containerWidth.times(percent).coerceAtMost(containerHeight.times(percent)).toSp()
         }
-        val minFontSize = targetFontSize.div(10f)
+        // Never below 14 sp, unless the box itself is smaller than that.
+        val minFontSize = max(targetFontSize.value / 10f, minOf(targetFontSize.value, 14f)).sp
         val stepSize = max(minFontSize.value, 0.0001f).sp
         BasicText(
             text = text,
