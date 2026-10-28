@@ -56,7 +56,8 @@ fun RemoteView(
                     sendRemoteKeyReport = sendRemoteKeyReport,
                     modifier = Modifier
                         .weight(2f)
-                        .padding(padding)
+                        // No padding above and below: the two halves are then a whole 48 dp each.
+                        .padding(horizontal = padding)
                         .align(Alignment.Start),
                     shape = buttonShape
                 )
@@ -153,7 +154,8 @@ fun RemoteView(
                     sendRemoteKeyReport = sendRemoteKeyReport,
                     modifier = Modifier
                         .weight(2f)
-                        .padding(padding)
+                        // No padding above and below: the two halves are then a whole 48 dp each.
+                        .padding(horizontal = padding)
                         .align(Alignment.End),
                     shape = buttonShape
                 )

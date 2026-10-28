@@ -347,6 +347,9 @@ private fun RemoteLandscapeView(
     }
 }
 
+/** Five rows of keys at 48 dp each, and the 6 dp padding round them. */
+private const val KEY_ROWS_MIN_DP = 5 * 48f + 12f
+
 @Composable
 private fun RemotePortraitView(
     remoteLayout: @Composable () -> Unit,
@@ -364,7 +367,9 @@ private fun RemotePortraitView(
                         if (screenHeightDp >= screenWidthDp * 1.9f) // Si la hauteur de l'appareil est suffisamment haute par rapport à sa largeur (ratio ~ 1/2)
                             screenWidthDp.dp // On peut se permettre de prendre pour hauteur la largeur de l'écran
                         else // Sinon
-                            (screenHeightDp * 0.50).dp // On prend 50% de la hauteur de l'écran
+                            // 50 % of the height, but never so little that the five rows of keys
+                            // come under 48 dp; the d-pad gives up the difference.
+                            maxOf(screenHeightDp * 0.50f, KEY_ROWS_MIN_DP).coerceAtMost(screenHeightDp * 0.62f).dp
                     }
                 )
                 .align(Alignment.CenterHorizontally),
