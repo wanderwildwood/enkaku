@@ -15,6 +15,7 @@ import com.atharok.btremote.common.utils.DEFAULT_MUST_CLEAR_INPUT_FIELD
 import com.atharok.btremote.common.utils.DEFAULT_REMOTE_NAVIGATION
 import com.atharok.btremote.common.utils.DEFAULT_SHOULD_INVERT_MOUSE_SCROLLING_DIRECTION
 import com.atharok.btremote.common.utils.DEFAULT_THEME
+import com.atharok.btremote.common.utils.DEFAULT_TURN_WITH_PHONE
 import com.atharok.btremote.common.utils.DEFAULT_USE_ADVANCED_KEYBOARD
 import com.atharok.btremote.common.utils.DEFAULT_USE_ADVANCED_KEYBOARD_INTEGRATED
 import com.atharok.btremote.common.utils.DEFAULT_USE_BLACK_COLOR_FOR_DARK_THEME
@@ -43,6 +44,7 @@ class SettingsDataStore(private val context: Context) {
         private const val DYNAMIC_COLORS_KEY = "material_you_key"
         private const val BLACK_COLOR_KEY = "black_color_key"
         private const val FULL_SCREEN_KEY = "full_screen_key"
+        private const val TURN_WITH_PHONE_KEY = "turn_with_phone_key"
 
         private const val MOUSE_SPEED_KEY = "mouse_speed_key"
         private const val MOUSE_SCROLL_SPEED_KEY = "mouse_scroll_speed_key"
@@ -69,6 +71,7 @@ class SettingsDataStore(private val context: Context) {
     private val useDynamicColorsKey = booleanPreferencesKey(DYNAMIC_COLORS_KEY)
     private val useBlackColorForDarkThemeKey = booleanPreferencesKey(BLACK_COLOR_KEY)
     private val useFullScreenKey = booleanPreferencesKey(FULL_SCREEN_KEY)
+    private val turnWithPhoneKey = booleanPreferencesKey(TURN_WITH_PHONE_KEY)
     private val mouseSpeedKey = floatPreferencesKey(MOUSE_SPEED_KEY)
     private val mouseScrollSpeedKey = floatPreferencesKey(MOUSE_SCROLL_SPEED_KEY)
     private val invertMouseScrollingDirectionKey = booleanPreferencesKey(INVERT_MOUSE_SCROLLING_DIRECTION_KEY)
@@ -110,7 +113,8 @@ class SettingsDataStore(private val context: Context) {
                 },
                 useDynamicColors = preferences[useDynamicColorsKey] ?: isDynamicColorsAvailable(),
                 useBlackColorForDarkTheme = preferences[useBlackColorForDarkThemeKey] ?: DEFAULT_USE_BLACK_COLOR_FOR_DARK_THEME,
-                useFullScreen = preferences[useFullScreenKey] ?: DEFAULT_USE_FULL_SCREEN
+                useFullScreen = preferences[useFullScreenKey] ?: DEFAULT_USE_FULL_SCREEN,
+                turnWithPhone = preferences[turnWithPhoneKey] ?: DEFAULT_TURN_WITH_PHONE
             )
         }
 
@@ -135,6 +139,12 @@ class SettingsDataStore(private val context: Context) {
     suspend fun saveUseFullScreen(useFullScreen: Boolean) {
         context.dataStore.edit {
             it[useFullScreenKey] = useFullScreen
+        }
+    }
+
+    suspend fun saveTurnWithPhone(turnWithPhone: Boolean) {
+        context.dataStore.edit {
+            it[turnWithPhoneKey] = turnWithPhone
         }
     }
 

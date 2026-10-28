@@ -36,6 +36,10 @@ class SettingsViewModel(
         useCase.saveUseFullScreen(useFullScreen)
     }
 
+    fun saveTurnWithPhone(turnWithPhone: Boolean) = viewModelScope.launch {
+        useCase.saveTurnWithPhone(turnWithPhone)
+    }
+
     // ---- Remote ----
 
     val remoteSettingsFlow: Flow<RemoteSettings> = useCase.remoteSettingsFlow

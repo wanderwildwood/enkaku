@@ -22,6 +22,8 @@ interface DataStoreRepository {
 
     suspend fun saveUseFullScreen(useFullScreen: Boolean)
 
+    suspend fun saveTurnWithPhone(turnWithPhone: Boolean)
+
     // ---- Remote ----
 
     val remoteSettingsFlow: Flow<RemoteSettings>

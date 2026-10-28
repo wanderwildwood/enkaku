@@ -35,6 +35,10 @@ class DataStoreRepositoryImpl(
         settingsDataStore.saveUseFullScreen(useFullScreen)
     }
 
+    override suspend fun saveTurnWithPhone(turnWithPhone: Boolean) {
+        settingsDataStore.saveTurnWithPhone(turnWithPhone)
+    }
+
     // ---- Remote ----
 
     override val remoteSettingsFlow: Flow<RemoteSettings>

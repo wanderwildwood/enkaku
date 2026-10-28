@@ -18,6 +18,7 @@ const val DATA_STORE_PREFERENCES_SETTINGS_NAME = "dataStoreSettings"
 val DEFAULT_THEME = ThemeEntity.SYSTEM
 const val DEFAULT_USE_BLACK_COLOR_FOR_DARK_THEME: Boolean = false
 const val DEFAULT_USE_FULL_SCREEN: Boolean = false
+const val DEFAULT_TURN_WITH_PHONE: Boolean = true
 
 // ---- Mouse ----
 const val DEFAULT_MOUSE_SPEED: Float = 1f

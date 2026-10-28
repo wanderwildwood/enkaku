@@ -1,6 +1,8 @@
 package com.atharok.btremote.ui.components
 
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
@@ -8,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.atharok.btremote.R
 import com.atharok.btremote.common.extensions.autoMirroredIcon
 import com.atharok.btremote.common.utils.AppIcons
@@ -55,12 +58,18 @@ fun SettingsIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BasicIconButton(
+    // The outlined cog the other apps draw: 22 dp inside a 48 dp place to press.
+    IconButton(
         onClick = onClick,
-        icon = AppIcons.Settings,
-        contentDescription = stringResource(id = R.string.settings),
-        modifier = modifier
-    )
+        modifier = modifier.size(48.dp)
+    ) {
+        Icon(
+            imageVector = AppIcons.Settings,
+            contentDescription = stringResource(id = R.string.settings),
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.size(22.dp)
+        )
+    }
 }
 
 @Composable

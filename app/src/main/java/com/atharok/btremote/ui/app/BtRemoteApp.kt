@@ -63,10 +63,14 @@ fun BtRemoteApp(
     },
     kodiRemote: KodiRemote = koinInject(),
     kodiStore: KodiStore = koinInject(),
+    turnWithPhone: (Boolean) -> Unit = {},
     context: Context = LocalContext.current
 ) {
     val appearance by appScopeViewModel.appearanceSettingsFlow
         .collectAsStateWithLifecycle(AppearanceSettings())
+
+    // Read again whenever the setting changes, so the switch takes effect at once.
+    LaunchedEffect(appearance.turnWithPhone) { turnWithPhone(appearance.turnWithPhone) }
 
     // A steady cursor: a blinking one is a repaint twice a second on an e-ink panel for as long
     // as a field has focus. Dialogs inherit it.

@@ -32,6 +32,10 @@ class SettingsUseCase(private val dataStoreRepository: DataStoreRepository) {
         dataStoreRepository.saveUseFullScreen(useFullScreen)
     }
 
+    suspend fun saveTurnWithPhone(turnWithPhone: Boolean) {
+        dataStoreRepository.saveTurnWithPhone(turnWithPhone)
+    }
+
     // ---- Remote ----
 
     val remoteSettingsFlow: Flow<RemoteSettings>

@@ -246,6 +246,14 @@ fun SettingsScreen(
 
             item {
                 SettingsSwitch(
+                    title = stringResource(id = R.string.turn_with_phone),
+                    checked = appearanceSettings.turnWithPhone,
+                    onCheckedChange = { settingsViewModel.saveTurnWithPhone(it) }
+                )
+            }
+
+            item {
+                SettingsSwitch(
                     title = stringResource(id = R.string.full_screen),
                     checked = appearanceSettings.useFullScreen,
                     onCheckedChange = { settingsViewModel.saveUseFullScreen(it) }
