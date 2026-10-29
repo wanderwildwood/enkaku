@@ -15,7 +15,6 @@ import androidx.compose.material.icons.automirrored.rounded.VolumeDown
 import androidx.compose.material.icons.automirrored.rounded.VolumeOff
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.outlined.Circle
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
@@ -72,6 +71,7 @@ import androidx.compose.material.icons.rounded.Usb
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.Watch
 import com.atharok.btremote.common.utils.icons.RoundPlayPause
+import com.atharok.btremote.common.utils.icons.SymbolInfo
 import com.atharok.btremote.common.utils.icons.SymbolSettings
 
 object AppIcons {
@@ -82,7 +82,7 @@ object AppIcons {
     val Help get() = Icons.AutoMirrored.Rounded.HelpOutline
     val Settings get() = SymbolSettings
     val Close get() = Icons.Rounded.Close
-    val Info get() = Icons.Outlined.Info
+    val Info get() = SymbolInfo
     val Refresh get() = Icons.Rounded.Refresh
     val MoreVert get() = Icons.Rounded.MoreVert
     val MoreHoriz get() = Icons.Rounded.MoreHoriz
