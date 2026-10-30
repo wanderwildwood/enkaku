@@ -67,6 +67,7 @@ fun KodiConnectOverlay(
             dialogTitle = stringResource(R.string.kodi_over_wifi),
             dialogText = when (val reply = state.reply) {
                 is KodiReply.Refused -> stringResource(R.string.kodi_refused, state.host.address, reply.message)
+                KodiReply.NotLocal -> stringResource(R.string.kodi_not_local, state.host.address)
                 else -> stringResource(R.string.kodi_unreachable, state.host.address)
             }
         )

@@ -48,7 +48,11 @@ fun BluetoothActivationScreen(
             if (checkBluetoothConnectPermission(context)) {
                 context.getActivity()?.let { activity ->
                     val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-                    activity.startActivity(enableBtIntent)
+                    try {
+                        activity.startActivity(enableBtIntent)
+                    } catch (_: Exception) {
+                        android.widget.Toast.makeText(context, R.string.pairing_screen_missing, android.widget.Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         },

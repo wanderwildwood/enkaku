@@ -4,7 +4,6 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -32,6 +30,7 @@ import com.atharok.btremote.ui.components.AppScaffold
 import com.atharok.btremote.ui.components.MaterialButton
 import com.atharok.btremote.ui.components.MaterialOutlinedButton
 import com.atharok.btremote.ui.components.NavigateUpIconButton
+import com.atharok.btremote.ui.components.PagedColumn
 import com.atharok.btremote.ui.components.TextMedium
 import com.atharok.btremote.ui.components.TextNormalSecondary
 import kotlinx.coroutines.CoroutineScope
@@ -46,7 +45,6 @@ fun DistantDevicePairScreen(
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current
 ) {
-    val scrollState: ScrollState = rememberScrollState()
     val pagerState: PagerState = rememberPagerState(pageCount = { MAX_PAGES })
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
 
@@ -60,7 +58,6 @@ fun DistantDevicePairScreen(
 
     StatelessDistantDevicePairScreen(
         pages = pagerContents,
-        scrollState = scrollState,
         pagerState = pagerState,
         coroutineScope = coroutineScope,
         navigateUp = navigateUp,
@@ -83,7 +80,6 @@ private fun createPages(
 @Composable
 private fun StatelessDistantDevicePairScreen(
     pages: Array<@Composable () -> Unit>,
-    scrollState: ScrollState,
     pagerState: PagerState,
     coroutineScope: CoroutineScope,
     navigateUp: () -> Unit,
@@ -109,7 +105,8 @@ private fun StatelessDistantDevicePairScreen(
                 verticalAlignment = Alignment.Top,
                 userScrollEnabled = false
             ) { pageIndex: Int ->
-                pages[pageIndex]()
+                // One step is one row, so a step taller than the screen turns in pages.
+                PagedColumn(Modifier.fillMaxSize()) { item { pages[pageIndex]() } }
             }
 
             DistantDevicePairBottomView(
@@ -171,7 +168,7 @@ private fun Page2(
                 val enableDiscoverableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE).apply {
                     putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300)
                 }
-                context.startActivity(enableDiscoverableBtIntent)
+                startOrSay(context, enableDiscoverableBtIntent)
             },
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.enabled_bluetooth_visibility),
@@ -211,7 +208,7 @@ private fun Page4(
         TextNormalSecondary(text = stringResource(id = R.string.pairing_from_a_remote_device_step_3_content_2))
         MaterialButton(
             onClick = {
-                context.startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                startOrSay(context, Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
             },
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.open_bluetooth_settings),
@@ -260,5 +257,13 @@ private fun DistantDevicePairBottomView(
             modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_normal)).weight(0.5f),
             text = if(pageIndex < MAX_PAGES - 1) stringResource(id = R.string.next) else stringResource(id = R.string.done)
         )
+    }
+}
+/** Starts a phone screen, or says plainly that this phone has none, rather than closing the app. */
+private fun startOrSay(context: Context, intent: Intent) {
+    try {
+        context.startActivity(intent)
+    } catch (_: Exception) {
+        android.widget.Toast.makeText(context, R.string.pairing_screen_missing, android.widget.Toast.LENGTH_LONG).show()
     }
 }

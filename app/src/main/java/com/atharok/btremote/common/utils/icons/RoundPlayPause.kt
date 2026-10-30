@@ -18,7 +18,7 @@ val RoundPlayPause: ImageVector
             viewportWidth = 40f,
             viewportHeight = 24f
         ).apply {
-            path(fill = SolidColor(Color(0xFFE3E3E3))) {
+            path(fill = SolidColor(Color.Black)) {
                 moveToRelative(4f, 6.82f)
                 verticalLineToRelative(10.36f)
                 curveToRelative(0f, 0.79f, 0.87f, 1.27f, 1.54f, 0.84f)
@@ -28,7 +28,7 @@ val RoundPlayPause: ImageVector
                 curveTo(4.87f, 5.55f, 4f, 6.03f, 4f, 6.82f)
                 close()
             }
-            path(fill = SolidColor(Color(0xFFE3E3E3))) {
+            path(fill = SolidColor(Color.Black)) {
                 moveToRelative(26f, 19f)
                 curveToRelative(1.1f, 0f, 2f, -0.9f, 2f, -2f)
                 verticalLineTo(7f)

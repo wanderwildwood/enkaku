@@ -336,11 +336,12 @@
     <string name="searching">Searching…</string>
     <string name="about_title">Remote %1$s</string>
     <string name="about_privacy_heading">Privacy</string>
-    <string name="about_privacy">The app connects only to the places you choose. Over Bluetooth it talks to the devices you pair, and sends them what you press and type. Over Wi-Fi it talks to the Kodi address you enter, on your own network, in plain HTTP: it sends the buttons you press and the text you type, and the Kodi username and password if you give them. That login is kept on this phone and goes nowhere else. Bluetooth is used to pair and connect; on Android 11 and older, Android also asks for location to search for devices, and it is used for nothing else. Notifications carry the remote\'s buttons, and a foreground service keeps the connection while the screen is off. There are no ads, no analytics and no tracking. Nothing is sent to the app\'s maker.</string>
+    <string name="about_privacy">The app connects only to the places you choose. Over Bluetooth it talks to the devices you pair, and sends them what you press and type. Over Wi-Fi it talks to the Kodi address you enter, on your own network, in plain HTTP: it sends the buttons you press and the text you type, and the Kodi username and password if you give them. That login is kept on this phone, sealed with a key that cannot leave it, and goes nowhere else. Plain HTTP is used only for a Kodi on your own network (a private address such as 192.168.x.x); any other address is refused before anything, the login included, is sent. Bluetooth is used to pair and connect; on Android 11 and older, Android also asks for location to search for devices, and it is used for nothing else. Notifications carry the remote\'s buttons, and a foreground service keeps the connection while the screen is off. There are no ads, no analytics and no tracking. Nothing is sent to the app\'s maker.</string>
     <string name="about_terms_heading">Terms</string>
     <string name="about_terms">This app is free software under the GNU General Public License v3 or later. It comes with no warranty: use it at your own risk.</string>
     <string name="about_after">After BT Remote by Atharok, GPL 3.0 or later.</string>
     <string name="about_bundled">Mudita Mindful Design, Material icons and Koin, Apache 2.0</string>
+    <string name="about_no_browser_address">No browser is installed. The address is %1$s.</string>
     <string name="about_source">github.com/wanderwildwood/enkaku</string>
     <!-- The donation link label, beside a drawing of a llama. A fixed phrase: a verb and an object, so the reader knows what pressing it does -->
     <string name="about_feed_the_llamas">feed the llamas</string>
@@ -364,6 +365,9 @@
     <string name="kodi_address_note">Kodi\'s address and port are under Settings › Services › Control, with Allow remote control via HTTP on. The username is kodi unless it was changed there.</string>
     <string name="kodi_login_note">Kodi asked for its username and password, from Settings › Services › Control.</string>
     <string name="kodi_address_wrong">That is not an address and port Kodi can be reached at.</string>
+    <string name="kodi_not_local">%1$s is not on this network. Kodi\'s login travels unscrambled, so Remote only talks to a Kodi on your own Wi-Fi (an address like 192.168.1.20), and nothing was sent.</string>
+    <string name="kodi_press_not_local">That Kodi is not on this network, so nothing was sent.</string>
+    <string name="pairing_screen_missing">This phone has no screen for that. Do it by hand in Settings, under Bluetooth.</string>
     <string name="kodi_connecting">Asking Kodi at %1$s.</string>
     <string name="kodi_unreachable">Nothing answered at %1$s. Kodi needs to be on, on this Wi-Fi, with Allow remote control via HTTP on.</string>
     <string name="kodi_refused">%1$s answered, but not as Kodi does: %2$s</string>
@@ -376,4 +380,16 @@
     <string name="folio_page">Page %1$d of %2$d</string>
     <string name="folio_go">Go</string>
     <string name="folio_cancel">Cancel</string>
+    <!-- Licences page, reached from About -->
+    <string name="licences_title">Licences</string>
+    <string name="licences_source_heading">Source code</string>
+    <string name="licences_source">Source: %1$s</string>
+    <string name="licences_licence_heading">Licence</string>
+    <string name="licences_licence">Remote is free software under the GNU General Public License, version 3 or later. Copyright wander wildwood, and Atharok for the parts that are theirs (BT Remote). The full text is below.</string>
+    <string name="licences_built_heading">Built with</string>
+    <string name="licences_gpl">GNU General Public License, version 3</string>
+    <string name="licences_apache">Apache License, version 2.0</string>
+    <string name="licences_ofl">SIL Open Font License, version 1.1</string>
+    <string name="licences_no_browser">No browser is installed.</string>
+    <string name="licences_close">Close</string>
 </resources>
