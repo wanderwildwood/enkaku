@@ -16,8 +16,8 @@ android {
         minSdk = 28
         targetSdk = 37
         // Remote 0.2.5, on BT Remote 1.13.0. versionCode = major * 1000000 + minor * 1000 + patch
-        versionCode = 2008
-        versionName = "0.2.8"
+        versionCode = 2009
+        versionName = "0.2.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

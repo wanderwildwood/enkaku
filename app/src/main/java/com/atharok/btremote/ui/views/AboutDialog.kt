@@ -58,9 +58,14 @@ fun AboutDialog(onDismiss: () -> Unit) {
             item {
                 Column {
                     AboutHeading(R.string.about_privacy_heading)
-                    AboutParagraph(stringResource(R.string.about_privacy))
+                    AboutParagraph(stringResource(R.string.about_privacy_1))
                 }
             }
+            // The rest of the Privacy words, a paragraph to a row, so a page ends on a whole one.
+            item { AboutParagraph(stringResource(R.string.about_privacy_2)) }
+            item { AboutParagraph(stringResource(R.string.about_privacy_3)) }
+            item { AboutParagraph(stringResource(R.string.about_privacy_4)) }
+            item { AboutParagraph(stringResource(R.string.about_privacy_5)) }
             item {
                 Column {
                     AboutHeading(R.string.about_terms_heading)
@@ -105,7 +110,7 @@ private fun AboutHeading(@StringRes text: Int) {
 
 @Composable
 private fun AboutParagraph(text: String) {
-    TextMMD(text = text, style = MaterialTheme.typography.labelSmall)
+    TextMMD(text = text, style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(bottom = 6.dp))
 }
 
 /** A web address that opens when pressed, in a row 48 dp tall. A phone with no browser gets a word, not a crash. */
