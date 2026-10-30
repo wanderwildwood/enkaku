@@ -211,7 +211,7 @@
     <string name="power">Power</string>
     <string name="menu">Menu</string>
     <string name="closed_captions">Closed captions</string>
-    <string name="screenshot">Screenshot</string>
+    <string name="screenshot">Capture</string>
     <string name="tv">TV</string>
     <string name="red_menu_button">Red</string>
     <string name="green_menu_button">Green</string>
@@ -336,7 +336,11 @@
     <string name="searching">Searching…</string>
     <string name="about_title">Remote %1$s</string>
     <string name="about_privacy_heading">Privacy</string>
-    <string name="about_privacy">The app connects only to the places you choose. Over Bluetooth it talks to the devices you pair, and sends them what you press and type. Over Wi-Fi it talks to the Kodi address you enter, on your own network, in plain HTTP: it sends the buttons you press and the text you type, and the Kodi username and password if you give them. That login is kept on this phone, sealed with a key that cannot leave it, and goes nowhere else. Plain HTTP is used only for a Kodi on your own network (a private address such as 192.168.x.x); any other address is refused before anything, the login included, is sent. Bluetooth is used to pair and connect; on Android 11 and older, Android also asks for location to search for devices, and it is used for nothing else. Notifications carry the remote\'s buttons, and a foreground service keeps the connection while the screen is off. There are no ads, no analytics and no tracking. Nothing is sent to the app\'s maker.</string>
+    <string name="about_privacy_1">The app connects only to the places you choose. Over Bluetooth it talks to the devices you pair, and sends them what you press and type.</string>
+    <string name="about_privacy_2">Over Wi-Fi it talks to the Kodi address you enter, on your own network, in plain HTTP: it sends the buttons you press and the text you type, and the Kodi username and password if you give them.</string>
+    <string name="about_privacy_3">That login is kept on this phone, sealed with a key that cannot leave it, and goes nowhere else. Plain HTTP is used only for a Kodi on your own network (a private address such as 192.168.x.x); any other address is refused before anything, the login included, is sent.</string>
+    <string name="about_privacy_4">Bluetooth is used to pair and connect; on Android 11 and older, Android also asks for location to search for devices, and it is used for nothing else.</string>
+    <string name="about_privacy_5">Notifications carry the remote\'s buttons, and a foreground service keeps the connection while the screen is off. There are no ads, no analytics and no tracking. Nothing is sent to the app\'s maker.</string>
     <string name="about_terms_heading">Terms</string>
     <string name="about_terms">This app is free software under the GNU General Public License v3 or later. It comes with no warranty: use it at your own risk.</string>
     <string name="about_after">After BT Remote by Atharok, GPL 3.0 or later.</string>
