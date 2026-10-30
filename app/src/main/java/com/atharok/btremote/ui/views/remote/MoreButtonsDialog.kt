@@ -151,6 +151,7 @@ private fun MoreButtonsLayout(
             } else {
                 MoreRemoteIconLayout(
                     properties = RemoteButtonProperties.BrightnessDownButton,
+                    label = R.string.brightness_down_short,
                     sendKeyReport = sendRemoteKeyReport,
                     modifier = Modifier.weight(1f),
                     buttonShape = buttonShape,
@@ -158,6 +159,7 @@ private fun MoreButtonsLayout(
 
                 MoreRemoteIconLayout(
                     properties = RemoteButtonProperties.BrightnessUpButton,
+                    label = R.string.brightness_up_short,
                     sendKeyReport = sendRemoteKeyReport,
                     modifier = Modifier.weight(1f),
                     buttonShape = buttonShape,
@@ -205,6 +207,7 @@ private fun MoreRemoteIconLayout(
     sendKeyReport: (ByteArray) -> Unit,
     modifier: Modifier = Modifier,
     buttonShape: Shape = RectangleShape,
+    @androidx.annotation.StringRes label: Int = properties.stringRes,
     buttonIconTint: Color = LocalContentColor.current
 ) {
     Column(
@@ -219,6 +222,6 @@ private fun MoreRemoteIconLayout(
             shape = buttonShape,
             iconTint = buttonIconTint
         )
-        TextSmall(text = stringResource(properties.stringRes))
+        TextSmall(text = stringResource(label))
     }
 }
