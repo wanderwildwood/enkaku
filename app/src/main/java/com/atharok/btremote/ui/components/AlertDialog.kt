@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.atharok.btremote.ui.theme.EInkDialog
+import com.atharok.btremote.ui.theme.HouseButton
 import com.mudita.mmd.components.buttons.OutlinedButtonMMD
 import com.mudita.mmd.components.text.TextMMD
 
@@ -122,7 +123,7 @@ fun ListDialog(
                             .fillMaxWidth()
                             .padding(vertical = 3.dp)
                             .then(
-                                if (chosen) Modifier.border(1.5.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
+                                if (chosen) Modifier.border(2.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
                                 else Modifier
                             )
                             .clickable { onConfirmation(index) }
@@ -176,10 +177,5 @@ fun DialogButton(
     action: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    OutlinedButtonMMD(
-        onClick = action,
-        modifier = modifier.height(48.dp)
-    ) {
-        TextMMD(text = text, style = MaterialTheme.typography.bodySmall, maxLines = 1)
-    }
+    HouseButton(text, action, modifier)
 }
