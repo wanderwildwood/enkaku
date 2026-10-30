@@ -211,6 +211,9 @@
     <string name="power">Power</string>
     <string name="menu">Menu</string>
     <string name="closed_captions">Closed captions</string>
+    <!-- Short labels under the round buttons of More Buttons, four to a row -->
+    <string name="brightness_down_short">Dimmer</string>
+    <string name="brightness_up_short">Brighter</string>
     <string name="screenshot">Capture</string>
     <string name="tv">TV</string>
     <string name="red_menu_button">Red</string>
