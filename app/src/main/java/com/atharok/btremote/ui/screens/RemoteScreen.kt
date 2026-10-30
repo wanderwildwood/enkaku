@@ -115,6 +115,7 @@ fun RemoteScreen(
     if (kodi != null) {
         val unreachable = stringResource(R.string.kodi_press_unreachable)
         val login = stringResource(R.string.kodi_press_login)
+        val notLocal = stringResource(R.string.kodi_press_not_local)
         val refused = stringResource(R.string.kodi_press_refused, "%s")
         LaunchedEffect(kodi) {
             // One line at a time: failures that come while a line is showing are let go but
@@ -123,6 +124,7 @@ fun RemoteScreen(
                 snackbarHostState.showSnackbar(
                     when (reply) {
                         KodiReply.Unauthorized -> login
+                        KodiReply.NotLocal -> notLocal
                         is KodiReply.Refused -> refused.replace("%s", reply.message)
                         else -> unreachable
                     }

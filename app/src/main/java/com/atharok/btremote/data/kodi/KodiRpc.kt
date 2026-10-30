@@ -19,6 +19,8 @@ sealed interface KodiReply {
     data object Unauthorized : KodiReply
     /** Nothing answered at that address in time. */
     data object Unreachable : KodiReply
+    /** The address is not on this network, so nothing was sent: the login would cross the internet in the clear. */
+    data object NotLocal : KodiReply
     /** Something answered and turned the call down. */
     data class Refused(val message: String) : KodiReply
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Kodi's web server speaks plain HTTP and nothing else, and its address is whatever the home
-    router gave it, so cleartext cannot be limited to a named host. The app reaches only the
-    Kodi address chosen in it, on the home network; nothing else is ever fetched.
+    No cleartext anywhere. Kodi's web server speaks plain HTTP and nothing else, and its address is
+    whatever the home router gave it, so the app reaches it on a plain socket (data/kodi/KodiHttp.kt)
+    and only at a private-network address (data/kodi/KodiNetwork.kt); nothing else is ever fetched.
 -->
 <network-security-config>
-    <base-config cleartextTrafficPermitted="true" />
+    <base-config cleartextTrafficPermitted="false" />
 </network-security-config>

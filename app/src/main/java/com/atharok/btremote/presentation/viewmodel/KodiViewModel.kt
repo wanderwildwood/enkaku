@@ -43,6 +43,10 @@ class KodiViewModel(
 
     private var connectJob: Job? = null
 
+    init {
+        viewModelScope.launch { store.sealStored() }
+    }
+
     fun startDiscovery() = discovery.start()
     fun stopDiscovery() = discovery.stop()
 

@@ -14,13 +14,11 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * Plain HTTP to the one Kodi chosen, on the home network. Kodi has no TLS to offer. Redirects
- * are not followed, so nothing is ever sent to any address but that one.
+ * Plain HTTP to the one Kodi chosen, on the home network only (see [KodiNetwork]). Kodi has no TLS
+ * to offer. Redirects are not followed, so nothing is ever sent to any address but that one.
  */
 class KodiClient(
     private val connectTimeoutMillis: Int = 3_000,
@@ -30,38 +28,34 @@ class KodiClient(
 
     suspend fun call(host: KodiHost, method: String, params: JsonObject? = null): KodiReply =
         withContext(Dispatchers.IO) {
-            val connection = try {
-                URL(KodiRpc.endpoint(host)).openConnection() as HttpURLConnection
-            } catch (_: Exception) {
+            // The login goes out in the clear (Kodi has no TLS), so only to a box on this network:
+            // checked before anything is sent.
+            val address = try {
+                KodiNetwork.resolveLocal(host.host)
+            } catch (_: IOException) {
                 return@withContext KodiReply.Unreachable
-            }
+            } catch (_: SecurityException) {
+                return@withContext KodiReply.Unreachable
+            } ?: return@withContext KodiReply.NotLocal
             try {
-                connection.requestMethod = "POST"
-                connection.connectTimeout = connectTimeoutMillis
-                connection.readTimeout = readTimeoutMillis
-                connection.instanceFollowRedirects = false
-                connection.useCaches = false
-                connection.doOutput = true
-                connection.setRequestProperty("Content-Type", "application/json")
-                KodiRpc.authorization(host.username, host.password)?.let {
-                    connection.setRequestProperty("Authorization", it)
+                val headers = buildMap {
+                    put("Content-Type", "application/json")
+                    KodiRpc.authorization(host.username, host.password)?.let { put("Authorization", it) }
                 }
                 val body = KodiRpc.body(ids.getAndIncrement(), method, params).toByteArray(Charsets.UTF_8)
-                connection.setFixedLengthStreamingMode(body.size)
-                connection.outputStream.use { it.write(body) }
-
-                when (val code = connection.responseCode) {
-                    HttpURLConnection.HTTP_OK ->
-                        KodiRpc.parse(connection.inputStream.bufferedReader().use { it.readText() })
-                    HttpURLConnection.HTTP_UNAUTHORIZED -> KodiReply.Unauthorized
-                    else -> KodiReply.Refused("HTTP $code")
+                val answer = KodiHttp.post(
+                    address, host.port, host.address, "/jsonrpc", headers, body,
+                    connectTimeoutMillis, readTimeoutMillis,
+                )
+                when (answer.status) {
+                    200 -> KodiRpc.parse(answer.body)
+                    401 -> KodiReply.Unauthorized
+                    else -> KodiReply.Refused("HTTP ${answer.status}")
                 }
             } catch (_: IOException) {
                 KodiReply.Unreachable
             } catch (_: SecurityException) {
                 KodiReply.Unreachable
-            } finally {
-                connection.disconnect()
             }
         }
 

@@ -30,6 +30,15 @@
     <!-- Kodi over Wi-Fi: JSON-RPC to the Kodi chosen in the app, on the home network. -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Lets the app see whether a real browser is installed, for the links in About. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
     <application
         android:name=".BtRemoteApplication"
         android:allowBackup="false"
