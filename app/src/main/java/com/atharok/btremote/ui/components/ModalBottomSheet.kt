@@ -113,8 +113,8 @@ fun TemplateModalBottomSheet(
                 )
                 PagedColumn(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 20.dp)
+                        .fillMaxSize(),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(start = 20.dp, end = 12.dp),
                 ) {
                     item { Spacer(Modifier.height(8.dp)) }
                     content()
