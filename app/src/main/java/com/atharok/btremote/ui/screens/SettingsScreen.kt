@@ -91,8 +91,8 @@ fun SettingsScreen(
         PagedColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 20.dp)
+                .padding(innerPadding),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(start = 20.dp, end = 12.dp),
         ) {
             // ---- Remote ----
 

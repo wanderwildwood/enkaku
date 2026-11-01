@@ -8,4 +8,4 @@ import androidx.compose.ui.unit.dp
  * gave them. A shadow on this panel is a band of dithered grey; a black edge reads at arm's
  * length outdoors and costs nothing to redraw.
  */
-val rimWidth: Dp = 1.5.dp
+val rimWidth: Dp = 2.dp

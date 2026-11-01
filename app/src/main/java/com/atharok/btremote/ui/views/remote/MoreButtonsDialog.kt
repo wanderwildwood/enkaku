@@ -6,9 +6,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,8 +18,10 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.atharok.btremote.R
 import com.atharok.btremote.domain.entities.remoteInput.RemoteButtonProperties
+import com.atharok.btremote.ui.components.PagedColumn
 import com.atharok.btremote.ui.components.TemplateDialog
 import com.atharok.btremote.ui.components.DialogTitle
 import com.atharok.btremote.ui.components.TextSmall
@@ -58,11 +59,11 @@ private fun MoreButtonsLayout(
     buttonShape: Shape = CircleShape,
     padding: Dp = dimensionResource(id = R.dimen.padding_large)
 ) {
-    Column(
-        modifier = modifier.verticalScroll(rememberScrollState()),
+    PagedColumn(
+        modifier = modifier.heightIn(max = 360.dp),
         verticalArrangement = Arrangement.spacedBy(padding)
     ) {
-        Row(
+        item { Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Absolute.spacedBy(padding)
         ) {
@@ -93,8 +94,8 @@ private fun MoreButtonsLayout(
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
             )
-        }
-        Row(
+        } }
+        item { Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Absolute.spacedBy(padding)
         ) {
@@ -125,8 +126,8 @@ private fun MoreButtonsLayout(
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape,
             )
-        }
-        Row(
+        } }
+        item { Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Absolute.spacedBy(padding)
         ) {
@@ -165,8 +166,8 @@ private fun MoreButtonsLayout(
                     buttonShape = buttonShape,
                 )
             }
-        }
-        Row(
+        } }
+        item { Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Absolute.spacedBy(padding)
         ) {
@@ -197,7 +198,7 @@ private fun MoreButtonsLayout(
                 modifier = Modifier.weight(1f),
                 buttonShape = buttonShape
             )
-        }
+        } }
     }
 }
 
