@@ -351,8 +351,7 @@
     <string name="about_no_browser_address">No browser is installed. The address is %1$s.</string>
     <string name="about_source">github.com/wanderwildwood/enkaku</string>
     <!-- The donation link label, beside a drawing of a llama. A fixed phrase: a verb and an object, so the reader knows what pressing it does -->
-    <string name="about_feed_the_llamas">feed the llamas</string>
-    <string name="about_no_browser">There is no browser on this phone to open that with.</string>
+    <string name="about_feed_the_llamas">Feed the llamas</string>
     <string name="about_close">Close</string>
 
     <!-- Kodi over Wi-Fi -->
