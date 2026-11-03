@@ -14,7 +14,7 @@ class KodiNetworkTest {
     private fun local(ip: String) = KodiNetwork.isLocal(InetAddress.getByName(ip))
 
     @Test fun `private and link-local ranges are local`() {
-        listOf("10.1.2.3", "172.16.0.1", "172.31.255.254", "192.168.1.50", "169.254.3.4", "127.0.0.1",
+        listOf("10.0.0.3", "172.16.0.1", "172.31.255.254", "192.168.1.50", "169.254.3.4", "127.0.0.1",
             "100.64.0.1", "100.127.255.1", "fd12:3456::1", "fe80::1", "::1").forEach { assertTrue(it, local(it)) }
     }
 

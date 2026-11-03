@@ -410,4 +410,17 @@
     <string name="privacy_rights_title">Your rights</string>
     <string name="privacy_rights">Under the GDPR you can ask to see the data held about you, to have it corrected or deleted, to limit or object to its use, to take a copy with you, to withdraw consent, and to complain to a data protection authority. Since the app keeps what it stores only on your phone, you can do most of this yourself: use Forget on the Kodi screen to remove the Kodi and its login, clear the app\'s data in Android\'s settings, or uninstall the app. A server of your own is yours: what it keeps is up to you.</string>
     <!-- /shared-about -->
+    <string name="kodi_save_backup">Save the Kodi box to a file</string>
+    <string name="kodi_save_backup_note">Its name, address, port and login name, and whether the remote opens on Kodi, in one file you pick. Not the password.</string>
+    <string name="kodi_restore_backup">Restore the Kodi box from a file</string>
+    <string name="kodi_restore_backup_armed">Restore: the Kodi box remembered now is replaced by the file\'s. Tap again to choose it</string>
+    <string name="kodi_restore_backup_note">The password is asked for again, unless it is the same box and login already remembered here.</string>
+    <string name="kodi_backup_saved">Kodi box saved.</string>
+    <string name="kodi_backup_not_saved">The file could not be written.</string>
+    <string name="kodi_restore_done">Restored. The remote now remembers %1$s.</string>
+    <string name="kodi_restore_done_none">Restored. The file held no Kodi box, so none is remembered.</string>
+    <string name="kodi_restore_not_ours">That file is not a backup from this app. Nothing was changed.</string>
+    <string name="kodi_restore_newer">That backup was made by a newer version of this app. Update the app and try again. Nothing was changed.</string>
+    <string name="kodi_restore_damaged">That backup is damaged, so it was not used. Nothing was changed.</string>
+    <string name="kodi_restore_unreadable">That file could not be read. Nothing was changed.</string>
 </resources>

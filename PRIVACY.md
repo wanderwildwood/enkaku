@@ -19,7 +19,10 @@ through Android's own service discovery); it announces nothing about itself.
 **On the phone** it keeps its settings, the devices you marked as favorites and the one it
 connects to on its own, and the last Kodi it reached: its name, address, and the username and
 password you gave it. Nothing else is stored. Uninstalling it removes all of that, and
-"Forget" on the Kodi screen removes the Kodi.
+"Forget" on the Kodi screen removes the Kodi. **Save the Kodi box to a file** (Settings) writes
+its name, address, port and username, never the password, to one file you choose through the
+phone's own file picker, and only when you ask; **Restore** reads such a file the same way and
+checks all of it before it changes anything.
 
 **Terms:** Remote is free software under the GNU General Public License v3 or later. It comes with no warranty: use it at your own risk.
 

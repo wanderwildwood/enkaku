@@ -1,6 +1,9 @@
 package com.atharok.btremote.ui.screens
 
 import android.content.Context
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,7 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,6 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.atharok.btremote.R
 import com.atharok.btremote.common.utils.AppIcons
+import com.atharok.btremote.data.kodi.KodiBackup
+import com.atharok.btremote.data.kodi.KodiBackupFiles
+import com.atharok.btremote.data.kodi.KodiStore
 import com.atharok.btremote.domain.entities.RemoteNavigationEntity
 import com.atharok.btremote.domain.entities.remoteInput.VolumePhysicalButtonAction
 import com.atharok.btremote.domain.entities.remoteInput.keyboard.KeyboardLanguage
@@ -40,7 +48,10 @@ import com.atharok.btremote.ui.views.AboutDialog
 import com.atharok.btremote.ui.components.PagedColumn
 import com.mudita.mmd.components.switcher.SwitchMMD
 import com.mudita.mmd.components.text.TextMMD
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 /** The speeds offered for the pointer and the wheel, where BT Remote had a slider. */
 private val SPEEDS = listOf(0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 2f, 2.5f, 3f, 4f, 5f)
@@ -57,8 +68,37 @@ fun SettingsScreen(
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel = koinViewModel(),
+    kodiStore: KodiStore = koinInject(),
     context: Context = LocalContext.current
 ) {
+    val scope = rememberCoroutineScope()
+    val saveKodi = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            val ok = KodiBackupFiles.save(context, kodiStore, uri)
+            Toast.makeText(context, context.getString(if (ok) R.string.kodi_backup_saved else R.string.kodi_backup_not_saved), Toast.LENGTH_LONG).show()
+        }
+    }
+    val restoreKodi = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            val message = when (val r = KodiBackupFiles.restore(context, kodiStore, uri)) {
+                is KodiBackupFiles.Result.Done ->
+                    if (r.name == null) context.getString(R.string.kodi_restore_done_none)
+                    else context.getString(R.string.kodi_restore_done, r.name)
+                is KodiBackupFiles.Result.Refused -> context.getString(
+                    when (r.kind) {
+                        KodiBackup.BackupException.Kind.NOT_A_BACKUP -> R.string.kodi_restore_not_ours
+                        KodiBackup.BackupException.Kind.NEWER -> R.string.kodi_restore_newer
+                        KodiBackup.BackupException.Kind.DAMAGED -> R.string.kodi_restore_damaged
+                    }
+                )
+                KodiBackupFiles.Result.Unreadable -> context.getString(R.string.kodi_restore_unreadable)
+            }
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        }
+    }
+
     val appearanceSettings by settingsViewModel
         .appearanceSettingsFlow.collectAsStateWithLifecycle(AppearanceSettings())
 
@@ -275,6 +315,27 @@ fun SettingsScreen(
                     onCheckedChange = { settingsViewModel.saveHideBluetoothActivationButton(it) }
                 )
             }
+
+            // ---- Kodi box backup ----
+
+            item { Heading(R.string.kodi_over_wifi) }
+
+            item {
+                Setting(
+                    title = stringResource(id = R.string.kodi_save_backup),
+                    value = stringResource(id = R.string.kodi_save_backup_note),
+                    onClick = { runCatching { saveKodi.launch("kodi-box-${java.time.LocalDate.now()}.json") } }
+                )
+            }
+
+            item {
+                ArmedSetting(
+                    title = stringResource(id = R.string.kodi_restore_backup),
+                    armedTitle = stringResource(id = R.string.kodi_restore_backup_armed),
+                    value = stringResource(id = R.string.kodi_restore_backup_note),
+                    onConfirm = { runCatching { restoreKodi.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) } }
+                )
+            }
         }
     }
 
@@ -314,6 +375,38 @@ private fun Setting(
         TextMMD(text = title, style = MaterialTheme.typography.bodyMedium)
         TextMMD(text = value, style = MaterialTheme.typography.labelSmall)
     }
+}
+
+/** How long a row that asks for a second tap stays armed. */
+private const val ARMED_MS = 6_000L
+
+/** The first tap arms it and it says what a second does; a second within six seconds does it. */
+@Composable
+private fun ArmedSetting(
+    title: String,
+    armedTitle: String,
+    value: String,
+    onConfirm: () -> Unit
+) {
+    var armed by remember { mutableStateOf(false) }
+    LaunchedEffect(armed) {
+        if (armed) {
+            delay(ARMED_MS)
+            armed = false
+        }
+    }
+    Setting(
+        title = if (armed) armedTitle else title,
+        value = value,
+        onClick = {
+            if (armed) {
+                armed = false
+                onConfirm()
+            } else {
+                armed = true
+            }
+        }
+    )
 }
 
 @Composable

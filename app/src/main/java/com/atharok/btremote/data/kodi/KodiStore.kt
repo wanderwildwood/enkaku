@@ -63,6 +63,13 @@ class KodiStore(private val context: Context) {
         context.dataStore.edit { if (it[startsOnKodiKey] != value) it[startsOnKodiKey] = value }
     }
 
+    /** The remembered Kodi now, or null. */
+    suspend fun lastKodi(): KodiHost? = try {
+        lastKodiFlow.first()
+    } catch (_: Exception) {
+        null
+    }
+
     suspend fun forgetLastKodi() {
         context.dataStore.edit { it.remove(lastKodiKey) }
     }
