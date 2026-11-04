@@ -1,0 +1,14 @@
+{
+  "uniqueId": "bt-remote",
+  "name": "BT Remote, the app this began from",
+  "description": "Remote is a fork of BT Remote: the Bluetooth remote, keyboard and mouse, and much of the code behind the screens, come from it.",
+  "developers": [
+    {
+      "name": "Atharok"
+    }
+  ],
+  "website": "https://gitlab.com/Atharok/BtRemote",
+  "licenses": [
+    "GPL-3.0-or-later"
+  ]
+}
