@@ -33,10 +33,10 @@ import com.atharok.btremote.ui.components.PagedColumn
 import com.atharok.btremote.ui.components.SettingsIconButton
 import com.atharok.btremote.ui.components.TextMedium
 import com.atharok.btremote.ui.components.TextNormalSecondary
+import com.atharok.btremote.ui.theme.rememberArmedFlag
 import com.atharok.btremote.ui.views.KodiAddressDialog
 import com.atharok.btremote.ui.views.KodiConnectOverlay
 import com.atharok.btremote.ui.views.KodiHostItemView
-import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -207,19 +207,13 @@ private fun LazyListScope.heading(@StringRes text: Int) {
     }
 }
 
-/** How long a row that asks for a second tap stays armed. */
-private const val ARMED_MS = 6_000L
-
-/** It asks in its own face: the first tap arms it, a second within six seconds forgets. */
+/**
+ * It asks in its own face: the first tap arms it, a second forgets. It stays armed until the next
+ * other touch, Back or leaving.
+ */
 @Composable
 private fun ForgetRow(name: String, forget: () -> Unit) {
-    var armed by remember { mutableStateOf(false) }
-    LaunchedEffect(armed) {
-        if (armed) {
-            delay(ARMED_MS)
-            armed = false
-        }
-    }
+    var armed by rememberArmedFlag()
     TextMedium(
         text = stringResource(if (armed) R.string.kodi_forget_armed else R.string.kodi_forget, name),
         modifier = Modifier

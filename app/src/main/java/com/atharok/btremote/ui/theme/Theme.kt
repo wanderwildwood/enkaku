@@ -42,5 +42,7 @@ fun BtRemoteTheme(
         }
     }
 
-    ThemeMMD(colorScheme = monochrome, content = content)
+    ThemeMMD(colorScheme = monochrome) {
+        ArmedScope(content = content)
+    }
 }
