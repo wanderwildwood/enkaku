@@ -40,7 +40,7 @@ the app's own internal messages to itself. None of them sends anything anywhere.
 <!-- shared-about privacy section -->
 ## Who we are
 
-Remote is made by wander wildwood, an independent developer: one person, not a company. wander wildwood is the data controller for anything the app itself handles, and that is very little. Remote keeps what you put in it on your phone and sends nothing to the developer, so the developer holds no data about you.
+Remote is made by wander wildwood, an independent developer: one person, not a company. wander wildwood is the data controller for anything the app itself handles, and that is very little. What you put in Remote stays on your phone. The only things that go out are the ones described above: your button presses, key presses, pointer movement and typed text, to the device you pair over Bluetooth or to the Kodi you choose (with its login, if it asks for one). The developer receives nothing and holds no data about you.
 
 ## How to contact us
 
