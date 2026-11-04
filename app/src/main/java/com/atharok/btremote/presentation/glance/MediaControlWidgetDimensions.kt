@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.atharok.btremote.ui.theme.HouseTypeFloor
 
 class MediaControlWidgetDimensions {
 
@@ -44,7 +45,7 @@ class MediaControlWidgetDimensions {
                 padding = 12.dp,
                 minIconSize = iconSize - 8.dp,
                 maxIconSize = iconSize,
-                minTextSp = 14.sp,
+                minTextSp = HouseTypeFloor,
                 maxTextSp = 16.sp
             )
         }

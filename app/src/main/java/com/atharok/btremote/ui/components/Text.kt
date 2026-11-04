@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import com.atharok.btremote.ui.theme.HOUSE_TYPE_FLOOR_SP
 import kotlin.math.max
 
 // ---- Adaptive ----
@@ -49,8 +50,8 @@ fun AdaptiveText(
         val targetFontSize = with(density) {
             containerWidth.times(percent).coerceAtMost(containerHeight.times(percent)).toSp()
         }
-        // Never below 14 sp, unless the box itself is smaller than that.
-        val minFontSize = max(targetFontSize.value / 10f, minOf(targetFontSize.value, 14f)).sp
+        // Never below the house floor (16 sp), unless the box itself is smaller than that.
+        val minFontSize = max(targetFontSize.value / 10f, minOf(targetFontSize.value, HOUSE_TYPE_FLOOR_SP)).sp
         val stepSize = max(minFontSize.value, 0.0001f).sp
         BasicText(
             text = text,
