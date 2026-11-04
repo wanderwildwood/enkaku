@@ -16,7 +16,7 @@ through Android's own service discovery); it announces nothing about itself.
 
 **The Kodi login** (username and password) is sent only to the Kodi address you entered, and over plain HTTP, because Kodi offers nothing else. Anyone on that network who can see its traffic could read it, so use it on a network you trust. The app refuses to send it to any address that is not on a private network (192.168.x.x, 10.x.x.x, 172.16-31.x.x, link-local, or a Tailscale-style 100.64.x.x address): nothing is sent to such an address, and the app says so. On the phone it is kept sealed with a key held in the phone's keystore, not as plain text.
 
-**On the phone** it keeps its settings, the devices you marked as favourites and the one it
+**On the phone** it keeps its settings, the devices you marked as favorites and the one it
 connects to on its own, and the last Kodi it reached: its name, address, and the username and
 password you gave it. Nothing else is stored. Uninstalling it removes all of that, and
 "Forget" on the Kodi screen removes the Kodi.
@@ -36,3 +36,31 @@ Remote runs none). The support library adds `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMI
 the app's own internal messages to itself. None of them sends anything anywhere.
 
 **Backups:** Android does not back up Remote's settings or devices; they stay on the phone.
+
+<!-- shared-about privacy section -->
+## Who we are
+
+Remote is made by wander wildwood, an independent developer: one person, not a company. wander wildwood is the data controller for anything the app itself handles, and that is very little. Remote keeps what you put in it on your phone and sends nothing to the developer, so the developer holds no data about you.
+
+## How to contact us
+
+Write to email@wanderthe.dev about your data, this policy or anything else. The same address is in the app, under About.
+
+## Your rights
+
+If you are in the EU, the EEA or the UK, the GDPR gives you the right to:
+
+- see the personal data held about you (access)
+- have it corrected (rectification) or deleted (erasure)
+- limit how it is used (restriction)
+- object to its use (objection)
+- get a copy to take elsewhere (portability)
+- withdraw your consent at any time, where something rests on it
+- complain to a data protection supervisory authority, for example the one where you live
+
+Similar laws elsewhere, such as the CCPA in California, give you the right to know, delete and correct, and to opt out of the sale or sharing of your data. Nothing from Remote is sold or shared.
+
+Since Remote keeps what it stores only on your phone, you can exercise most of these rights yourself: use Forget on the Kodi screen to remove the Kodi and its login, clear the app's data in Android's settings, or uninstall the app, which deletes all of it. For anything you cannot do yourself, write to the address above.
+
+If you point Remote at a server of your own, what that server keeps is yours to manage.
+<!-- /shared-about privacy section -->
