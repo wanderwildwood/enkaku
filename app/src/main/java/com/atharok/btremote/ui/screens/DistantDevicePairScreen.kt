@@ -106,7 +106,7 @@ private fun StatelessDistantDevicePairScreen(
                 userScrollEnabled = false
             ) { pageIndex: Int ->
                 // One step is one row, so a step taller than the screen turns in pages.
-                PagedColumn(Modifier.fillMaxSize()) { item { pages[pageIndex]() } }
+                PagedColumn(Modifier.fillMaxSize(), showCutRow = true) { item { pages[pageIndex]() } }
             }
 
             DistantDevicePairBottomView(

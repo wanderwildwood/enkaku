@@ -115,6 +115,7 @@ fun TemplateModalBottomSheet(
                     modifier = Modifier
                         .fillMaxSize(),
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(start = 20.dp, end = 12.dp),
+                    showCutRow = true,
                 ) {
                     item { Spacer(Modifier.height(8.dp)) }
                     content()

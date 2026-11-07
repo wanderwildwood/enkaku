@@ -82,7 +82,7 @@ fun KodiScreen(
             SettingsIconButton(navigateToSettings)
         }
     ) { innerPadding ->
-        PagedColumn(modifier = Modifier.padding(innerPadding)) {
+        PagedColumn(modifier = Modifier.padding(innerPadding), showCutRow = true) {
             if (bluetoothMissing) {
                 item {
                     TextNormalSecondary(

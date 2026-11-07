@@ -306,7 +306,8 @@ private fun DevicesListView(
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     PagedColumn(
-        modifier = modifier.padding(contentPadding)
+        modifier = modifier.padding(contentPadding),
+        showCutRow = true,
     ) {
         // Kodi over Wi-Fi comes first, so it is in reach on a phone with no Bluetooth to speak of:
         // the box last used is one press, the rest are behind the next row.

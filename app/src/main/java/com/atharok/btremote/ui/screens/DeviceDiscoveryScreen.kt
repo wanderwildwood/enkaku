@@ -208,7 +208,8 @@ private fun DiscoveredDevicesListView(
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     PagedColumn(
-        modifier = modifier.padding(contentPadding)
+        modifier = modifier.padding(contentPadding),
+        showCutRow = true,
     ) {
         item {
             Column(
