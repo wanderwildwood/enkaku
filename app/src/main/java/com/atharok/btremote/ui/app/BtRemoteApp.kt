@@ -314,6 +314,11 @@ fun BtRemoteApp(
                 // ---- Lifecycle ----
 
                 OnLifecycleEvent { _, event ->
+                    // Back on screen (unlocked or reopened): if Bluetooth dropped the registration
+                    // while the phone was locked, register again before the error shows.
+                    if(event == Lifecycle.Event.ON_START) {
+                        appScopeViewModel.ensureHidProfileRegistered()
+                    }
                     // If the app goes into the background
                     if(event == Lifecycle.Event.ON_STOP) {
                         // If we are in the device selection view

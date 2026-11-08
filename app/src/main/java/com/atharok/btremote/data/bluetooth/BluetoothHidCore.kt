@@ -7,6 +7,8 @@ import android.bluetooth.BluetoothHidDeviceAppSdpSettings
 import android.bluetooth.BluetoothProfile
 import android.bluetooth.BluetoothProfile.ServiceListener
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.RequiresPermission
 import com.atharok.btremote.common.utils.DELAY_BETWEEN_KEY_PRESSES_IN_MILLIS
 import com.atharok.btremote.common.utils.KEYBOARD_REPORT_ID
@@ -31,19 +33,70 @@ class BluetoothHidCore(
     private val _isBluetoothServiceRunning: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isBluetoothServiceRunning: StateFlow<Boolean> = _isBluetoothServiceRunning
 
+    // True while registered or still trying to be; false only once the tries have run out,
+    // which is when the screen offers Retry.
     private val _isBluetoothHidProfileRegistered: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isBluetoothHidProfileRegistered: StateFlow<Boolean> = _isBluetoothHidProfileRegistered
 
     private var autoConnectDeviceAddress: String = ""
 
+    // Bluetooth callbacks arrive on a binder thread; everything here runs on the main thread.
+    private val mainHandler = Handler(Looper.getMainLooper())
+
+    private val registration = HidRegistration(
+        register = {
+            val hidDevice = bluetoothHidDevice
+            hidDevice != null && checkBluetoothConnectPermission(context) &&
+                hidDevice.registerApp(hidSettings, null, null, Runnable::run, callback)
+        },
+        unregister = {
+            val hidDevice = bluetoothHidDevice
+            hidDevice != null && checkBluetoothConnectPermission(context) && hidDevice.unregisterApp()
+        },
+        schedule = { delayMillis, action -> mainHandler.postDelayed(action, delayMillis) },
+        onGiveUp = { _isBluetoothHidProfileRegistered.value = false }
+    )
+
+    // The host Remote was last connected to, kept until the person disconnects, so a connection
+    // the phone dropped by itself (the screen locked) is made again once Remote is registered.
+    @Volatile private var lastHostAddress: String? = null
+    private var reconnectAddress: String? = null
+
     // ---- HID Profile ----
 
     fun startBluetoothHidProfile(autoConnectDeviceAddress: String) {
         this.autoConnectDeviceAddress = autoConnectDeviceAddress
-        adapter?.getProfileProxy(context, serviceListener, BluetoothProfile.HID_DEVICE)
+        val hidDevice = bluetoothHidDevice
+        if (hidDevice != null) {
+            // Already has Bluetooth's HID service: register only if it is not, or trying to be.
+            if (!_isBluetoothHidProfileRegistered.value) startRegistration()
+        } else {
+            adapter?.getProfileProxy(context, serviceListener, BluetoothProfile.HID_DEVICE)
+        }
+    }
+
+    /**
+     * Back on screen (unlocked, or reopened): if Bluetooth dropped the registration and the
+     * tries ran out while the phone was locked, try again now, before the error shows.
+     */
+    fun ensureRegistered() {
+        if (_isBluetoothServiceRunning.value && !_isBluetoothHidProfileRegistered.value &&
+            bluetoothHidDevice != null) {
+            reconnectAddress = lastHostAddress
+            startRegistration()
+        }
+    }
+
+    private fun startRegistration() {
+        _isBluetoothHidProfileRegistered.value = true
+        registration.start()
     }
 
     fun stopBluetoothHidProfile() {
+        registration.cancel()
+        mainHandler.removeCallbacksAndMessages(null)
+        lastHostAddress = null
+        reconnectAddress = null
         bluetoothHidDevice?.let { hidDevice ->
             if (checkBluetoothConnectPermission(context)) {
                 disconnectDevice(hidDevice)
@@ -62,16 +115,23 @@ class BluetoothHidCore(
         override fun onServiceConnected(i: Int, bluetoothProfile: BluetoothProfile?) {
             if(i == BluetoothProfile.HID_DEVICE) {
                 bluetoothHidDevice = bluetoothProfile as? BluetoothHidDevice?
-                bluetoothHidDevice?.let { hidDevice ->
-                    if (checkBluetoothConnectPermission(context)) {
-                        _isBluetoothHidProfileRegistered.value = hidDevice.registerApp(hidSettings, null, null, Runnable::run, callback)
-                    }
+                if (bluetoothHidDevice != null && checkBluetoothConnectPermission(context)) {
+                    startRegistration()
                 }
             }
             _isBluetoothServiceRunning.value = true
         }
 
-        override fun onServiceDisconnected(i: Int) {}
+        // Bluetooth's HID service went away (Bluetooth restarting). The proxy is dead; Android
+        // connects it again by itself, and onServiceConnected registers afresh.
+        override fun onServiceDisconnected(i: Int) {
+            if (i == BluetoothProfile.HID_DEVICE) {
+                registration.cancel()
+                bluetoothHidDevice = null
+                bluetoothDevice = null
+                _deviceHidConnectionState.value = DeviceHidConnectionState()
+            }
+        }
     }
 
     // ---- BluetoothHidDevice.Callback implementation ----
@@ -80,17 +140,36 @@ class BluetoothHidCore(
 
         override fun onAppStatusChanged(pluggedDevice: BluetoothDevice?, registered: Boolean) {
             super.onAppStatusChanged(pluggedDevice, registered)
-            _isBluetoothHidProfileRegistered.value = registered
-            if(registered && isMacAddress(autoConnectDeviceAddress)) {
-                connectDevice(autoConnectDeviceAddress)
-            }
+            mainHandler.post { onAppStatus(registered) }
         }
 
         override fun onConnectionStateChanged(device: BluetoothDevice?, state: Int) {
             super.onConnectionStateChanged(device, state)
             if (checkBluetoothConnectPermission(context)) {
+                if (state == BluetoothProfile.STATE_CONNECTED) {
+                    device?.address?.let { lastHostAddress = it }
+                }
                 _deviceHidConnectionState.value = DeviceHidConnectionState(state, device?.name ?: "")
             }
+        }
+    }
+
+    private fun onAppStatus(registered: Boolean) {
+        if (bluetoothHidDevice == null) return
+        if (registered) {
+            registration.confirmed()
+            _isBluetoothHidProfileRegistered.value = true
+            val address = reconnectAddress ?: autoConnectDeviceAddress
+            reconnectAddress = null
+            if (isMacAddress(address)) {
+                connectDevice(address)
+            }
+        } else if (!registration.isTrying) {
+            // Bluetooth dropped the registration (the screen locked): register again, and go
+            // back to the host that was connected. While trying, a "not registered" is only the
+            // old registration being cleared.
+            reconnectAddress = lastHostAddress
+            startRegistration()
         }
     }
 
@@ -108,6 +187,8 @@ class BluetoothHidCore(
     }
 
     fun disconnectDevice(): Boolean {
+        lastHostAddress = null
+        reconnectAddress = null
         if (checkBluetoothConnectPermission(context)) {
             bluetoothHidDevice?.let {
                 return disconnectDevice(it)

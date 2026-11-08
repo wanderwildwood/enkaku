@@ -86,7 +86,7 @@
     <string name="connection">Connection</string>
     <string name="bluetooth_device_connecting_message">Connecting to \"%1$s\" device…</string>
     <string name="bluetooth_device_disconnecting_message">Disconnecting \"%1$s\"…</string>
-    <string name="bluetooth_failed_to_register_app_message">Failure to register the application. Please ensure that no other Bluetooth service is running in the background. If the error persists, it\'s possible that the Bluetooth process was unexpectedly interrupted. To fix this issue, please disable the Bluetooth on your device, then re-enable it.</string>
+    <string name="bluetooth_failed_to_register_app_message">Remote could not register with Bluetooth as a keyboard and mouse. Tap Retry. If it still fails, turn Bluetooth off and on again in the phone\'s settings, then open Remote.</string>
     <string name="bluetooth_failed_to_connect_to_device">The attempt to connect to the remote device failed.</string>
     <string name="bluetooth_failed_try_again">Please try again.</string>
 

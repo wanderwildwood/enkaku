@@ -38,6 +38,10 @@ class AppScopeUseCase(
         return bluetoothRepository.isBluetoothHidProfileRegistered()
     }
 
+    fun ensureHidProfileRegistered() {
+        bluetoothRepository.ensureHidProfileRegistered()
+    }
+
     fun getDeviceHidConnectionState(): StateFlow<DeviceHidConnectionState> {
         return bluetoothRepository.getDeviceHidConnectionState()
     }

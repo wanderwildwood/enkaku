@@ -59,6 +59,10 @@ class BluetoothRepositoryImpl(
         bluetoothHidCore.stopBluetoothHidProfile()
     }
 
+    override fun ensureHidProfileRegistered() {
+        bluetoothHidCore.ensureRegistered()
+    }
+
     override fun isBluetoothServiceRunning(): StateFlow<Boolean> {
         return bluetoothHidCore.isBluetoothServiceRunning
     }

@@ -34,6 +34,8 @@ interface BluetoothRepository {
 
     fun stopHidProfile()
 
+    fun ensureHidProfileRegistered()
+
     fun isBluetoothServiceRunning(): StateFlow<Boolean>
 
     fun isBluetoothHidProfileRegistered(): StateFlow<Boolean>
