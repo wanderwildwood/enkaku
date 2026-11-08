@@ -1,5 +1,6 @@
 package com.atharok.btremote.ui.screens
 
+import com.atharok.btremote.ui.components.DottedRule
 import android.bluetooth.BluetoothHidDevice
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -245,14 +246,17 @@ private fun DiscoveredDevicesListView(
             }
         }
         items(devices) { device ->
-            DeviceItemView(
-                name = device.name,
-                macAddress = device.macAddress,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { connectToDevice(device.macAddress) }
-                    .padding(dimensionResource(id = R.dimen.padding_max))
-            )
+            Column {
+                DeviceItemView(
+                    name = device.name,
+                    macAddress = device.macAddress,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { connectToDevice(device.macAddress) }
+                        .padding(dimensionResource(id = R.dimen.padding_max))
+                )
+                DottedRule()
+            }
         }
     }
 }

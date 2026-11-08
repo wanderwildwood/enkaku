@@ -1,5 +1,6 @@
 package com.atharok.btremote.ui.screens
 
+import com.atharok.btremote.ui.components.DottedRule
 import android.bluetooth.BluetoothHidDevice
 import android.content.Context
 import androidx.activity.compose.BackHandler
@@ -373,21 +374,24 @@ private fun DevicesListView(
                 )
             }
             items(favoriteDevices) { device ->
-                DeviceItemView(
-                    name = device.name,
-                    macAddress = device.macAddress,
-                    isAutoConnectDeviceAddress = autoConnectDeviceAddress == device.macAddress,
-                    autoConnect = { autoConnect(InternalDevice(device.name, device.macAddress)) },
-                    isFavoriteDevice = true,
-                    onFavoriteDeviceChanged = {
-                        saveFavoriteDevice(device.macAddress)
-                    },
-                    unpair = { unpairDevice(InternalDevice(device.name, device.macAddress)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { connectDevice(device.macAddress) }
-                        .padding(dimensionResource(id = R.dimen.padding_max))
-                )
+                Column {
+                    DeviceItemView(
+                        name = device.name,
+                        macAddress = device.macAddress,
+                        isAutoConnectDeviceAddress = autoConnectDeviceAddress == device.macAddress,
+                        autoConnect = { autoConnect(InternalDevice(device.name, device.macAddress)) },
+                        isFavoriteDevice = true,
+                        onFavoriteDeviceChanged = {
+                            saveFavoriteDevice(device.macAddress)
+                        },
+                        unpair = { unpairDevice(InternalDevice(device.name, device.macAddress)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { connectDevice(device.macAddress) }
+                            .padding(dimensionResource(id = R.dimen.padding_max))
+                    )
+                    DottedRule()
+                }
             }
         }
 
@@ -406,21 +410,24 @@ private fun DevicesListView(
                 )
             }
             items(nonFavoriteDevices) { device ->
-                DeviceItemView(
-                    name = device.name,
-                    macAddress = device.macAddress,
-                    isAutoConnectDeviceAddress = autoConnectDeviceAddress == device.macAddress,
-                    autoConnect = { autoConnect(InternalDevice(device.name, device.macAddress)) },
-                    isFavoriteDevice = false,
-                    onFavoriteDeviceChanged = {
-                        saveFavoriteDevice(device.macAddress)
-                    },
-                    unpair = { unpairDevice(InternalDevice(device.name, device.macAddress)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { connectDevice(device.macAddress) }
-                        .padding(dimensionResource(id = R.dimen.padding_max))
-                )
+                Column {
+                    DeviceItemView(
+                        name = device.name,
+                        macAddress = device.macAddress,
+                        isAutoConnectDeviceAddress = autoConnectDeviceAddress == device.macAddress,
+                        autoConnect = { autoConnect(InternalDevice(device.name, device.macAddress)) },
+                        isFavoriteDevice = false,
+                        onFavoriteDeviceChanged = {
+                            saveFavoriteDevice(device.macAddress)
+                        },
+                        unpair = { unpairDevice(InternalDevice(device.name, device.macAddress)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { connectDevice(device.macAddress) }
+                            .padding(dimensionResource(id = R.dimen.padding_max))
+                    )
+                    DottedRule()
+                }
             }
         }
 

@@ -1,5 +1,7 @@
 package com.atharok.btremote.ui.screens
 
+import androidx.compose.foundation.layout.Column
+import com.atharok.btremote.ui.components.DottedRule
 import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -142,13 +144,16 @@ fun KodiScreen(
                 }
             }
             items(found) { host ->
-                KodiHostItemView(
-                    host = host,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { viewModel.connect(viewModel.withSavedLogin(host)) }
-                        .padding(dimensionResource(R.dimen.padding_max))
-                )
+                Column {
+                    KodiHostItemView(
+                        host = host,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.connect(viewModel.withSavedLogin(host)) }
+                            .padding(dimensionResource(R.dimen.padding_max))
+                    )
+                    DottedRule()
+                }
             }
 
             item {
