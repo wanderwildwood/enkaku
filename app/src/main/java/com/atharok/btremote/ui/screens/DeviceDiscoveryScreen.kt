@@ -180,14 +180,9 @@ private fun StatelessBluetoothScanningScreen(
         // Dialog / ModalBottomSheet
         when {
             bluetoothDeviceHidConnectionState.state == BluetoothHidDevice.STATE_CONNECTING -> {
-                LoadingDialog(
-                    title = stringResource(id = R.string.connection),
-                    message = stringResource(
-                        id = R.string.bluetooth_device_connecting_message,
-                        bluetoothDeviceHidConnectionState.deviceName
-                    ),
-                    buttonText = stringResource(id = android.R.string.cancel),
-                    onButtonClick = disconnectDevice
+                com.atharok.btremote.ui.components.ConnectingDialog(
+                    deviceName = bluetoothDeviceHidConnectionState.deviceName,
+                    onCancel = disconnectDevice
                 )
             }
             showHelpBottomSheet -> {

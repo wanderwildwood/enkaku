@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -160,6 +162,33 @@ fun LoadingDialog(
         onDismissRequest = onButtonClick
     )
 }
+
+/**
+ * Connecting to a host. Android never gives up on a host that does not answer, which is what a
+ * computer does when it no longer knows the phone as a keyboard (it forgot it, or it looked while
+ * Remote was not registered). So after a while the words change to say what fixes it.
+ */
+@Composable
+fun ConnectingDialog(deviceName: String, onCancel: () -> Unit) {
+    var slow by androidx.compose.runtime.remember(deviceName) { androidx.compose.runtime.mutableStateOf(false) }
+    androidx.compose.runtime.LaunchedEffect(deviceName) {
+        kotlinx.coroutines.delay(CONNECT_PATIENCE_MILLIS)
+        slow = true
+    }
+    LoadingDialog(
+        title = androidx.compose.ui.res.stringResource(id = com.atharok.btremote.R.string.connection),
+        message = if (slow) {
+            androidx.compose.ui.res.stringResource(id = com.atharok.btremote.R.string.bluetooth_device_no_answer_message, deviceName)
+        } else {
+            androidx.compose.ui.res.stringResource(id = com.atharok.btremote.R.string.bluetooth_device_connecting_message, deviceName)
+        },
+        buttonText = androidx.compose.ui.res.stringResource(id = android.R.string.cancel),
+        onButtonClick = onCancel
+    )
+}
+
+/** A host that answers does so in a few seconds; past this it is not going to. */
+private const val CONNECT_PATIENCE_MILLIS = 15_000L
 
 @Composable
 fun DialogTitle(text: String) {

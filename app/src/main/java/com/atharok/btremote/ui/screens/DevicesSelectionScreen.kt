@@ -76,6 +76,7 @@ fun DevicesSelectionScreen(
     isBluetoothEnabled: Boolean,
     isBluetoothServiceRunning: Boolean,
     isBluetoothHidProfileRegistered: Boolean,
+    isRegistering: Boolean,
     bluetoothDeviceHidConnectionState: DeviceHidConnectionState,
     closeApp: () -> Unit,
     navigateToRemoteScreen: (deviceName: String) -> Unit,
@@ -89,6 +90,15 @@ fun DevicesSelectionScreen(
     kodiViewModel: KodiViewModel = koinViewModel(),
     context: Context = LocalContext.current
 ) {
+    var registeringSlowly by remember { mutableStateOf(false) }
+    LaunchedEffect(isRegistering) {
+        registeringSlowly = false
+        if (isRegistering) {
+            kotlinx.coroutines.delay(2_000L)
+            registeringSlowly = true
+        }
+    }
+
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState: SnackbarHostStateMMD = remember { SnackbarHostStateMMD() }
 
@@ -167,6 +177,17 @@ fun DevicesSelectionScreen(
         overlayView = {
             // Dialog / ModalBottomSheet
             when {
+                // Still asking Bluetooth, which after an update or a lock can take a while: said
+                // after a moment (a quick registration never shows it), so nobody taps a device
+                // that cannot be reached yet and waits on "Connecting" for nothing.
+                isBluetoothServiceRunning && isRegistering && registeringSlowly -> {
+                    LoadingDialog(
+                        title = stringResource(id = R.string.bluetooth_getting_ready),
+                        message = stringResource(id = R.string.bluetooth_getting_ready_message),
+                        buttonText = stringResource(id = R.string.close),
+                        onButtonClick = closeApp
+                    )
+                }
                 isBluetoothServiceRunning && !isBluetoothHidProfileRegistered -> {
                     SimpleDialog(
                         confirmButtonText = stringResource(id = R.string.retry),
@@ -180,13 +201,9 @@ fun DevicesSelectionScreen(
                     )
                 }
                 bluetoothDeviceHidConnectionState.state == BluetoothHidDevice.STATE_CONNECTING -> {
-                    LoadingDialog(
-                        title = stringResource(id = R.string.connection),
-                        message = stringResource(id = R.string.bluetooth_device_connecting_message, bluetoothDeviceHidConnectionState.deviceName),
-                        buttonText = stringResource(id = android.R.string.cancel),
-                        onButtonClick = {
-                            viewModel.disconnectDevice()
-                        }
+                    com.atharok.btremote.ui.components.ConnectingDialog(
+                        deviceName = bluetoothDeviceHidConnectionState.deviceName,
+                        onCancel = { viewModel.disconnectDevice() }
                     )
                 }
                 showHelpBottomSheet -> {

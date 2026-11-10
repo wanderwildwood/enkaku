@@ -38,6 +38,10 @@ class BluetoothHidCore(
     private val _isBluetoothHidProfileRegistered: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isBluetoothHidProfileRegistered: StateFlow<Boolean> = _isBluetoothHidProfileRegistered
 
+    // True from the first try until Bluetooth confirms, the tries run out, or it is stopped.
+    private val _isRegistering: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isRegistering: StateFlow<Boolean> = _isRegistering
+
     private var autoConnectDeviceAddress: String = ""
 
     // Bluetooth callbacks arrive on a binder thread; everything here runs on the main thread.
@@ -54,7 +58,10 @@ class BluetoothHidCore(
             hidDevice != null && checkBluetoothConnectPermission(context) && hidDevice.unregisterApp()
         },
         schedule = { delayMillis, action -> mainHandler.postDelayed(action, delayMillis) },
-        onGiveUp = { _isBluetoothHidProfileRegistered.value = false }
+        onGiveUp = {
+            _isRegistering.value = false
+            _isBluetoothHidProfileRegistered.value = false
+        }
     )
 
     // The host Remote was last connected to, kept until the person disconnects, so a connection
@@ -89,11 +96,13 @@ class BluetoothHidCore(
 
     private fun startRegistration() {
         _isBluetoothHidProfileRegistered.value = true
+        _isRegistering.value = true
         registration.start()
     }
 
     fun stopBluetoothHidProfile() {
         registration.cancel()
+        _isRegistering.value = false
         mainHandler.removeCallbacksAndMessages(null)
         lastHostAddress = null
         reconnectAddress = null
@@ -127,6 +136,7 @@ class BluetoothHidCore(
         override fun onServiceDisconnected(i: Int) {
             if (i == BluetoothProfile.HID_DEVICE) {
                 registration.cancel()
+                _isRegistering.value = false
                 bluetoothHidDevice = null
                 bluetoothDevice = null
                 _deviceHidConnectionState.value = DeviceHidConnectionState()
@@ -158,6 +168,7 @@ class BluetoothHidCore(
         if (bluetoothHidDevice == null) return
         if (registered) {
             registration.confirmed()
+            _isRegistering.value = false
             _isBluetoothHidProfileRegistered.value = true
             val address = reconnectAddress ?: autoConnectDeviceAddress
             reconnectAddress = null

@@ -40,6 +40,9 @@ interface BluetoothRepository {
 
     fun isBluetoothHidProfileRegistered(): StateFlow<Boolean>
 
+    /** True while Remote is still asking Bluetooth to register it, before it is confirmed. */
+    fun isRegistering(): StateFlow<Boolean>
+
     fun connectDevice(deviceAddress: String): Boolean
 
     fun disconnectDevice(): Boolean

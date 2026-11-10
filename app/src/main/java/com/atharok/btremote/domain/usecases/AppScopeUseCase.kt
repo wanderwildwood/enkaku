@@ -38,6 +38,8 @@ class AppScopeUseCase(
         return bluetoothRepository.isBluetoothHidProfileRegistered()
     }
 
+    fun isRegistering(): StateFlow<Boolean> = bluetoothRepository.isRegistering()
+
     fun ensureHidProfileRegistered() {
         bluetoothRepository.ensureHidProfileRegistered()
     }

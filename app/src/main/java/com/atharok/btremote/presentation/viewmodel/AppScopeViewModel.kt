@@ -29,6 +29,8 @@ class AppScopeViewModel(
 
     val isBluetoothHidProfileRegistered: StateFlow<Boolean> get() = useCase.isBluetoothHidProfileRegistered()
 
+    val isRegistering: StateFlow<Boolean> get() = useCase.isRegistering()
+
     val deviceHidConnectionState: StateFlow<DeviceHidConnectionState> get() = useCase.getDeviceHidConnectionState()
 
     /** Back on screen: register again if Bluetooth dropped Remote while the phone was locked. */

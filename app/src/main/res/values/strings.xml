@@ -86,6 +86,9 @@
     <string name="connection">Connection</string>
     <string name="bluetooth_device_connecting_message">Connecting to \"%1$s\" device…</string>
     <string name="bluetooth_device_disconnecting_message">Disconnecting \"%1$s\"…</string>
+    <string name="bluetooth_device_no_answer_message">\"%1$s\" has not answered. If it was paired or changed while Remote was closed, it may no longer know this phone as a keyboard: on %1$s, remove the phone from its Bluetooth devices, then pair it again while Remote is open.</string>
+    <string name="bluetooth_getting_ready">Getting ready</string>
+    <string name="bluetooth_getting_ready_message">Remote is asking Bluetooth to treat it as a keyboard and mouse. After an update, or with the phone locked, this can take up to half a minute.</string>
     <string name="bluetooth_failed_to_register_app_message">Remote could not register with Bluetooth as a keyboard and mouse. Tap Retry. If it still fails, turn Bluetooth off and on again in the phone\'s settings, then open Remote.</string>
     <string name="bluetooth_failed_to_connect_to_device">The attempt to connect to the remote device failed.</string>
     <string name="bluetooth_failed_try_again">Please try again.</string>
@@ -360,7 +363,7 @@
     <string name="kodi_find">Find Kodi on this network</string>
     <string name="kodi_last_used">Last used</string>
     <string name="kodi_on_this_network">On this network</string>
-    <string name="kodi_none_found">No Kodi has answered yet. Kodi shows itself here when Settings › Services › General › Announce services to other systems is on.</string>
+    <string name="kodi_none_found">No Kodi has answered yet. Check that this phone has Wi-Fi on and is on the same network as Kodi. Kodi shows itself here when Settings › Services › General › Announce services to other systems is on.</string>
     <string name="kodi_enter_address">Enter an address</string>
     <string name="kodi_forget">Forget %1$s</string>
     <string name="kodi_forget_armed">Forget %1$s — tap again</string>

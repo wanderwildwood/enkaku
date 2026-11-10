@@ -87,6 +87,7 @@ fun BtRemoteApp(
 
                 val isBluetoothServiceRunning: Boolean by appScopeViewModel.isBluetoothServiceRunning.collectAsStateWithLifecycle()
                 val isBluetoothHidProfileRegistered: Boolean by appScopeViewModel.isBluetoothHidProfileRegistered.collectAsStateWithLifecycle()
+                val isRegistering: Boolean by appScopeViewModel.isRegistering.collectAsStateWithLifecycle()
                 val bluetoothDeviceHidConnectionState: DeviceHidConnectionState by appScopeViewModel.deviceHidConnectionState.collectAsStateWithLifecycle()
 
                 var isBluetoothEnabled: Boolean by remember { mutableStateOf(appScopeViewModel.isBluetoothEnabled) }
@@ -204,6 +205,7 @@ fun BtRemoteApp(
                             isBluetoothEnabled = isBluetoothEnabled,
                             isBluetoothServiceRunning = isBluetoothServiceRunning,
                             isBluetoothHidProfileRegistered = isBluetoothHidProfileRegistered,
+                            isRegistering = isRegistering,
                             bluetoothDeviceHidConnectionState = bluetoothDeviceHidConnectionState,
                             closeApp = { context.getActivity()?.moveTaskToBack(true) },
                             navigateToRemoteScreen = {
