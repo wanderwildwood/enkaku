@@ -5,7 +5,7 @@ A Bluetooth remote, keyboard and mouse for an E Ink phone, and a Wi-Fi remote fo
 *Enkaku* means at a distance: the plain word for "remote".
 
 Built for the [Mudita Kompakt](https://mudita.com/products/kompakt/), whose 4.3" panel has
-sixteen greys and a slow redraw.
+sixteen grays and a slow redraw.
 
 ## Screenshots
 
@@ -33,11 +33,11 @@ the mouse and brightness have no Kodi equivalent and are left out.
 ## What changed for E Ink
 
 **One appearance.** The light, dark, black and wallpaper themes are gone. The panel can
-only show dark marks on a light ground, and a theme setting it cannot honour is a setting
+only show dark marks on a light ground, and a theme setting it cannot honor is a setting
 that lies.
 
 **Black edges instead of shadows.** Every button is white inside a black rim. A shadow on
-this panel is a band of dithered grey.
+this panel is a band of dithered gray.
 
 **Mudita's type and components.** Lato at [MMD](https://github.com/mudita/MMD)'s sizes; top
 bars, switches, lists, menus, text fields and buttons drawn the way MMD draws them; settings
@@ -77,7 +77,7 @@ by design.
 See [PRIVACY.md](PRIVACY.md). In short: it talks only to the device you pair it with, over
 Bluetooth, or to the Kodi you choose on your home Wi-Fi, and to nothing else.
 
-## Licence
+## License
 
 **GNU General Public License v3.0 or later.** See [LICENSE](LICENSE).
 
