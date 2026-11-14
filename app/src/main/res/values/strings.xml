@@ -423,4 +423,6 @@
     <string name="kodi_restore_newer">That backup was made by a newer version of this app. Update the app and try again. Nothing was changed.</string>
     <string name="kodi_restore_damaged">That backup is damaged, so it was not used. Nothing was changed.</string>
     <string name="kodi_restore_unreadable">That file could not be read. Nothing was changed.</string>
+    <string name="settings_dark">Dark mode</string>
+    <string name="settings_dark_note">White on black, in this app. Home has one switch for every app.</string>
 </resources>
