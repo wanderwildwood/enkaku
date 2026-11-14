@@ -27,6 +27,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import com.atharok.btremote.R
 import com.atharok.btremote.common.utils.AppIcons
+import com.atharok.btremote.ui.theme.DarkWindow
 import com.atharok.btremote.ui.theme.rimWidth
 
 /**
@@ -47,6 +48,7 @@ fun EInkSheet(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
     ) {
+        DarkWindow()
         val view = LocalView.current
         SideEffect {
             (view.parent as? DialogWindowProvider)?.window?.let { window ->
@@ -89,6 +91,7 @@ fun TemplateModalBottomSheet(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
+        DarkWindow()
         val view = LocalView.current
         SideEffect {
             // No dim, as in EInkSheet above, so the status-bar icons stay dark.

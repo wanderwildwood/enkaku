@@ -46,6 +46,7 @@ import com.atharok.btremote.ui.components.BasicIconButton
 import com.atharok.btremote.ui.components.ListDialog
 import com.atharok.btremote.ui.views.AboutDialog
 import com.atharok.btremote.ui.components.PagedColumn
+import com.atharok.btremote.ui.theme.DarkMode
 import com.mudita.mmd.components.switcher.SwitchMMD
 import com.mudita.mmd.components.text.TextMMD
 import kotlinx.coroutines.delay
@@ -297,6 +298,15 @@ fun SettingsScreen(
                     title = stringResource(id = R.string.full_screen),
                     checked = appearanceSettings.useFullScreen,
                     onCheckedChange = { settingsViewModel.saveUseFullScreen(it) }
+                )
+            }
+
+            item {
+                SettingsSwitch(
+                    title = stringResource(id = R.string.settings_dark),
+                    note = stringResource(id = R.string.settings_dark_note),
+                    checked = DarkMode.on,
+                    onCheckedChange = { DarkMode.set(context, it) }
                 )
             }
 
