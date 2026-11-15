@@ -4,8 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import com.atharok.btremote.common.utils.DEFAULT_TURN_WITH_PHONE
 import com.atharok.btremote.ui.app.BtRemoteApp
+import com.atharok.btremote.ui.components.Notice
+import com.atharok.btremote.ui.components.onEachPress
 
 class MainActivity : ComponentActivity() {
     private val turner = TurnWithPhone(this)
@@ -17,8 +22,16 @@ class MainActivity : ComponentActivity() {
         turner.set(DEFAULT_TURN_WITH_PHONE)
         enableEdgeToEdge()
         setContent {
-            BtRemoteApp(turnWithPhone = { turner.set(it) })
+            // A notice along the foot (drawn by BtRemoteApp) stays until the next press.
+            Box(Modifier.fillMaxSize().onEachPress { Notice.clear() }) {
+                BtRemoteApp(turnWithPhone = { turner.set(it) })
+            }
         }
+    }
+
+    override fun dispatchKeyEvent(event: android.view.KeyEvent): Boolean {
+        Notice.pressed(event)
+        return super.dispatchKeyEvent(event)
     }
 
     override fun onResume() {

@@ -5,7 +5,10 @@ import android.content.Context
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.exclude
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +36,7 @@ import com.atharok.btremote.domain.entities.settings.AppearanceSettings
 import com.atharok.btremote.presentation.services.BluetoothHidService
 import com.atharok.btremote.presentation.viewmodel.AppScopeViewModel
 import com.atharok.btremote.ui.components.CheckBluetoothStateChanged
+import com.atharok.btremote.ui.components.NoticeStrip
 import com.atharok.btremote.ui.components.OnLifecycleEvent
 import com.atharok.btremote.ui.navigation.AppNavDestination
 import com.atharok.btremote.ui.navigation.AppNavHost
@@ -78,6 +82,7 @@ fun BtRemoteApp(
     BtRemoteTheme(
         appearance = appearance
     ) {
+        Box(Modifier.fillMaxSize()) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.surface
@@ -332,6 +337,10 @@ fun BtRemoteApp(
                     }
                 }
             }
+        }
+        // A notice along the foot stays until the next press (see Notice); drawn in the
+        // app's theme, over whatever page is open.
+        NoticeStrip(Modifier.align(Alignment.BottomCenter).navigationBarsPadding())
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.atharok.btremote.ui.screens
 
 import android.content.Context
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -82,7 +81,8 @@ fun SettingsScreen(
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
             val ok = KodiBackupFiles.save(context, kodiStore, uri)
-            Toast.makeText(context, context.getString(if (ok) R.string.kodi_backup_saved else R.string.kodi_backup_not_saved), Toast.LENGTH_LONG).show()
+            // Said along the foot until the next press, not in a toast that goes by itself.
+            com.atharok.btremote.ui.components.Notice.say(context.getString(if (ok) R.string.kodi_backup_saved else R.string.kodi_backup_not_saved))
         }
     }
     val restoreKodi = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -101,7 +101,7 @@ fun SettingsScreen(
                 )
                 KodiBackupFiles.Result.Unreadable -> context.getString(R.string.kodi_restore_unreadable)
             }
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+            com.atharok.btremote.ui.components.Notice.say(message)
         }
     }
 

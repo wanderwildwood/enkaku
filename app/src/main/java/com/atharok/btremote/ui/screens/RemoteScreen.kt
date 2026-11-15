@@ -121,7 +121,8 @@ fun RemoteScreen(
             // One line at a time: failures that come while a line is showing are let go but
             // for the latest, so a box that has gone away is said once, not at every press.
             remoteViewModel.kodiFailures.collect { reply ->
-                snackbarHostState.showSnackbar(
+                // Along the foot until the next press (see Notice), not a line that goes by itself.
+                com.atharok.btremote.ui.components.Notice.say(
                     when (reply) {
                         KodiReply.Unauthorized -> login
                         KodiReply.NotLocal -> notLocal

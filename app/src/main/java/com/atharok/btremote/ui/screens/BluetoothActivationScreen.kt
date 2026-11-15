@@ -51,7 +51,7 @@ fun BluetoothActivationScreen(
                     try {
                         activity.startActivity(enableBtIntent)
                     } catch (_: Exception) {
-                        android.widget.Toast.makeText(context, R.string.pairing_screen_missing, android.widget.Toast.LENGTH_LONG).show()
+                        com.atharok.btremote.ui.components.Notice.say(context.getString(R.string.pairing_screen_missing))
                     }
                 }
             }

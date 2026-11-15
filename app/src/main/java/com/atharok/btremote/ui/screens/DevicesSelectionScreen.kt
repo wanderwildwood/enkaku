@@ -227,7 +227,7 @@ fun DevicesSelectionScreen(
                         title = deviceToUnpair?.name ?: "",
                         unpairDevice = {
                             val result = viewModel.unpairDevice(deviceToUnpair?.macAddress)
-                            coroutineScope.launch { snackbarHostState.showSnackbar(result.message) }
+                            com.atharok.btremote.ui.components.Notice.say(result.message)
                             deviceToUnpair = null
                         },
                         onDismissRequest = {

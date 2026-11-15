@@ -264,6 +264,6 @@ private fun startOrSay(context: Context, intent: Intent) {
     try {
         context.startActivity(intent)
     } catch (_: Exception) {
-        android.widget.Toast.makeText(context, R.string.pairing_screen_missing, android.widget.Toast.LENGTH_LONG).show()
+        com.atharok.btremote.ui.components.Notice.say(context.getString(R.string.pairing_screen_missing))
     }
 }
