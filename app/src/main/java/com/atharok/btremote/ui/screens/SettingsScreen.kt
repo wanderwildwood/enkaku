@@ -53,6 +53,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.state.ToggleableState
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.toggleableState
 
 /** The speeds offered for the pointer and the wheel, where BT Remote had a slider. */
 private val SPEEDS = listOf(0.25f, 0.5f, 0.75f, 1f, 1.25f, 1.5f, 2f, 2.5f, 3f, 4f, 5f)
@@ -464,6 +469,7 @@ private fun SettingsSwitch(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .semantics { role = Role.Switch; toggleableState = ToggleableState(checked) }
             .clickable { onCheckedChange(!checked) }
             .padding(vertical = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
