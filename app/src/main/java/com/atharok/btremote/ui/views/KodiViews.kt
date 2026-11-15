@@ -34,6 +34,11 @@ import com.atharok.btremote.ui.components.SimpleDialog
 import com.atharok.btremote.ui.components.TemplateDialog
 import com.mudita.mmd.components.text.TextMMD
 import com.mudita.mmd.components.text_field.TextFieldMMD
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
 /**
  * What stands over the list while a Kodi is being reached: the words while it is asked, and
@@ -111,9 +116,20 @@ fun KodiAddressDialog(
         }
     }
 
+    val addressField = remember { FocusRequester() }
+    val passwordField = remember { FocusRequester() }
+    val keyboard = LocalSoftwareKeyboardController.current
+
     TemplateDialog(
         title = { DialogTitle(text = stringResource(R.string.kodi_address_title)) },
         content = {
+            // The cursor starts where the typing is: the password when Kodi asked for a login,
+            // the address otherwise. Asked from inside the dialog, a frame after it is drawn.
+            LaunchedEffect(Unit) {
+                withFrameNanos { }
+                runCatching { (if (askingForLogin) passwordField else addressField).requestFocus() }
+                keyboard?.show()
+            }
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 TextMMD(
                     text = stringResource(if (askingForLogin) R.string.kodi_login_note else R.string.kodi_address_note),
@@ -123,7 +139,7 @@ fun KodiAddressDialog(
                     TextFieldMMD(
                         value = address,
                         onValueChange = { address = it; showError = false },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).focusRequester(addressField),
                         label = { TextMMD(text = stringResource(R.string.kodi_address), style = MaterialTheme.typography.labelSmall) },
                         placeholder = { TextMMD(text = "192.168.1.20", style = MaterialTheme.typography.labelSmall) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
@@ -150,7 +166,7 @@ fun KodiAddressDialog(
                 TextFieldMMD(
                     value = password,
                     onValueChange = { password = it },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().focusRequester(passwordField),
                     label = { TextMMD(text = stringResource(R.string.kodi_password), style = MaterialTheme.typography.labelSmall) },
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
