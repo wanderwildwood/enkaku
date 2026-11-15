@@ -23,6 +23,10 @@ import com.atharok.btremote.ui.theme.EInkDialog
 import com.atharok.btremote.ui.theme.HouseButton
 import com.mudita.mmd.components.buttons.OutlinedButtonMMD
 import com.mudita.mmd.components.text.TextMMD
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 
 /**
  * BT Remote's dialogs, on the house dialog rather than Material's: no dimmed backdrop, no
@@ -128,6 +132,7 @@ fun ListDialog(
                                 if (chosen) Modifier.border(2.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
                                 else Modifier
                             )
+                            .semantics { role = Role.RadioButton; selected = chosen }
                             .clickable { onConfirmation(index) }
                             .padding(horizontal = 12.dp, vertical = 10.dp)
                     )
