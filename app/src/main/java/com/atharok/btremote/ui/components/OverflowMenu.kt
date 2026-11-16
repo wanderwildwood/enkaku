@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.atharok.btremote.R
 import com.atharok.btremote.common.utils.AppIcons
+import com.atharok.btremote.ui.theme.DarkWindow
 import com.mudita.mmd.components.menus.DropdownMenuItemMMD
 import com.mudita.mmd.components.menus.DropdownMenuMMD
 import com.mudita.mmd.components.text.TextMMD
@@ -28,6 +29,7 @@ private fun OverflowMenu(
         expanded = showMenu,
         onDismissRequest = { showMenu = false }
     ) {
+        DarkWindow()
         content { showMenu = false }
     }
 }
