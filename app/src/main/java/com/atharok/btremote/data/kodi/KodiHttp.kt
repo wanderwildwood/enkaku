@@ -18,7 +18,16 @@ class HttpAnswer(val status: Int, val body: String)
  * No redirect is followed: there is only the one answer.
  */
 object KodiHttp {
-    private const val MAX_BODY = 4 * 1024 * 1024
+    /*
+     * Limits on what a box may send back. Remote asks Kodi only small things (a ping, the
+     * active players, one info label, a key or a line of text), whose answers are well under a
+     * kilobyte; even Kodi's biggest real answers, a whole movie or song library listed with all
+     * its fields, run to a few megabytes, and Remote never asks for those. Anything past these
+     * is not Kodi, and the request fails as unreachable rather than the app filling its memory.
+     */
+    internal const val MAX_BODY = 4 * 1024 * 1024
+    internal const val MAX_HEAD = 16 * 1024
+    internal const val MAX_LINE = 1024
 
     fun post(
         address: InetAddress,
@@ -50,7 +59,7 @@ object KodiHttp {
 
     /** Reads a status line, headers and a body (chunked, by length, or to the end). */
     fun readAnswer(input: InputStream): HttpAnswer {
-        val head = readHead(input) ?: throw IOException("no answer")
+        val head = readHead(input)
         val lines = head.split("\r\n")
         val status = lines.first().split(' ').getOrNull(1)?.toIntOrNull() ?: throw IOException("not HTTP")
         val headers = lines.drop(1).mapNotNull { l ->
@@ -69,15 +78,15 @@ object KodiHttp {
         return HttpAnswer(status, String(bytes, Charsets.UTF_8))
     }
 
-    private fun readHead(input: InputStream): String? {
+    private fun readHead(input: InputStream): String {
         val sb = StringBuilder()
-        while (sb.length < 16 * 1024) {
+        while (sb.length < MAX_HEAD) {
             val b = input.read()
-            if (b < 0) return null
+            if (b < 0) throw IOException("no answer")
             sb.append(b.toChar())
             if (sb.endsWith("\r\n\r\n")) return sb.substring(0, sb.length - 4)
         }
-        return null
+        throw IOException("head too long")
     }
 
     private fun readExactly(input: InputStream, n: Int): ByteArray {
@@ -108,8 +117,10 @@ object KodiHttp {
         while (true) {
             val line = readLine(input).substringBefore(';').trim()
             val size = line.toIntOrNull(16) ?: throw IOException("bad chunk")
+            // A negative size would otherwise get past the check below and fail outside IOException.
+            if (size < 0) throw IOException("bad chunk")
             if (size == 0) break
-            if (out.size() + size > MAX_BODY) throw IOException("too big")
+            if (size > MAX_BODY - out.size()) throw IOException("too big") // not a sum: it could overflow
             out.write(readExactly(input, size))
             readLine(input) // the CRLF after the chunk
         }
@@ -123,6 +134,7 @@ object KodiHttp {
             if (b < 0) throw IOException("cut short")
             if (b == '\n'.code) break
             if (b != '\r'.code) sb.append(b.toChar())
+            if (sb.length > MAX_LINE) throw IOException("line too long")
         }
         return sb.toString()
     }
