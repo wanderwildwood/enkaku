@@ -56,6 +56,11 @@ class KodiClient(
                 KodiReply.Unreachable
             } catch (_: SecurityException) {
                 KodiReply.Unreachable
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (_: RuntimeException) {
+                // Anything else a broken answer could raise is a refusal, not a crash.
+                KodiReply.Refused("not JSON-RPC")
             }
         }
 

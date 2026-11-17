@@ -57,9 +57,17 @@ object KodiRpc {
                 val message = try {
                     error.jsonObject["message"]?.jsonPrimitive?.contentOrNull
                 } catch (_: Exception) { null }
-                return KodiReply.Refused(message ?: error.toString())
+                return KodiReply.Refused(shown(message ?: error.toString()))
             }
         }
         return KodiReply.Ok(json["result"] ?: JsonNull)
     }
+
+    /** What the box said, as it goes into a dialog: one line, no control characters, and short. */
+    internal fun shown(text: String): String {
+        val plain = text.map { if (it.isISOControl()) ' ' else it }.joinToString("").trim()
+        return if (plain.length <= MAX_SHOWN) plain else plain.take(MAX_SHOWN).trimEnd() + "…"
+    }
+
+    private const val MAX_SHOWN = 120
 }

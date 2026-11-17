@@ -55,6 +55,10 @@ class KodiRemote(private val client: KodiClient) {
                     val host = _session.value ?: continue
                     val reply = client.run(host, command)
                     if (reply !is KodiReply.Ok && _session.value == host) _failures.tryEmit(reply)
+                } catch (e: kotlinx.coroutines.CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    // One bad press does not end the queue for every press after it.
                 } finally {
                     pending.decrementAndGet()
                 }
