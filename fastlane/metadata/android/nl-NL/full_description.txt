@@ -8,7 +8,7 @@ Kenmerken:
 - Geen extra app nodig op je Android TV-apparaat door gebruik van het hid-protocol;
 - Moderne en aanpasbare vormgeving;
 - Ontwikkeld met behulp van Kotlin, Jetpack Compose en Material 3;
-- Privacy staat hoog in het vaandel en er worden geen gegevens verzameld (sterker nog: internettoegang is uitgeschakeld);
+- Privacy staat hoog in het vaandel en er worden geen gegevens verzameld;
 - Geen reclame;
 - Open source.
 

@@ -8,7 +8,7 @@ Soporte para mouse y teclado integrados.
 No se requiere instalación de aplicaciones adicionales en tu dispositivo Android TV gracias al protocolo HID.
 Interfaz de usuario moderna y receptiva.
 Desarrollado con Kotlin, Jetpack Compose y Material 3.
-Enfocado en la privacidad sin recopilación de datos (permiso de internet deshabilitado).
+Enfocado en la privacidad sin recopilación de datos.
 Sin anuncios.
 Código abierto.
 

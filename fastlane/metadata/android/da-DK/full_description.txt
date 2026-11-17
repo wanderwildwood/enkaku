@@ -7,7 +7,7 @@ Funktioner:
 -Ingen yderligere app på dit Android TV, takket være HID protokollen.
 -Moderne og hurtig brugerflade.
 -Udviklet sammen med Kotlin, Jetpack Compose, and Material 3.
--Privatliv i fokus, uden indsamling af data. (Internetadgang deaktiveret)
+-Privatliv i fokus, uden indsamling af data.
 -Ingen reklamer.
 - Open source.
 

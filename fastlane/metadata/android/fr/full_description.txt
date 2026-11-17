@@ -8,7 +8,7 @@ Fonctionnalités :
 - Aucune application à installer sur votre appareil Android TV grâce au protocole HID.
 - Interface utilisateur moderne et réactive.
 - Développé avec Kotlin, Jetpack Compose et Material 3.
-- Respect de la vie privée sans collecte de données (permission internet désactivée).
+- Respect de la vie privée sans collecte de données.
 - Aucune publicité.
 - Open source.
 

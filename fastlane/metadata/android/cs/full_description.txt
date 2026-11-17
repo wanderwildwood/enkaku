@@ -8,7 +8,7 @@ Funkce:
 - Na vaší Android TV není třeba instalovat žádnou další aplikace díky HID protokolu.
 - Moderní a intuitivní rozhraní.
 - Vyvinuto za použití Kotlinu, Jetpack Compose a Material 3.
-- Zaměřeno na soukromí bez jakéhokoliv sběru dat (není povolen přístup k internetu).
+- Zaměřeno na soukromí bez jakéhokoliv sběru dat.
 - Bez reklam.
 - Open source.
 

@@ -8,7 +8,7 @@ Android TV'nizde kolayca gezinmek ve etkileşimde bulunmak için akıllı telefo
 - HID protokolü sayesinde Android TV cihazınıza ek uygulama kurulumu gerekmez.
 - Modern ve duyarlı kullanıcı arayüzü.
 - Kotlin, Jetpack Compose ve Material 3 ile geliştirildi.
-- Veri toplama olmadan gizlilik odaklı (internet izni devre dışı).
+- Veri toplama olmadan gizlilik odaklı.
 - Reklam yok.
 - Açık kaynak.
 
