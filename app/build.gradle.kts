@@ -17,7 +17,7 @@ android {
         applicationId = "com.wanderwildwood.enkaku"
         minSdk = 28
         targetSdk = 37
-        // Remote 0.2.5, on BT Remote 1.13.0. versionCode = major * 1000000 + minor * 1000 + patch
+        // Built on BT Remote 1.13.0. versionCode = major * 1000000 + minor * 1000 + patch
         versionCode = 2028
         versionName = "0.2.28"
 

@@ -7,9 +7,6 @@ import com.atharok.btremote.domain.entities.settings.ThemeEntity
 const val NOTIFICATION_ID = 1
 const val NOTIFICATION_CHANNEL_ID = "notificationChannelId"
 
-const val SOURCE_CODE_LINK = "https://gitlab.com/Atharok/BtRemote"
-const val WEB_SITE_LINK = "https://atharok.gitlab.io/site/projects/bt-remote/"
-
 const val DATA_STORE_PREFERENCES_SETTINGS_NAME = "dataStoreSettings"
 
 // ---- Settings default value ----

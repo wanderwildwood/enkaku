@@ -32,9 +32,9 @@ the mouse and brightness have no Kodi equivalent and are left out.
 
 ## What changed for E Ink
 
-**One appearance.** The light, dark, black and wallpaper themes are gone. The panel can
-only show dark marks on a light ground, and a theme setting it cannot honor is a setting
-that lies.
+**One appearance.** The light, dark, black and wallpaper themes are gone. In their place is
+one Dark mode switch in Settings, which also follows Home's dark mode or the phone's own dark
+setting where it has one.
 
 **Black edges instead of shadows.** Every button is white inside a black rim. A shadow on
 this panel is a band of dithered gray.
