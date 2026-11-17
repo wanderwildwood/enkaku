@@ -12,11 +12,12 @@ class QuickSettingsTileService: TileService() {
 
     override fun onStartListening() {
         super.onStartListening()
+        val tile = qsTile ?: return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            qsTile.subtitle = getString(R.string.open)
+            tile.subtitle = getString(R.string.open)
         }
-        qsTile.state = Tile.STATE_INACTIVE
-        qsTile.updateTile()
+        tile.state = Tile.STATE_INACTIVE
+        tile.updateTile()
     }
 
     override fun onClick() {

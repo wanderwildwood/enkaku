@@ -158,6 +158,9 @@ class BluetoothHidCore(
             if (checkBluetoothConnectPermission(context)) {
                 if (state == BluetoothProfile.STATE_CONNECTED) {
                     device?.address?.let { lastHostAddress = it }
+                    // A connection the other device made: the buttons send to it too, not only
+                    // to one this phone connected to itself.
+                    if (device != null) mainHandler.post { bluetoothDevice = device }
                 }
                 _deviceHidConnectionState.value = DeviceHidConnectionState(state, device?.name ?: "")
             }

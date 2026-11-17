@@ -29,7 +29,7 @@ class BluetoothLocalData(
                     DeviceEntity(
                         name = device.name ?: "null",
                         macAddress = device.address ?: "null",
-                        category = device.bluetoothClass.majorDeviceClass
+                        category = (device.bluetoothClass?.majorDeviceClass ?: android.bluetooth.BluetoothClass.Device.Major.UNCATEGORIZED)
                     )
                 )
             }
