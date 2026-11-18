@@ -19,7 +19,8 @@ import java.net.InetAddress
  * looked for too, for a box that announces only the one. Android's own mDNS does the
  * listening, so the app holds no multicast lock of its own.
  *
- * Android before 14 resolves one service at a time, so they are resolved in turn.
+ * Android before 14 resolves one service at a time, so they are resolved in turn, and a new
+ * search waits for a resolve the last one left on its way rather than having its own refused.
  */
 class KodiDiscovery(private val nsdManager: NsdManager) {
 
@@ -32,7 +33,10 @@ class KodiDiscovery(private val nsdManager: NsdManager) {
     private val lock = Any()
     private val listeners = mutableListOf<NsdManager.DiscoveryListener>()
     private val waiting = ArrayDeque<NsdServiceInfo>()
+    // A resolve is on its way (from this search or the one before), with its number and start.
     private var isResolving = false
+    private var resolveNumber = 0
+    private var resolvingSince = 0L
     private var generation = 0
 
     fun start() {
@@ -41,7 +45,8 @@ class KodiDiscovery(private val nsdManager: NsdManager) {
             generation++
             _found.value = emptyList()
             waiting.clear()
-            isResolving = false
+            // One that never answered is not waited for forever.
+            if (isResolving && System.nanoTime() - resolvingSince > STUCK_RESOLVE_NANOS) isResolving = false
             _isSearching.value = true
             for (type in SERVICE_TYPES) {
                 val listener = Listener(type, generation)
@@ -61,7 +66,6 @@ class KodiDiscovery(private val nsdManager: NsdManager) {
             stopLocked()
             generation++
             waiting.clear()
-            isResolving = false
             _isSearching.value = false
         }
     }
@@ -92,16 +96,18 @@ class KodiDiscovery(private val nsdManager: NsdManager) {
         if (isResolving) return
         val next = waiting.removeFirstOrNull() ?: return
         isResolving = true
+        val number = ++resolveNumber
+        resolvingSince = System.nanoTime()
         val forGeneration = generation
         try {
             @Suppress("DEPRECATION")
             nsdManager.resolveService(next, object : NsdManager.ResolveListener {
                 override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
-                    resolved(null, forGeneration)
+                    resolved(null, forGeneration, number)
                 }
 
                 override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
-                    resolved(serviceInfo, forGeneration)
+                    resolved(serviceInfo, forGeneration, number)
                 }
             })
         } catch (_: Exception) {
@@ -110,10 +116,15 @@ class KodiDiscovery(private val nsdManager: NsdManager) {
         }
     }
 
-    private fun resolved(info: NsdServiceInfo?, forGeneration: Int) {
+    private fun resolved(info: NsdServiceInfo?, forGeneration: Int, number: Int) {
         synchronized(lock) {
-            if (forGeneration != generation) return
-            isResolving = false
+            // Android's resolver is free again once this one answers, even for an old search,
+            // so the current search's next box goes on.
+            if (number == resolveNumber) isResolving = false
+            if (forGeneration != generation) {
+                resolveNextLocked()
+                return
+            }
             val address = info?.let(::addressOf)
             if (info != null && address != null && info.port > 0) {
                 val host = KodiHost(name = info.serviceName, host = address, port = info.port)
@@ -173,5 +184,6 @@ class KodiDiscovery(private val nsdManager: NsdManager) {
         const val JSON_RPC_TYPE = "_xbmc-jsonrpc-h._tcp"
         const val HTTP_TYPE = "_http._tcp"
         val SERVICE_TYPES = listOf(JSON_RPC_TYPE, HTTP_TYPE)
+        const val STUCK_RESOLVE_NANOS = 10_000_000_000L
     }
 }
