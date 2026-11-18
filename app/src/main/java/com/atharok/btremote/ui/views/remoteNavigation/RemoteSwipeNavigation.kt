@@ -9,9 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
@@ -23,9 +22,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.atharok.btremote.R
 import com.atharok.btremote.common.utils.AppIcons
+import com.atharok.btremote.common.utils.DELAY_BETWEEN_KEY_PRESSES_IN_MILLIS
 import com.atharok.btremote.common.utils.REMOTE_INPUT_NONE
 import com.atharok.btremote.domain.entities.remoteInput.RemoteButtonProperties
 import com.atharok.btremote.ui.components.DefaultElevatedCard
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlin.math.abs
 import kotlin.math.sqrt
 
@@ -51,47 +53,50 @@ fun RemoteSwipeNavigation(
     shape: Shape = RoundedCornerShape(dimensionResource(id = R.dimen.card_corner_radius))
 ) {
     val haptic = LocalHapticFeedback.current
-    var action: SwipeAction by remember { mutableStateOf(SwipeAction.NONE) }
+    val send by rememberUpdatedState(sendRemoteKeyReport)
+    val sendKeyboard by rememberUpdatedState(sendKeyboardKeyReport)
+    val enterForSelection by rememberUpdatedState(useEnterForSelection)
+    // Every action the gesture finds is queued and sent in order. A state holding only the
+    // latest one lost a direction whose swipe and lift came in the same frame: the lift
+    // overwrote it before it was sent, and only the release went out.
+    val actions = remember { Channel<SwipeAction>(Channel.UNLIMITED) }
 
-    LaunchedEffect(action) {
-        when(action) {
-            SwipeAction.NONE -> {}
-            SwipeAction.DIRECTION_RELEASE -> {
-                sendRemoteKeyReport(REMOTE_INPUT_NONE)
-                action = SwipeAction.NONE
-            }
-            SwipeAction.PICK_RELEASE -> {
-                if(useEnterForSelection) {
-                    sendKeyboardKeyReport(REMOTE_INPUT_NONE)
-                } else {
-                    sendRemoteKeyReport(REMOTE_INPUT_NONE)
+    LaunchedEffect(actions) {
+        for (action in actions) {
+            when(action) {
+                SwipeAction.NONE -> {}
+                SwipeAction.DIRECTION_RELEASE -> send(REMOTE_INPUT_NONE)
+                SwipeAction.PICK_RELEASE -> {
+                    if(enterForSelection) sendKeyboard(REMOTE_INPUT_NONE) else send(REMOTE_INPUT_NONE)
                 }
-                action = SwipeAction.NONE
-            }
-            SwipeAction.UP -> {
-                sendRemoteKeyReport(RemoteButtonProperties.MenuUpButton.input)
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            }
-            SwipeAction.LEFT -> {
-                sendRemoteKeyReport(RemoteButtonProperties.MenuLeftButton.input)
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            }
-            SwipeAction.RIGHT -> {
-                sendRemoteKeyReport(RemoteButtonProperties.MenuRightButton.input)
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            }
-            SwipeAction.DOWN -> {
-                sendRemoteKeyReport(RemoteButtonProperties.MenuDownButton.input)
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-            }
-            SwipeAction.PICK -> {
-                if(useEnterForSelection) {
-                    sendKeyboardKeyReport(RemoteButtonProperties.KeyboardEnterButton.input)
-                } else {
-                    sendRemoteKeyReport(RemoteButtonProperties.MenuPickButton.input)
+                SwipeAction.UP -> {
+                    send(RemoteButtonProperties.MenuUpButton.input)
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 }
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                action = SwipeAction.PICK_RELEASE
+                SwipeAction.LEFT -> {
+                    send(RemoteButtonProperties.MenuLeftButton.input)
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                }
+                SwipeAction.RIGHT -> {
+                    send(RemoteButtonProperties.MenuRightButton.input)
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                }
+                SwipeAction.DOWN -> {
+                    send(RemoteButtonProperties.MenuDownButton.input)
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                }
+                SwipeAction.PICK -> {
+                    // A tap is a press and its release, a moment apart as a key is.
+                    val keyboard = enterForSelection
+                    if(keyboard) {
+                        sendKeyboard(RemoteButtonProperties.KeyboardEnterButton.input)
+                    } else {
+                        send(RemoteButtonProperties.MenuPickButton.input)
+                    }
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    delay(DELAY_BETWEEN_KEY_PRESSES_IN_MILLIS)
+                    if(keyboard) sendKeyboard(REMOTE_INPUT_NONE) else send(REMOTE_INPUT_NONE)
+                }
             }
         }
     }
@@ -104,7 +109,7 @@ fun RemoteSwipeNavigation(
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInput(Unit) {
-                    detectDirection(onSwipeActionDetected = { action = it })
+                    detectDirection(onSwipeActionDetected = { actions.trySend(it) })
                 },
             contentAlignment = Alignment.Center
         ) {
