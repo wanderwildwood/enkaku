@@ -325,6 +325,13 @@ fun BtRemoteApp(
                     // while the phone was locked, register again before the error shows.
                     if(event == Lifecycle.Event.ON_START) {
                         appScopeViewModel.ensureHidProfileRegistered()
+                        // Left before Bluetooth's HID service answered, the service was stopped
+                        // and the device list's own start does not run again: start it here.
+                        if(navController.currentDestination?.route == AppNavDestination.DeviceSelectionDestination.route &&
+                            appScopeViewModel.isBluetoothEnabled &&
+                            !appScopeViewModel.isBluetoothServiceRunning.value) {
+                            BluetoothHidService.start(context)
+                        }
                     }
                     // If the app goes into the background
                     if(event == Lifecycle.Event.ON_STOP) {
