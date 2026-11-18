@@ -44,6 +44,14 @@ class BluetoothHidCore(
 
     private var autoConnectDeviceAddress: String = ""
 
+    // True from start to stop. A proxy that turns up while it is false (one asked for before a
+    // stop, or the one Android brings back after Bluetooth goes off and on with nothing running)
+    // is closed at once, so Remote is never registered as a keyboard with no service behind it.
+    private var wanted = false
+
+    // A proxy has been asked for and has not arrived yet; asked for once, not on every start.
+    private var proxyRequested = false
+
     // Bluetooth callbacks arrive on a binder thread; everything here runs on the main thread.
     private val mainHandler = Handler(Looper.getMainLooper())
 
@@ -73,12 +81,13 @@ class BluetoothHidCore(
 
     fun startBluetoothHidProfile(autoConnectDeviceAddress: String) {
         this.autoConnectDeviceAddress = autoConnectDeviceAddress
+        wanted = true
         val hidDevice = bluetoothHidDevice
         if (hidDevice != null) {
             // Already has Bluetooth's HID service: register only if it is not, or trying to be.
             if (!_isBluetoothHidProfileRegistered.value) startRegistration()
-        } else {
-            adapter?.getProfileProxy(context, serviceListener, BluetoothProfile.HID_DEVICE)
+        } else if (!proxyRequested) {
+            proxyRequested = adapter?.getProfileProxy(context, serviceListener, BluetoothProfile.HID_DEVICE) == true
         }
     }
 
@@ -101,6 +110,7 @@ class BluetoothHidCore(
     }
 
     fun stopBluetoothHidProfile() {
+        wanted = false
         registration.cancel()
         _isRegistering.value = false
         mainHandler.removeCallbacksAndMessages(null)
@@ -114,6 +124,7 @@ class BluetoothHidCore(
             adapter?.closeProfileProxy(BluetoothProfile.HID_DEVICE, hidDevice)
         }
         bluetoothHidDevice = null
+        // A proxy still on its way is closed when it arrives (see onServiceConnected).
         _deviceHidConnectionState.value = DeviceHidConnectionState()
         _isBluetoothServiceRunning.value = false
     }
@@ -123,6 +134,13 @@ class BluetoothHidCore(
     private val serviceListener = object : ServiceListener {
         override fun onServiceConnected(i: Int, bluetoothProfile: BluetoothProfile?) {
             if(i == BluetoothProfile.HID_DEVICE) {
+                proxyRequested = false
+                if (!wanted) {
+                    // Stopped meanwhile: this proxy is not wanted, and is let go unregistered.
+                    bluetoothProfile?.let { adapter?.closeProfileProxy(BluetoothProfile.HID_DEVICE, it) }
+                    bluetoothHidDevice = null
+                    return
+                }
                 bluetoothHidDevice = bluetoothProfile as? BluetoothHidDevice?
                 if (bluetoothHidDevice != null && checkBluetoothConnectPermission(context)) {
                     startRegistration()

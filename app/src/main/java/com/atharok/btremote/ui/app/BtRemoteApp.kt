@@ -330,9 +330,10 @@ fun BtRemoteApp(
                     if(event == Lifecycle.Event.ON_STOP) {
                         // If we are in the device selection view
                         if(navController.currentDestination?.route == AppNavDestination.DeviceSelectionDestination.route) {
-                            if(isBluetoothServiceRunning) {
-                                BluetoothHidService.stop(context)
-                            }
+                            // Stopped even while Bluetooth's HID service has not answered yet,
+                            // which is when isBluetoothServiceRunning is still false; stopping a
+                            // service that is not running does nothing.
+                            BluetoothHidService.stop(context)
                         }
                     }
                 }
