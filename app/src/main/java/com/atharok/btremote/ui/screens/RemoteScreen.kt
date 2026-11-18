@@ -65,6 +65,7 @@ import com.atharok.btremote.ui.components.BasicIconButton
 import com.atharok.btremote.ui.components.FadeAnimatedContent
 import com.atharok.btremote.ui.components.LoadingDialog
 import com.atharok.btremote.ui.components.SettingsIconButton
+import com.atharok.btremote.ui.views.kodiRefusedReason
 import com.atharok.btremote.ui.views.keyboard.AdvancedKeyboard
 import com.atharok.btremote.ui.views.keyboard.AdvancedKeyboardModalBottomSheet
 import com.atharok.btremote.ui.views.keyboard.VirtualKeyboardModalBottomSheet
@@ -126,7 +127,7 @@ fun RemoteScreen(
                     when (reply) {
                         KodiReply.Unauthorized -> login
                         KodiReply.NotLocal -> notLocal
-                        is KodiReply.Refused -> refused.replace("%s", reply.message)
+                        is KodiReply.Refused -> refused.replace("%s", kodiRefusedReason(context.resources, reply))
                         else -> unreachable
                     }
                 )

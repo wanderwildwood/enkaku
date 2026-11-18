@@ -119,6 +119,8 @@ class KodiRequestTest {
         val error = KodiRpc.parse("""{"error":{"code":-32601,"message":"Method not found."},"id":1,"jsonrpc":"2.0"}""")
         assertEquals(KodiReply.Refused("Method not found."), error)
         assertTrue(KodiRpc.parse("<html>") is KodiReply.Refused)
+        assertEquals(KodiReply.Refused.Reason.NOT_JSON_RPC, (KodiRpc.parse("<html>") as KodiReply.Refused).reason)
+        assertEquals(KodiReply.Refused.Reason.SAID, (error as KodiReply.Refused).reason)
     }
 
     @Test

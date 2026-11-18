@@ -21,8 +21,17 @@ sealed interface KodiReply {
     data object Unreachable : KodiReply
     /** The address is not on this network, so nothing was sent: the login would cross the internet in the clear. */
     data object NotLocal : KodiReply
-    /** Something answered and turned the call down. */
-    data class Refused(val message: String) : KodiReply
+    /**
+     * Something answered and turned the call down: Kodi's own words in [message], or, for an
+     * answer that was not Kodi's, why not, which the screen puts in words of its own.
+     */
+    data class Refused(
+        val message: String = "",
+        val reason: Reason = Reason.SAID,
+        val httpStatus: Int = 0
+    ) : KodiReply {
+        enum class Reason { SAID, HTTP_STATUS, NOT_JSON_RPC, NOT_KODI }
+    }
 }
 
 /** JSON-RPC 2.0 as Kodi takes it: POST http://host:port/jsonrpc, one call to a request. */
@@ -50,7 +59,7 @@ object KodiRpc {
         val json: JsonObject = try {
             Json.parseToJsonElement(body).jsonObject
         } catch (_: Exception) {
-            return KodiReply.Refused("not JSON-RPC")
+            return KodiReply.Refused(reason = KodiReply.Refused.Reason.NOT_JSON_RPC)
         }
         json["error"]?.let { error ->
             if (error !is JsonNull) {

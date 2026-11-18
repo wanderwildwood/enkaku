@@ -383,6 +383,9 @@
     <string name="kodi_refused">%1$s answered, but not as Kodi does: %2$s</string>
     <string name="kodi_press_unreachable">Kodi did not answer. Check that it is on, and on this Wi-Fi.</string>
     <string name="kodi_press_refused">Kodi did not take that: %1$s</string>
+    <string name="kodi_refused_http">its web server gave error %1$d</string>
+    <string name="kodi_refused_not_jsonrpc">the answer was not JSON-RPC</string>
+    <string name="kodi_refused_not_kodi">it did not answer the ping as Kodi does</string>
     <string name="kodi_press_login">Kodi turned down the username or password.</string>
     <!-- Licences page, reached from About -->
     <string name="licences_title">Licenses</string>

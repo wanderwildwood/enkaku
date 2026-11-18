@@ -76,7 +76,7 @@ class KodiClient(
                 when (answer.status) {
                     200 -> KodiRpc.parse(answer.body)
                     401 -> KodiReply.Unauthorized
-                    else -> KodiReply.Refused("HTTP ${answer.status}")
+                    else -> KodiReply.Refused(reason = KodiReply.Refused.Reason.HTTP_STATUS, httpStatus = answer.status)
                 }
             } catch (_: IOException) {
                 KodiReply.Unreachable
@@ -86,7 +86,7 @@ class KodiClient(
                 throw e
             } catch (_: RuntimeException) {
                 // Anything else a broken answer could raise is a refusal, not a crash.
-                KodiReply.Refused("not JSON-RPC")
+                KodiReply.Refused(reason = KodiReply.Refused.Reason.NOT_JSON_RPC)
             }
         }
 
@@ -103,7 +103,7 @@ class KodiClient(
         val reply = request(host, "JSONRPC.Ping", null, fresh = true)
         if (reply is KodiReply.Ok) {
             val pong = try { reply.result.jsonPrimitive.contentOrNull } catch (_: Exception) { null }
-            if (pong != "pong") return KodiReply.Refused("not Kodi")
+            if (pong != "pong") return KodiReply.Refused(reason = KodiReply.Refused.Reason.NOT_KODI)
         }
         return reply
     }

@@ -1,5 +1,6 @@
 package com.atharok.btremote.ui.views
 
+import android.content.res.Resources
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
 /**
@@ -71,13 +73,23 @@ fun KodiConnectOverlay(
             onDismissRequest = dismiss,
             dialogTitle = stringResource(R.string.kodi_over_wifi),
             dialogText = when (val reply = state.reply) {
-                is KodiReply.Refused -> stringResource(R.string.kodi_refused, state.host.address, reply.message)
+                is KodiReply.Refused -> stringResource(
+                    R.string.kodi_refused, state.host.address, kodiRefusedReason(LocalContext.current.resources, reply)
+                )
                 KodiReply.NotLocal -> stringResource(R.string.kodi_not_local, state.host.address)
                 else -> stringResource(R.string.kodi_unreachable, state.host.address)
             }
         )
         else -> Unit
     }
+}
+
+/** Why a box turned a call down, in words: Kodi's own when it gave some. */
+fun kodiRefusedReason(resources: Resources, reply: KodiReply.Refused): String = when (reply.reason) {
+    KodiReply.Refused.Reason.SAID -> reply.message
+    KodiReply.Refused.Reason.HTTP_STATUS -> resources.getString(R.string.kodi_refused_http, reply.httpStatus)
+    KodiReply.Refused.Reason.NOT_JSON_RPC -> resources.getString(R.string.kodi_refused_not_jsonrpc)
+    KodiReply.Refused.Reason.NOT_KODI -> resources.getString(R.string.kodi_refused_not_kodi)
 }
 
 /** A Kodi in a list: its name, and where it is. */
