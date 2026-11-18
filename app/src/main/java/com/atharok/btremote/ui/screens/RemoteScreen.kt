@@ -696,6 +696,10 @@ private fun sendPhysicalVolumeButtonAction(
 
     when(event.action) {
         KeyEvent.ACTION_DOWN -> {
+            // A held key repeats its down about every 50 ms. Only the first is sent: a Bluetooth
+            // host holds the key itself, and Kodi's remote repeats at its own pace, so the
+            // volume stops when the finger lifts. The repeats are still taken, not the phone's.
+            if (event.repeatCount > 0) return true
             sendHidReport(
                 volumePhysicalButtonAction.hidReportId, volumePhysicalButtonAction.pressedBytes
             )
