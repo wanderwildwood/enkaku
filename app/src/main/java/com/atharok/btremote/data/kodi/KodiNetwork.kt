@@ -1,8 +1,10 @@
 package com.atharok.btremote.data.kodi
 
+import java.net.DatagramSocket
 import java.net.Inet4Address
 import java.net.Inet6Address
 import java.net.InetAddress
+import java.net.InetSocketAddress
 
 /**
  * Where Remote may send a Kodi login: only to a box on the phone's own network.
@@ -24,6 +26,19 @@ object KodiNetwork {
             is Inet6Address -> (b[0].toInt() and 0xFE) == 0xFC
             else -> false
         }
+    }
+
+    /**
+     * The phone's own address on the way to [address], or null when it cannot be told. Nothing
+     * is sent: a UDP socket only picks its route when connected.
+     */
+    fun ownAddressTowards(address: InetAddress, port: Int): String? = try {
+        DatagramSocket().use { socket ->
+            socket.connect(InetSocketAddress(address, port))
+            socket.localAddress?.takeUnless { it.isAnyLocalAddress }?.hostAddress
+        }
+    } catch (_: Exception) {
+        null
     }
 
     /**

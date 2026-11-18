@@ -82,13 +82,34 @@ class KodiNetworkTest {
             val client = KodiClient()
             val host = KodiHost("x", "127.0.0.1", server.localPort, "kodi", "secret")
             assertTrue(runBlocking { client.ping(host) } is KodiReply.Ok)
-            assertTrue(runBlocking { client.ping(host) } is KodiReply.Ok)
+            assertTrue(runBlocking { client.call(host, "JSONRPC.Ping") } is KodiReply.Ok)
             t.join()
             assertEquals(3, seen.size)
             assertNull(seen[0])
             assertTrue(seen[1]!!.startsWith("Basic "))
             assertTrue(seen[2]!!.startsWith("Basic "))
         }
+    }
+
+    @Test fun `a new connection goes without the login until the box asks again`() {
+        ServerSocket(0, 2, InetAddress.getByName("127.0.0.1")).use { server ->
+            val seen = mutableListOf<String?>()
+            val t = kodiWithLogin(server, 4, seen)
+            val client = KodiClient()
+            val host = KodiHost("x", "127.0.0.1", server.localPort, "kodi", "secret")
+            assertTrue(runBlocking { client.ping(host) } is KodiReply.Ok)
+            assertTrue(runBlocking { client.ping(host) } is KodiReply.Ok)
+            t.join()
+            assertEquals(4, seen.size)
+            assertNull(seen[0])
+            assertTrue(seen[1]!!.startsWith("Basic "))
+            assertNull(seen[2])
+            assertTrue(seen[3]!!.startsWith("Basic "))
+        }
+    }
+
+    @Test fun `the phone's own address towards a box is known`() {
+        assertEquals("127.0.0.1", KodiNetwork.ownAddressTowards(InetAddress.getByName("127.0.0.1"), 8080))
     }
 
     @Test fun `a box that asks for no login is never sent one`() {

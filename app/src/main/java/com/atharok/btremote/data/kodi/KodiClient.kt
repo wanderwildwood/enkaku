@@ -31,10 +31,16 @@ class KodiClient(
      * The boxes, by address and port, that have asked for the login with a 401. A request goes
      * out without the login until the box at that address asks for it, so a saved password is
      * never sent to a machine that does not want one; after that it goes with every request.
+     * Each is also keyed on the phone's own address on the way there, and forgotten when a
+     * connection is made afresh ([ping]), so on another network the box at that same address
+     * has to ask again before it is sent the login.
      */
     private val askedForLogin: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     suspend fun call(host: KodiHost, method: String, params: JsonObject? = null): KodiReply =
+        request(host, method, params, fresh = false)
+
+    private suspend fun request(host: KodiHost, method: String, params: JsonObject?, fresh: Boolean): KodiReply =
         withContext(Dispatchers.IO) {
             // The login goes out in the clear (Kodi has no TLS), so only to a box on this network:
             // checked before anything is sent.
@@ -47,7 +53,10 @@ class KodiClient(
             } ?: return@withContext KodiReply.NotLocal
             try {
                 val login = KodiRpc.authorization(host.username, host.password)
-                val box = "${address.hostAddress}:${host.port}"
+                // No way to tell which network this is: nothing is remembered, the box asks each time.
+                val box = KodiNetwork.ownAddressTowards(address, host.port)
+                    ?.let { "$it>${address.hostAddress}:${host.port}" }
+                if (fresh && box != null) askedForLogin -= box
                 val body = KodiRpc.body(ids.getAndIncrement(), method, params).toByteArray(Charsets.UTF_8)
                 fun post(withLogin: Boolean) = KodiHttp.post(
                     address, host.port, host.address, "/jsonrpc",
@@ -57,11 +66,11 @@ class KodiClient(
                     },
                     body, connectTimeoutMillis, readTimeoutMillis,
                 )
-                val sentLogin = login != null && box in askedForLogin
+                val sentLogin = login != null && box != null && box in askedForLogin
                 var answer = post(sentLogin)
                 if (answer.status == 401 && login != null && !sentLogin) {
                     // This box wants the login: sent again with it, to this same address only.
-                    askedForLogin += box
+                    if (box != null) askedForLogin += box
                     answer = post(true)
                 }
                 when (answer.status) {
@@ -86,9 +95,12 @@ class KodiClient(
         KodiCommand.CycleRepeat -> cycleRepeat(host)
     }
 
-    /** JSONRPC.Ping answers "pong": the address is Kodi, and the login, if any, is right. */
+    /**
+     * JSONRPC.Ping answers "pong": the address is Kodi, and the login, if any, is right. It starts
+     * a connection, so it goes without the login until the box asks for it again.
+     */
     suspend fun ping(host: KodiHost): KodiReply {
-        val reply = call(host, "JSONRPC.Ping")
+        val reply = request(host, "JSONRPC.Ping", null, fresh = true)
         if (reply is KodiReply.Ok) {
             val pong = try { reply.result.jsonPrimitive.contentOrNull } catch (_: Exception) { null }
             if (pong != "pong") return KodiReply.Refused("not Kodi")
