@@ -14,6 +14,7 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import java.io.IOException
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -25,6 +26,13 @@ class KodiClient(
     private val readTimeoutMillis: Int = 5_000
 ) {
     private val ids = AtomicInteger(1)
+
+    /**
+     * The boxes, by address and port, that have asked for the login with a 401. A request goes
+     * out without the login until the box at that address asks for it, so a saved password is
+     * never sent to a machine that does not want one; after that it goes with every request.
+     */
+    private val askedForLogin: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     suspend fun call(host: KodiHost, method: String, params: JsonObject? = null): KodiReply =
         withContext(Dispatchers.IO) {
@@ -38,15 +46,24 @@ class KodiClient(
                 return@withContext KodiReply.Unreachable
             } ?: return@withContext KodiReply.NotLocal
             try {
-                val headers = buildMap {
-                    put("Content-Type", "application/json")
-                    KodiRpc.authorization(host.username, host.password)?.let { put("Authorization", it) }
-                }
+                val login = KodiRpc.authorization(host.username, host.password)
+                val box = "${address.hostAddress}:${host.port}"
                 val body = KodiRpc.body(ids.getAndIncrement(), method, params).toByteArray(Charsets.UTF_8)
-                val answer = KodiHttp.post(
-                    address, host.port, host.address, "/jsonrpc", headers, body,
-                    connectTimeoutMillis, readTimeoutMillis,
+                fun post(withLogin: Boolean) = KodiHttp.post(
+                    address, host.port, host.address, "/jsonrpc",
+                    buildMap {
+                        put("Content-Type", "application/json")
+                        if (withLogin && login != null) put("Authorization", login)
+                    },
+                    body, connectTimeoutMillis, readTimeoutMillis,
                 )
+                val sentLogin = login != null && box in askedForLogin
+                var answer = post(sentLogin)
+                if (answer.status == 401 && login != null && !sentLogin) {
+                    // This box wants the login: sent again with it, to this same address only.
+                    askedForLogin += box
+                    answer = post(true)
+                }
                 when (answer.status) {
                     200 -> KodiRpc.parse(answer.body)
                     401 -> KodiReply.Unauthorized

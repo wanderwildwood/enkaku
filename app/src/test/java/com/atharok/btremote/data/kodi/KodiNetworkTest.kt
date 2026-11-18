@@ -53,6 +53,67 @@ class KodiNetworkTest {
         }
     }
 
+    /** A Kodi with a login: answers 401 to a request without it. Returns each request's Authorization. */
+    private fun kodiWithLogin(server: ServerSocket, requests: Int, seen: MutableList<String?>) = Thread {
+        repeat(requests) {
+            server.accept().use { s ->
+                val input = s.getInputStream()
+                val head = StringBuilder()
+                while (!head.endsWith("\r\n\r\n")) head.append(input.read().toChar())
+                val len = Regex("Content-Length: (\\d+)").find(head)!!.groupValues[1].toInt()
+                input.readNBytes(len)
+                val auth = Regex("Authorization: (.+)\r\n").find(head)?.groupValues?.get(1)
+                synchronized(seen) { seen += auth }
+                val out = s.getOutputStream()
+                if (auth == null) {
+                    out.write("HTTP/1.1 401 Unauthorized\r\nContent-Length: 0\r\n\r\n".toByteArray())
+                } else {
+                    val body = "{\"id\":1,\"jsonrpc\":\"2.0\",\"result\":\"pong\"}"
+                    out.write(("HTTP/1.1 200 OK\r\nContent-Length: ${body.length}\r\n\r\n$body").toByteArray())
+                }
+            }
+        }
+    }.also { it.start() }
+
+    @Test fun `the login goes only after the box asks for it, and then with every request`() {
+        ServerSocket(0, 2, InetAddress.getByName("127.0.0.1")).use { server ->
+            val seen = mutableListOf<String?>()
+            val t = kodiWithLogin(server, 3, seen)
+            val client = KodiClient()
+            val host = KodiHost("x", "127.0.0.1", server.localPort, "kodi", "secret")
+            assertTrue(runBlocking { client.ping(host) } is KodiReply.Ok)
+            assertTrue(runBlocking { client.ping(host) } is KodiReply.Ok)
+            t.join()
+            assertEquals(3, seen.size)
+            assertNull(seen[0])
+            assertTrue(seen[1]!!.startsWith("Basic "))
+            assertTrue(seen[2]!!.startsWith("Basic "))
+        }
+    }
+
+    @Test fun `a box that asks for no login is never sent one`() {
+        ServerSocket(0, 1, InetAddress.getByName("127.0.0.1")).use { server ->
+            var auth: String? = "unset"
+            val t = Thread {
+                server.accept().use { s ->
+                    val input = s.getInputStream()
+                    val head = StringBuilder()
+                    while (!head.endsWith("\r\n\r\n")) head.append(input.read().toChar())
+                    val len = Regex("Content-Length: (\\d+)").find(head)!!.groupValues[1].toInt()
+                    input.readNBytes(len)
+                    auth = Regex("Authorization: (.+)\r\n").find(head)?.groupValues?.get(1)
+                    val body = "{\"id\":1,\"jsonrpc\":\"2.0\",\"result\":\"pong\"}"
+                    s.getOutputStream().write(("HTTP/1.1 200 OK\r\nContent-Length: ${body.length}\r\n\r\n$body").toByteArray())
+                }
+            }
+            t.start()
+            val reply = runBlocking { KodiClient().ping(KodiHost("x", "127.0.0.1", server.localPort, "kodi", "secret")) }
+            t.join()
+            assertTrue(reply is KodiReply.Ok)
+            assertNull(auth)
+        }
+    }
+
     @Test fun `chunked and read-to-end answers are read`() {
         val chunked = "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n5\r\nhello\r\n6\r\n world\r\n0\r\n\r\n"
         assertEquals("hello world", KodiHttp.readAnswer(chunked.byteInputStream()).body)

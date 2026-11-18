@@ -10,11 +10,13 @@ movement, and the text you send from the keyboard panel.
 **Over Wi-Fi** it can drive Kodi instead. It then sends Kodi the button presses
 and the text you send from the keyboard panel, as JSON-RPC over plain HTTP (Kodi offers
 nothing else), to the one address you chose, and only while its remote is open. If Kodi asks
-for a username and password, those go with each press, to that address and no other. To find
+for a username and password, those go with each press, to that address and no other; the
+first request goes without them, and they are sent only once the box at that address has
+asked for them. To find
 Kodi boxes it listens on the home network for the ones that announce themselves (mDNS,
 through Android's own service discovery); it announces nothing about itself.
 
-**The Kodi login** (username and password) is sent only to the Kodi address you entered, and over plain HTTP, because Kodi offers nothing else. Anyone on that network who can see its traffic could read it, so use it on a network you trust. The app refuses to send it to any address that is not on a private network (192.168.x.x, 10.x.x.x, 172.16-31.x.x, link-local, or a Tailscale-style 100.64.x.x address): nothing is sent to such an address, and the app says so. On the phone it is kept sealed with a key held in the phone's keystore, not as plain text.
+**The Kodi login** (username and password) is sent only to the Kodi address you entered, and only after the box there has asked for it, and over plain HTTP, because Kodi offers nothing else. Anyone on that network who can see its traffic could read it, so use it on a network you trust. The app refuses to send it to any address that is not on a private network (192.168.x.x, 10.x.x.x, 172.16-31.x.x, link-local, or a Tailscale-style 100.64.x.x address): nothing is sent to such an address, and the app says so. On the phone it is kept sealed with a key held in the phone's keystore, not as plain text.
 
 **On the phone** it keeps its settings, the devices you marked as favorites and the one it
 connects to on its own, and the last Kodi it reached: its name, address, and the username and
