@@ -4,9 +4,11 @@ import android.bluetooth.BluetoothHidDevice
 import android.bluetooth.BluetoothHidDeviceAppSdpSettings
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.net.ConnectivityManager
 import android.net.nsd.NsdManager
 import com.atharok.btremote.data.kodi.KodiClient
 import com.atharok.btremote.data.kodi.KodiDiscovery
+import com.atharok.btremote.data.kodi.KodiNetwork
 import com.atharok.btremote.data.kodi.KodiRemote
 import com.atharok.btremote.data.kodi.KodiStore
 import com.atharok.btremote.presentation.viewmodel.KodiViewModel
@@ -321,7 +323,10 @@ private val dataModule: Module = module {
 
     // ---- Kodi over Wi-Fi ----
 
-    single { KodiClient() }
+    single {
+        val connectivity = androidContext().getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        KodiClient(vpnUp = { KodiNetwork.vpnUp(connectivity) })
+    }
 
     single { KodiRemote(client = get<KodiClient>()) }
 

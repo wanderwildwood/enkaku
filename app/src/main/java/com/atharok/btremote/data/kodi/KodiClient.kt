@@ -23,7 +23,9 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 class KodiClient(
     private val connectTimeoutMillis: Int = 3_000,
-    private val readTimeoutMillis: Int = 5_000
+    private val readTimeoutMillis: Int = 5_000,
+    /** Whether a VPN is up right now, asked before each request; 100.64/10 is let in only then. */
+    private val vpnUp: () -> Boolean = { false }
 ) {
     private val ids = AtomicInteger(1)
 
@@ -45,7 +47,7 @@ class KodiClient(
             // The login goes out in the clear (Kodi has no TLS), so only to a box on this network:
             // checked before anything is sent.
             val address = try {
-                KodiNetwork.resolveLocal(host.host)
+                KodiNetwork.resolveLocal(host.host, vpnUp())
             } catch (_: IOException) {
                 return@withContext KodiReply.Unreachable
             } catch (_: SecurityException) {

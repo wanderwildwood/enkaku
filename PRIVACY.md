@@ -16,7 +16,7 @@ asked for them. To find
 Kodi boxes it listens on the home network for the ones that announce themselves (mDNS,
 through Android's own service discovery); it announces nothing about itself.
 
-**The Kodi login** (username and password) is sent only to the Kodi address you entered, and only after the box there has asked for it, and over plain HTTP, because Kodi offers nothing else. Anyone on that network who can see its traffic could read it, so use it on a network you trust. The app refuses to send it to any address that is not on a private network (192.168.x.x, 10.x.x.x, 172.16-31.x.x, link-local, or a Tailscale-style 100.64.x.x address): nothing is sent to such an address, and the app says so. On the phone it is kept sealed with a key held in the phone's keystore, not as plain text.
+**The Kodi login** (username and password) is sent only to the Kodi address you entered, and only after the box there has asked for it, and over plain HTTP, because Kodi offers nothing else. Anyone on that network who can see its traffic could read it, so use it on a network you trust. The app refuses to send it to any address that is not on a private network (192.168.x.x, 10.x.x.x, 172.16-31.x.x, link-local, or a Tailscale-style 100.64.x.x address, and that last one only while a VPN such as Tailscale is on, because without it the mobile carrier uses that same range for its own shared network): nothing is sent to such an address, and the app says so. On the phone it is kept sealed with a key held in the phone's keystore, not as plain text.
 
 **On the phone** it keeps its settings, the devices you marked as favorites and the one it
 connects to on its own, and the last Kodi it reached: its name, address, and the username and
@@ -31,13 +31,12 @@ checks all of it before it changes anything.
 **Permissions:** Bluetooth, to pair and connect; internet, for Kodi over Wi-Fi, used for
 nothing but the Kodi address you choose; a foreground service, so the connection holds
 while the screen is off; and notifications, for the buttons it can put in the notification
-shade. On Android 11 and older, location is asked for too, because those versions require it
+shade; and the network state, only to see whether a VPN is on before talking to a 100.64.x.x
+Kodi. On Android 11 and older, location is asked for too, because those versions require it
 to search for Bluetooth devices. It is never used for anything else.
 
-Four more are added by Android's own libraries and are never asked for. WorkManager, which
-the home-screen remote widget runs on, brings a wake lock, starting at
-boot, and seeing whether the phone is online (its check, for jobs that would need the internet;
-Remote runs none). The support library adds `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`, which keeps
+Three more are added by Android's own libraries and are never asked for. WorkManager, which
+the home-screen remote widget runs on, brings a wake lock and starting at boot. The support library adds `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`, which keeps
 the app's own internal messages to itself. None of them sends anything anywhere.
 
 **Backups:** Android does not back up Remote's settings or devices; they stay on the phone.

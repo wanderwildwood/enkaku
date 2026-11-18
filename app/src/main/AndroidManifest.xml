@@ -29,6 +29,8 @@
 
     <!-- Kodi over Wi-Fi: JSON-RPC to the Kodi chosen in the app, on the home network. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Whether a VPN such as Tailscale is up, the only time a 100.64.x.x Kodi is trusted. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Lets the app see whether a real browser is installed, for the links in About. -->
     <queries>

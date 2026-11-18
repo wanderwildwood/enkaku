@@ -11,11 +11,23 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class KodiNetworkTest {
-    private fun local(ip: String) = KodiNetwork.isLocal(InetAddress.getByName(ip))
+    private fun local(ip: String, vpnUp: Boolean = true) = KodiNetwork.isLocal(InetAddress.getByName(ip), vpnUp)
 
     @Test fun `private and link-local ranges are local`() {
         listOf("10.0.0.3", "172.16.0.1", "172.31.255.254", "192.168.1.50", "169.254.3.4", "127.0.0.1",
             "100.64.0.1", "100.127.255.1", "fd12:3456::1", "fe80::1", "::1").forEach { assertTrue(it, local(it)) }
+    }
+
+    @Test fun `the shared range 100_64 counts only while a VPN is up`() {
+        listOf("100.64.0.1", "100.127.255.1").forEach { assertFalse(it, local(it, vpnUp = false)) }
+        listOf("10.0.0.3", "192.168.1.50", "127.0.0.1", "fd12:3456::1").forEach { assertTrue(it, local(it, vpnUp = false)) }
+        assertNull(KodiNetwork.resolveLocal("100.64.0.1", vpnUp = false))
+        assertEquals("100.64.0.1", KodiNetwork.resolveLocal("100.64.0.1", vpnUp = true)!!.hostAddress)
+    }
+
+    @Test fun `a login is never sent to 100_64 without a VPN`() = runBlocking {
+        val reply = KodiClient(vpnUp = { false }).call(KodiHost("x", "100.64.0.1", 8080, "kodi", "secret"), "JSONRPC.Ping")
+        assertEquals(KodiReply.NotLocal, reply)
     }
 
     @Test fun `public addresses are not local`() {
@@ -24,8 +36,8 @@ class KodiNetworkTest {
     }
 
     @Test fun `a public literal resolves to nothing`() {
-        assertNull(KodiNetwork.resolveLocal("8.8.8.8"))
-        assertEquals("192.168.1.50", KodiNetwork.resolveLocal("192.168.1.50")!!.hostAddress)
+        assertNull(KodiNetwork.resolveLocal("8.8.8.8", vpnUp = true))
+        assertEquals("192.168.1.50", KodiNetwork.resolveLocal("192.168.1.50", vpnUp = false)!!.hostAddress)
     }
 
     @Test fun `a login is never sent to a public address`() = runBlocking {
