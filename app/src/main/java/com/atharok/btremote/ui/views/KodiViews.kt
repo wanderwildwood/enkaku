@@ -112,11 +112,12 @@ fun KodiAddressDialog(
         } else {
             // A name typed by hand is the address; Kodi is asked for its own once it answers.
             val name = initial?.takeIf { it.isSameBox(host) }?.name ?: host.host
-            // The remembered password goes only to its own box. Another address gets it only if
-            // it was typed here; otherwise none is sent, and that Kodi asks if it wants one.
+            // The remembered password goes only to its own box, also when a Kodi asked for the
+            // login and the address was then changed here. Another address gets it only if it
+            // was typed here; otherwise none is sent, and that Kodi asks if it wants one.
             val sameBox = initial?.isSameBox(host) == true
             val typed = password != (initial?.password ?: "")
-            val login = if (askingForLogin || sameBox || typed) password else ""
+            val login = if (sameBox || typed) password else ""
             connect(host.copy(name = name, username = username.trim(), password = login))
         }
     }
