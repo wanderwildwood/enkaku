@@ -52,6 +52,11 @@ class BluetoothHidCore(
     // A proxy has been asked for and has not arrived yet; asked for once, not on every start.
     private var proxyRequested = false
 
+    // The proxy Remote holds, kept while Bluetooth's HID service is away (Bluetooth off and on):
+    // Android brings that same proxy back by itself, so no second one is asked for meanwhile,
+    // and a stop closes it even then.
+    private var boundProxy: BluetoothProfile? = null
+
     // Bluetooth callbacks arrive on a binder thread; everything here runs on the main thread.
     private val mainHandler = Handler(Looper.getMainLooper())
 
@@ -86,7 +91,7 @@ class BluetoothHidCore(
         if (hidDevice != null) {
             // Already has Bluetooth's HID service: register only if it is not, or trying to be.
             if (!_isBluetoothHidProfileRegistered.value) startRegistration()
-        } else if (!proxyRequested) {
+        } else if (!proxyRequested && boundProxy == null) {
             proxyRequested = adapter?.getProfileProxy(context, serviceListener, BluetoothProfile.HID_DEVICE) == true
         }
     }
@@ -121,8 +126,9 @@ class BluetoothHidCore(
                 disconnectDevice(hidDevice)
                 hidDevice.unregisterApp()
             }
-            adapter?.closeProfileProxy(BluetoothProfile.HID_DEVICE, hidDevice)
         }
+        boundProxy?.let { adapter?.closeProfileProxy(BluetoothProfile.HID_DEVICE, it) }
+        boundProxy = null
         bluetoothHidDevice = null
         // A proxy still on its way is closed when it arrives (see onServiceConnected).
         _deviceHidConnectionState.value = DeviceHidConnectionState()
@@ -138,9 +144,24 @@ class BluetoothHidCore(
                 if (!wanted) {
                     // Stopped meanwhile: this proxy is not wanted, and is let go unregistered.
                     bluetoothProfile?.let { adapter?.closeProfileProxy(BluetoothProfile.HID_DEVICE, it) }
+                    boundProxy?.let {
+                        if (it !== bluetoothProfile) adapter?.closeProfileProxy(BluetoothProfile.HID_DEVICE, it)
+                    }
+                    boundProxy = null
                     bluetoothHidDevice = null
                     return
                 }
+                val held = boundProxy
+                if (held != null && held !== bluetoothProfile) {
+                    if (bluetoothHidDevice != null) {
+                        // A second proxy while the one held is alive: closed, never registered twice.
+                        bluetoothProfile?.let { adapter?.closeProfileProxy(BluetoothProfile.HID_DEVICE, it) }
+                        return
+                    }
+                    // The one held is dead and a new one came instead: the dead one is let go.
+                    adapter?.closeProfileProxy(BluetoothProfile.HID_DEVICE, held)
+                }
+                boundProxy = bluetoothProfile
                 bluetoothHidDevice = bluetoothProfile as? BluetoothHidDevice?
                 if (bluetoothHidDevice != null && checkBluetoothConnectPermission(context)) {
                     startRegistration()
@@ -150,7 +171,8 @@ class BluetoothHidCore(
         }
 
         // Bluetooth's HID service went away (Bluetooth restarting). The proxy is dead; Android
-        // connects it again by itself, and onServiceConnected registers afresh.
+        // connects it again by itself, and onServiceConnected registers afresh. It stays in
+        // boundProxy, so a start meanwhile waits for it instead of asking for another.
         override fun onServiceDisconnected(i: Int) {
             if (i == BluetoothProfile.HID_DEVICE) {
                 registration.cancel()
