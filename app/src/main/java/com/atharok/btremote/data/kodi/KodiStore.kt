@@ -8,10 +8,14 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.atharok.btremote.common.extensions.dataStore
 import com.atharok.btremote.domain.entities.KODI_DEFAULT_PORT
 import com.atharok.btremote.domain.entities.KodiHost
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
@@ -32,12 +36,16 @@ class KodiStore(private val context: Context) {
     val lastKodiFlow: Flow<KodiHost?> by lazy {
         context.dataStore.data
             .catch { emit(emptyPreferences()) }
-            .map { preferences -> preferences[lastKodiKey]?.let { decodeStored(it, Secrets::open) } }
+            .map { preferences -> preferences[lastKodiKey] }
+            // Unsealed only when it changed, and off the main thread: the keystore is a binder call.
+            .distinctUntilChanged()
+            .map { stored -> stored?.let { decodeStored(it, Secrets::open) } }
+            .flowOn(Dispatchers.IO)
     }
 
     suspend fun saveLastKodi(host: KodiHost) {
         // Only the sealed form is ever written; with no keystore the Kodi is not remembered.
-        val sealed = Secrets.seal(encode(host))
+        val sealed = withContext(Dispatchers.IO) { Secrets.seal(encode(host)) }
         context.dataStore.edit { if (sealed != null) it[lastKodiKey] = sealed else it.remove(lastKodiKey) }
     }
 
@@ -46,7 +54,7 @@ class KodiStore(private val context: Context) {
         try {
             val stored = context.dataStore.data.first()[lastKodiKey] ?: return
             if (Secrets.isSealed(stored)) return
-            val sealed = Secrets.seal(stored)
+            val sealed = withContext(Dispatchers.IO) { Secrets.seal(stored) }
             context.dataStore.edit { if (sealed != null) it[lastKodiKey] = sealed else it.remove(lastKodiKey) }
         } catch (_: Exception) {
         }
