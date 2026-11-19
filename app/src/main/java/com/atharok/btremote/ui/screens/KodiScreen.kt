@@ -77,7 +77,8 @@ fun KodiScreen(
         navigateUp = { NavigateUpIconButton(navigateUp) },
         topBarActions = {
             BasicIconButton(
-                onClick = viewModel::startDiscovery,
+                // A second press while searching would start the search over: it waits instead.
+                onClick = { if (!isSearching) viewModel.startDiscovery() },
                 icon = AppIcons.Refresh,
                 contentDescription = stringResource(R.string.refresh)
             )

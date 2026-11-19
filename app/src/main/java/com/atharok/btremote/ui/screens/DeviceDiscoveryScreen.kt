@@ -160,7 +160,8 @@ private fun StatelessBluetoothScanningScreen(
         },
         topBarActions = {
             BasicIconButton(
-                onClick = startDiscovery,
+                // A second press while searching would start the search over: it waits instead.
+                onClick = { if (!isDiscovering) startDiscovery() },
                 icon = AppIcons.Refresh,
                 contentDescription = stringResource(id = R.string.refresh)
             )
