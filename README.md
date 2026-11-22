@@ -62,6 +62,8 @@ For updates, add this repository to [Obtainium](https://github.com/ImranR98/Obta
 
 It installs beside BT Remote rather than over it.
 
+Questions, ideas, or just saying hello: the wander the dev Discord, <https://discord.gg/UMW8yJg7dQ>
+
 ## Building
 
 ```
