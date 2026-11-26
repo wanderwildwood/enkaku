@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.atharok.btremote.R
@@ -51,6 +52,17 @@ fun MoreButtonsDialog(
     )
 }
 
+/** One round button of More Buttons and the label under it. */
+private class MoreButton(
+    val properties: RemoteButtonProperties,
+    val keyboard: Boolean = false,
+    @androidx.annotation.StringRes val label: Int = properties.stringRes
+)
+
+// Three to a row: at four, a column on the Kompakt (480 px) is narrower than "Forward",
+// "Previous", "captions" or "Capture", and the label broke inside the word.
+private const val MORE_BUTTONS_PER_ROW = 3
+
 @Composable
 private fun MoreButtonsLayout(
     sendRemoteKeyReport: (ByteArray) -> Unit,
@@ -59,146 +71,52 @@ private fun MoreButtonsLayout(
     buttonShape: Shape = CircleShape,
     padding: Dp = dimensionResource(id = R.dimen.padding_large)
 ) {
+    val kodi = LocalKodiRemote.current
+    val buttons = buildList {
+        add(MoreButton(RemoteButtonProperties.PlayButton))
+        add(MoreButton(RemoteButtonProperties.PauseButton))
+        add(MoreButton(RemoteButtonProperties.StopButton))
+        add(MoreButton(RemoteButtonProperties.RepeatButton))
+        add(MoreButton(RemoteButtonProperties.RewindButton))
+        add(MoreButton(RemoteButtonProperties.ForwardButton))
+        add(MoreButton(RemoteButtonProperties.PreviousTrackButton))
+        add(MoreButton(RemoteButtonProperties.NextTrackButton))
+        add(MoreButton(RemoteButtonProperties.ClosedCaptionsButton))
+        add(MoreButton(RemoteButtonProperties.KeyboardPrintScreenButton, keyboard = true))
+        // Kodi has no brightness.
+        if (!kodi) {
+            add(MoreButton(RemoteButtonProperties.BrightnessDownButton, label = R.string.brightness_down_short))
+            add(MoreButton(RemoteButtonProperties.BrightnessUpButton, label = R.string.brightness_up_short))
+        }
+        add(MoreButton(RemoteButtonProperties.RedMenuButton))
+        add(MoreButton(RemoteButtonProperties.GreenMenuButton))
+        add(MoreButton(RemoteButtonProperties.BlueMenuButton))
+        add(MoreButton(RemoteButtonProperties.YellowMenuButton))
+    }
     PagedColumn(
         modifier = modifier.heightIn(max = 360.dp),
         verticalArrangement = Arrangement.spacedBy(padding)
     ) {
-        item { Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Absolute.spacedBy(padding)
-        ) {
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.PlayButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-            )
-
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.PauseButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-            )
-
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.StopButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-            )
-
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.RepeatButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-            )
-        } }
-        item { Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Absolute.spacedBy(padding)
-        ) {
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.RewindButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-            )
-
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.ForwardButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-            )
-
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.PreviousTrackButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-            )
-
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.NextTrackButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-            )
-        } }
-        item { Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Absolute.spacedBy(padding)
-        ) {
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.ClosedCaptionsButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-            )
-
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.KeyboardPrintScreenButton,
-                sendKeyReport = sendKeyboardKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape,
-            )
-
-            // Kodi has no brightness; the two places stay, empty, so the grid keeps its columns.
-            if (LocalKodiRemote.current) {
-                Spacer(modifier = Modifier.weight(1f))
-                Spacer(modifier = Modifier.weight(1f))
-            } else {
-                MoreRemoteIconLayout(
-                    properties = RemoteButtonProperties.BrightnessDownButton,
-                    label = R.string.brightness_down_short,
-                    sendKeyReport = sendRemoteKeyReport,
-                    modifier = Modifier.weight(1f),
-                    buttonShape = buttonShape,
-                )
-
-                MoreRemoteIconLayout(
-                    properties = RemoteButtonProperties.BrightnessUpButton,
-                    label = R.string.brightness_up_short,
-                    sendKeyReport = sendRemoteKeyReport,
-                    modifier = Modifier.weight(1f),
-                    buttonShape = buttonShape,
-                )
-            }
-        } }
-        item { Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Absolute.spacedBy(padding)
-        ) {
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.RedMenuButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape
-            )
-
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.GreenMenuButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape
-            )
-
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.BlueMenuButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape
-            )
-
-            MoreRemoteIconLayout(
-                properties = RemoteButtonProperties.YellowMenuButton,
-                sendKeyReport = sendRemoteKeyReport,
-                modifier = Modifier.weight(1f),
-                buttonShape = buttonShape
-            )
-        } }
+        buttons.chunked(MORE_BUTTONS_PER_ROW).forEach { row ->
+            item { Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Absolute.spacedBy(padding)
+            ) {
+                row.forEach { button ->
+                    MoreRemoteIconLayout(
+                        properties = button.properties,
+                        label = button.label,
+                        sendKeyReport = if (button.keyboard) sendKeyboardKeyReport else sendRemoteKeyReport,
+                        modifier = Modifier.weight(1f),
+                        buttonShape = buttonShape,
+                    )
+                }
+                // A short last row keeps the grid's columns.
+                repeat(MORE_BUTTONS_PER_ROW - row.size) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            } }
+        }
     }
 }
 
@@ -223,6 +141,6 @@ private fun MoreRemoteIconLayout(
             shape = buttonShape,
             iconTint = buttonIconTint
         )
-        TextSmall(text = stringResource(label))
+        TextSmall(text = stringResource(label), textAlign = TextAlign.Center)
     }
 }
