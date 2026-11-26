@@ -11,7 +11,7 @@ sixteen grays and a slow redraw.
 
 | | | | |
 |---|---|---|---|
-| ![The remote, connected to Kodi](screenshots/1-remote.png) | ![Kodi over Wi-Fi: the last one used, and any that announce themselves](screenshots/2-kodi.png) | ![More buttons](screenshots/3-more-buttons.png) | ![Settings, turned in pages](screenshots/4-settings.png) |
+| ![The remote, connected](screenshots/1-remote.png) | ![Typing on the TV from the phone's keyboard](screenshots/2-keyboard.png) | ![The touchpad](screenshots/3-touchpad.png) | ![Settings, turned in pages](screenshots/4-settings.png) |
 
 ## What it is
 
